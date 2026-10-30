@@ -42,6 +42,7 @@ export function ProjectImageShowcase({
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isInViewport, setIsInViewport] = useState(false);
   const [isTabHidden, setIsTabHidden] = useState(
@@ -345,19 +346,35 @@ export function ProjectImageShowcase({
             aria-roledescription="slide"
             aria-label={`Slide ${currentIndex + 1} of ${slides.length}: ${currentSlide.caption}`}
           >
-            <img
-              src={currentSlide.src}
-              alt={currentSlide.alt}
-              width={1600}
-              height={1000}
-              loading="lazy"
-              decoding="async"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsLightboxOpen(true);
-              }}
-              className="max-w-full max-h-full w-full h-full object-contain object-center rounded-lg shadow-xl cursor-zoom-in pointer-events-auto transition-transform duration-200 hover:scale-[1.01]"
-            />
+            {imageErrors[currentSlide.src] ? (
+              <div className="w-full h-full flex items-center justify-center p-3 pointer-events-auto">
+                <div className="rounded-lg border border-dashed border-white/20 bg-white/[0.02] py-4 px-4 flex flex-col items-center justify-center text-center">
+                  <span className="font-mono text-[11px] font-medium tracking-wide text-[#8A8A92]">
+                    Screenshot coming soon
+                  </span>
+                  <span className="font-mono text-[9px] text-[#8A8A92]/60 mt-0.5">
+                    Docker Compose setup in repository
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <img
+                src={currentSlide.src}
+                alt={currentSlide.alt}
+                width={1600}
+                height={1000}
+                loading="lazy"
+                decoding="async"
+                onError={() =>
+                  setImageErrors((prev) => ({ ...prev, [currentSlide.src]: true }))
+                }
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsLightboxOpen(true);
+                }}
+                className="max-w-full max-h-full w-full h-full object-contain object-center rounded-lg shadow-xl cursor-zoom-in pointer-events-auto transition-transform duration-200 hover:scale-[1.01]"
+              />
+            )}
           </motion.div>
         </AnimatePresence>
 

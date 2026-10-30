@@ -1,8 +1,31 @@
 import { useState, useEffect, useRef } from 'react';
 import { Bot, Activity, ShieldCheck, MessageSquare, Sparkles, Cpu, Store, Home, GitBranch, Layers, Image as ImageIcon, Video } from 'lucide-react';
-import { ProjectImageShowcase } from './ProjectImageShowcase';
+import { ProjectImageShowcase, SlideItem } from './ProjectImageShowcase';
 import { ProjectVideoShowcase } from './ProjectVideoShowcase';
 import { CharanEstatesVideoPreview } from './CharanEstatesVideoPreview';
+
+const iplSlides: SlideItem[] = [
+  {
+    src: '/projects/ipl/ipl-01-pre-match.jpg',
+    caption: 'Pre Match Predictor',
+    alt: 'Pre Match Predictor',
+  },
+  {
+    src: '/projects/ipl/ipl-02-live-match.jpg',
+    caption: 'Live Match Predictor inputs',
+    alt: 'Live Match Predictor inputs',
+  },
+  {
+    src: '/projects/ipl/ipl-03-live-result.jpg',
+    caption: 'Live Match win probability and match situation',
+    alt: 'Live Match win probability and match situation',
+  },
+  {
+    src: '/projects/ipl/ipl-04-championship-race.jpg',
+    caption: 'Championship Race',
+    alt: 'Championship Race',
+  },
+];
 
 interface ProjectDiagramVisualProps {
   projectId: string;
@@ -307,15 +330,11 @@ export function ProjectDiagramVisual({ projectId }: ProjectDiagramVisualProps) {
             </div>
           </div>
 
-          {/* Clearly marked slot labeled "Screenshot coming soon" with a dashed border */}
-          <div className="rounded-lg border border-dashed border-white/20 bg-white/[0.02] py-4 px-3 flex flex-col items-center justify-center text-center">
-            <span className="font-mono text-[11px] font-medium tracking-wide text-[#8A8A92]">
-              Screenshot coming soon
-            </span>
-            <span className="font-mono text-[9px] text-[#8A8A92]/60 mt-0.5">
-              Docker Compose setup in repository
-            </span>
-          </div>
+          {/* Real screenshots showcase carousel (Atelier-style) */}
+          <ProjectImageShowcase
+            slides={iplSlides}
+            projectName="IPL Win Predictor"
+          />
         </div>
 
         <div className="flex items-center justify-between pt-2.5 border-t border-white/10 font-mono text-[10px] text-[#8A8A92]">
