@@ -14,6 +14,9 @@ import { FooterSection } from './components/sections/FooterSection';
 import { allProjects, Project } from './data/projects';
 
 // Lazy-loaded heavy sections and modals below the fold
+const ChatWidget = lazy(() =>
+  import('./components/chat/ChatWidget').then((m) => ({ default: m.ChatWidget }))
+);
 const TwoModesSection = lazy(() =>
   import('./components/sections/TwoModesSection').then((m) => ({ default: m.TwoModesSection }))
 );
@@ -305,6 +308,11 @@ export default function App() {
           />
         </Suspense>
       )}
+
+      {/* Portfolio RAG Chatbot */}
+      <Suspense fallback={null}>
+        <ChatWidget isPageLoaded={isPageLoaded} />
+      </Suspense>
     </div>
   );
 }

@@ -15,6 +15,9 @@ export default defineConfig(() => {
         '@': path.resolve(__dirname, '.'),
       },
     },
+    optimizeDeps: {
+      exclude: ['@xenova/transformers'],
+    },
     build: {
       target: 'es2020',
       minify: 'esbuild',
