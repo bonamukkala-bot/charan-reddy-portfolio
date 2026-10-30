@@ -37,6 +37,7 @@ const STRUCTURAL_WORDS = new Set([
   'of',
   'for',
   'about',
+  'like',
 ]);
 
 const QUESTION_WORDS = new Set(['how', 'what', 'where', 'who', 'why', 'which', 'when']);
@@ -189,7 +190,7 @@ export function normalizeQuery(query: string, vocab?: Set<string>): string {
   q = q.replace(/\bwhere\s+charan\s+lives?\b/g, 'where charan is based');
 
   // 7. Typo tolerance
-  const activeVocab = vocab || cachedVocab;
+  const activeVocab = vocab || cachedVocab || undefined;
   if (activeVocab && activeVocab.size > 0) {
     const tokens = q.split(/\b/);
     const correctedTokens = tokens.map((token) => {
@@ -286,6 +287,30 @@ function computeOverlap(
   }
 
   return Number(Math.min(titleOverlap, queryCoverage).toFixed(4));
+}
+
+/**
+ * Computes maximum titleMatch score across title and all variants for a chunk.
+ */
+export function computeChunkTitleMatch(
+  normalizedQuery: string,
+  chunk: Chunk,
+  vocab?: Set<string>
+): number {
+  const activeVocab = vocab || cachedVocab || undefined;
+  const qFullTokens = getFullTokens(normalizedQuery);
+  const qTokenSet = new Set(qFullTokens);
+
+  let titleMatch = computeOverlap(chunk.title, qFullTokens, qTokenSet, activeVocab);
+  if (chunk.variants && chunk.variants.length > 0) {
+    for (const variant of chunk.variants) {
+      const vMatch = computeOverlap(variant, qFullTokens, qTokenSet, activeVocab);
+      if (vMatch > titleMatch) {
+        titleMatch = vMatch;
+      }
+    }
+  }
+  return titleMatch;
 }
 
 export interface RetrieveCoreOptions {

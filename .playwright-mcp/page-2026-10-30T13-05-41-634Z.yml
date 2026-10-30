@@ -1,0 +1,1194 @@
+- generic [ref=e3]:
+  - link "Skip to content" [ref=e4] [cursor=pointer]:
+    - /url: "#hero"
+  - generic [aria-hidden]:
+    - generic:
+      - generic:
+        - generic: →
+        - generic: 00%
+      - generic: 100% remaining
+  - banner [ref=e607]:
+    - generic [ref=e608]:
+      - link "Charan homepage" [ref=e609] [cursor=pointer]:
+        - /url: "#"
+        - generic [ref=e610]: Charan
+        - generic [ref=e611]: .
+      - navigation "Primary navigation" [ref=e612]:
+        - link "Work" [ref=e613] [cursor=pointer]:
+          - /url: "#work"
+        - link "Services" [ref=e614] [cursor=pointer]:
+          - /url: "#services"
+        - link "Content" [ref=e615] [cursor=pointer]:
+          - /url: "#content"
+        - link "About" [ref=e616] [cursor=pointer]:
+          - /url: "#about"
+        - link "Contact" [ref=e617] [cursor=pointer]:
+          - /url: "#contact"
+      - button "Hire me" [ref=e619]
+  - main [ref=e41]:
+    - generic [ref=e42]:
+      - generic [ref=e44]:
+        - generic [ref=e45]:
+          - generic [ref=e46]: HYDERABAD, INDIA — 06:35:41 pm
+          - heading "I build AI products that actually ship." [level=1] [ref=e49]:
+            - generic [ref=e50]: I build AI products that
+            - generic [ref=e52]: actually ship.
+          - generic [ref=e57]:
+            - generic [ref=e58]: ">"
+            - generic [ref=e2073]: Freelance Web/AI Developer
+          - paragraph [ref=e60]: Multi-agent systems, full-stack products, and client work. Second-year B.Sc Computer Science student at NIAT Hyderabad (degree via BITS Pilani), specializing in Generative AI.
+          - generic [ref=e61]:
+            - button "View my work" [ref=e62]
+            - button "Hire me" [ref=e66]
+        - generic [ref=e71]:
+          - generic [aria-hidden]:
+            - generic: CHARAN
+            - generic: REDDY
+          - generic [ref=e72]:
+            - img "Charan (Bonamukkala Charan Reddy) - Generative AI Engineer" [ref=e74]
+            - generic [ref=e75]: Open for freelance projects
+            - generic [ref=e80]:
+              - generic [ref=e81]: Now Building
+              - generic [ref=e86]: Multi-agent AI pipelines
+            - generic [ref=e87]:
+              - generic [ref=e88]: నమస్కారం
+              - generic [ref=e89]: "|"
+              - generic [ref=e90]: Telugu + English
+      - generic [ref=e91]:
+        - generic [ref=e92]: Scroll to explore
+        - generic [ref=e96]:
+          - link "GitHub profile" [ref=e97] [cursor=pointer]:
+            - /url: https://github.com/bonamukkala-bot
+          - link "LinkedIn profile" [ref=e101] [cursor=pointer]:
+            - /url: https://www.linkedin.com/in/bonamukkala-charan
+          - link "Instagram profile" [ref=e106] [cursor=pointer]:
+            - /url: https://www.instagram.com/charan.insights
+          - link "YouTube channel" [ref=e110] [cursor=pointer]:
+            - /url: https://www.youtube.com/@charanreddysinsights
+    - generic [ref=e114]:
+      - generic [ref=e116]:
+        - generic [ref=e117]:
+          - generic [ref=e118]: "00"
+          - generic [ref=e119]: Projects on GitHub
+          - generic [ref=e120]: Repositories across AI agents, full-stack & ML
+        - generic [ref=e121]:
+          - generic [ref=e122]: "00"
+          - generic [ref=e123]: AI Agents in One Platform
+          - generic [ref=e124]: Autonomous recruiting pipeline in RecruitMate
+        - generic [ref=e125]:
+          - generic [ref=e126]: 0.0%
+          - generic [ref=e128]: IPL Pre-Match Accuracy
+          - generic [ref=e129]: Ensemble model with AUC 0.93 and isotonic calibration
+        - generic [ref=e130]:
+          - generic [ref=e131]: "00"
+          - generic [ref=e132]: Client Sites Delivered
+          - generic [ref=e133]: Production websites shipped for active businesses
+      - generic [ref=e134]:
+        - generic [ref=e135]:
+          - generic [ref=e136]: React
+          - generic [ref=e139]: Flask
+          - generic [ref=e142]: MongoDB
+          - generic [ref=e145]: Groq
+          - generic [ref=e148]: JWT
+          - generic [ref=e151]: Cloudflare Turnstile
+          - generic [ref=e154]: Vite
+          - generic [ref=e157]: TypeScript
+          - generic [ref=e160]: Tailwind CSS
+          - generic [ref=e163]: Supabase
+          - generic [ref=e166]: Framer Motion
+          - generic [ref=e169]: XGBoost
+          - generic [ref=e172]: LightGBM
+          - generic [ref=e175]: Random Forest
+          - generic [ref=e178]: SHAP
+          - generic [ref=e181]: FastAPI
+          - generic [ref=e184]: Docker
+          - generic [ref=e187]: Tailwind
+          - generic [ref=e190]: Web App
+          - generic [ref=e193]: TanStack Router
+          - generic [ref=e196]: Vercel Edge Functions
+          - generic [ref=e199]: pandas
+          - generic [ref=e202]: NumPy
+          - generic [ref=e205]: React 19
+          - generic [ref=e208]: Recharts
+          - generic [ref=e211]: Groq (Llama 4 Scout)
+          - generic [ref=e214]: Python
+          - generic [ref=e217]: Vision LLMs
+          - generic [ref=e220]: Multi-Agent
+          - generic [ref=e223]: Image Analysis
+          - generic [ref=e226]: Policy Synthesis
+          - generic [ref=e229]: AI Agent
+          - generic [ref=e232]: Diagnostics
+          - generic [ref=e235]: Hackathon
+          - generic [ref=e238]: AI Assistant
+          - generic [ref=e241]: React
+          - generic [ref=e244]: Flask
+          - generic [ref=e247]: MongoDB
+          - generic [ref=e250]: Groq
+          - generic [ref=e253]: JWT
+          - generic [ref=e256]: Cloudflare Turnstile
+          - generic [ref=e259]: Vite
+          - generic [ref=e262]: TypeScript
+          - generic [ref=e265]: Tailwind CSS
+          - generic [ref=e268]: Supabase
+          - generic [ref=e271]: Framer Motion
+          - generic [ref=e274]: XGBoost
+          - generic [ref=e277]: LightGBM
+          - generic [ref=e280]: Random Forest
+          - generic [ref=e283]: SHAP
+          - generic [ref=e286]: FastAPI
+          - generic [ref=e289]: Docker
+          - generic [ref=e292]: Tailwind
+          - generic [ref=e295]: Web App
+          - generic [ref=e298]: TanStack Router
+          - generic [ref=e301]: Vercel Edge Functions
+          - generic [ref=e304]: pandas
+          - generic [ref=e307]: NumPy
+          - generic [ref=e310]: React 19
+          - generic [ref=e313]: Recharts
+          - generic [ref=e316]: Groq (Llama 4 Scout)
+          - generic [ref=e319]: Python
+          - generic [ref=e322]: Vision LLMs
+          - generic [ref=e325]: Multi-Agent
+          - generic [ref=e328]: Image Analysis
+          - generic [ref=e331]: Policy Synthesis
+          - generic [ref=e334]: AI Agent
+          - generic [ref=e337]: Diagnostics
+          - generic [ref=e340]: Hackathon
+          - generic [ref=e343]: AI Assistant
+        - generic [aria-hidden] [ref=e346]:
+          - generic [ref=e347]: React
+          - generic [ref=e350]: Flask
+          - generic [ref=e353]: MongoDB
+          - generic [ref=e356]: Groq
+          - generic [ref=e359]: JWT
+          - generic [ref=e362]: Cloudflare Turnstile
+          - generic [ref=e365]: Vite
+          - generic [ref=e368]: TypeScript
+          - generic [ref=e371]: Tailwind CSS
+          - generic [ref=e374]: Supabase
+          - generic [ref=e377]: Framer Motion
+          - generic [ref=e380]: XGBoost
+          - generic [ref=e383]: LightGBM
+          - generic [ref=e386]: Random Forest
+          - generic [ref=e389]: SHAP
+          - generic [ref=e392]: FastAPI
+          - generic [ref=e395]: Docker
+          - generic [ref=e398]: Tailwind
+          - generic [ref=e401]: Web App
+          - generic [ref=e404]: TanStack Router
+          - generic [ref=e407]: Vercel Edge Functions
+          - generic [ref=e410]: pandas
+          - generic [ref=e413]: NumPy
+          - generic [ref=e416]: React 19
+          - generic [ref=e419]: Recharts
+          - generic [ref=e422]: Groq (Llama 4 Scout)
+          - generic [ref=e425]: Python
+          - generic [ref=e428]: Vision LLMs
+          - generic [ref=e431]: Multi-Agent
+          - generic [ref=e434]: Image Analysis
+          - generic [ref=e437]: Policy Synthesis
+          - generic [ref=e440]: AI Agent
+          - generic [ref=e443]: Diagnostics
+          - generic [ref=e446]: Hackathon
+          - generic [ref=e449]: AI Assistant
+          - generic [ref=e452]: React
+          - generic [ref=e455]: Flask
+          - generic [ref=e458]: MongoDB
+          - generic [ref=e461]: Groq
+          - generic [ref=e464]: JWT
+          - generic [ref=e467]: Cloudflare Turnstile
+          - generic [ref=e470]: Vite
+          - generic [ref=e473]: TypeScript
+          - generic [ref=e476]: Tailwind CSS
+          - generic [ref=e479]: Supabase
+          - generic [ref=e482]: Framer Motion
+          - generic [ref=e485]: XGBoost
+          - generic [ref=e488]: LightGBM
+          - generic [ref=e491]: Random Forest
+          - generic [ref=e494]: SHAP
+          - generic [ref=e497]: FastAPI
+          - generic [ref=e500]: Docker
+          - generic [ref=e503]: Tailwind
+          - generic [ref=e506]: Web App
+          - generic [ref=e509]: TanStack Router
+          - generic [ref=e512]: Vercel Edge Functions
+          - generic [ref=e515]: pandas
+          - generic [ref=e518]: NumPy
+          - generic [ref=e521]: React 19
+          - generic [ref=e524]: Recharts
+          - generic [ref=e527]: Groq (Llama 4 Scout)
+          - generic [ref=e530]: Python
+          - generic [ref=e533]: Vision LLMs
+          - generic [ref=e536]: Multi-Agent
+          - generic [ref=e539]: Image Analysis
+          - generic [ref=e542]: Policy Synthesis
+          - generic [ref=e545]: AI Agent
+          - generic [ref=e548]: Diagnostics
+          - generic [ref=e551]: Hackathon
+          - generic [ref=e554]: AI Assistant
+    - generic [ref=e625]:
+      - generic:
+        - generic: ●
+        - generic: TWO SIDES OF MY WORK
+      - generic [ref=e626]:
+        - generic:
+          - generic [aria-hidden]: agents.run()
+          - generic [aria-hidden]: pipeline.verify()
+          - generic:
+            - generic: 7 AI AGENTS · ONE PLATFORM
+            - generic: MULTI-AGENT PIPELINES
+            - generic: GROQ-POWERED CHATBOTS
+            - generic: 85.3% IPL PRE-MATCH ACCURACY
+          - generic [ref=e627]:
+            - generic [ref=e628]: MODE_01
+            - heading "AI AGENT ENGINEER" [level=2] [ref=e631]
+            - paragraph [ref=e635]: Agents that coordinate, verify and ship.
+            - generic [ref=e636]:
+              - generic [ref=e637]: MULTI-AGENT
+              - generic [ref=e638]: GROQ
+              - generic [ref=e639]: PYTHON
+              - generic [ref=e640]: FASTAPI
+              - generic [ref=e641]: FLASK
+              - generic [ref=e642]: LIGHTGBM
+              - generic [ref=e643]: XGBOOST
+              - generic [ref=e644]: SHAP
+        - generic:
+          - generic [aria-hidden]: <div class="hero">
+          - generic [aria-hidden]: "display: grid;"
+          - generic [aria-hidden]: </html>
+          - generic:
+            - generic: 2 CLIENT SITES DELIVERED
+            - generic: SHIPPED ON VERCEL
+            - generic: STOREFRONT + ADMIN CRM
+            - generic: WHATSAPP BOOKING FLOW
+          - generic [ref=e645]:
+            - generic [ref=e646]: MODE_02
+            - heading "FULL‑STACK PRODUCT BUILDER" [level=2] [ref=e649]:
+              - text: FULL‑STACK
+              - generic [ref=e650]: PRODUCT BUILDER
+            - paragraph [ref=e654]: Real products for real clients.
+            - generic [ref=e655]:
+              - generic [ref=e656]: REACT
+              - generic [ref=e657]: TYPESCRIPT
+              - generic [ref=e658]: VITE
+              - generic [ref=e659]: TAILWIND
+              - generic [ref=e660]: SUPABASE
+              - generic [ref=e661]: FRAMER MOTION
+              - generic [ref=e662]: VERCEL
+        - generic:
+          - generic:
+            - img "AI Agent Engineer portrait"
+          - generic:
+            - img "Product Builder portrait"
+        - slider "Switch between AI engineer and product builder" [ref=e663]:
+          - generic [ref=e664]:
+            - generic [ref=e665]: ‹
+            - generic [ref=e666]: ›
+        - link "SEE THE WORK ↓" [ref=e668] [cursor=pointer]:
+          - /url: "#work"
+    - generic [ref=e671]:
+      - generic [ref=e672]:
+        - generic [ref=e673]:
+          - generic [ref=e674]: Stack Explorer
+          - heading "Technology & System Layers" [level=3] [ref=e677]
+        - generic [ref=e678]: Hover or tap any tech to inspect project usage
+      - generic [ref=e680]:
+        - button "All(35)" [pressed] [ref=e681] [cursor=pointer]:
+          - text: All
+          - generic [ref=e682]: (35)
+        - button "Build(15)" [ref=e683] [cursor=pointer]:
+          - text: Build
+          - generic [ref=e684]: (15)
+        - button "AI(12)" [ref=e685] [cursor=pointer]:
+          - text: AI
+          - generic [ref=e686]: (12)
+        - button "Data(4)" [ref=e687] [cursor=pointer]:
+          - text: Data
+          - generic [ref=e688]: (4)
+        - button "Ship(4)" [ref=e689] [cursor=pointer]:
+          - text: Ship
+          - generic [ref=e690]: (4)
+      - generic [ref=e691]:
+        - img "Interactive 3D rotating sphere of 35 technologies used in Charan's projects" [ref=e693]
+        - list [ref=e694]:
+          - listitem [ref=e695]: "React - Layer: Build, used in 6 projects (RecruitMate AI, Atelier, IPL Win Predictor, charanEstates, Sri Vishnu Grand PG, Nuerax Hackathon)"
+          - listitem [ref=e696]: "Flask - Layer: Build, used in 1 projects (RecruitMate AI)"
+          - listitem [ref=e697]: "MongoDB - Layer: Data, used in 1 projects (RecruitMate AI)"
+          - listitem [ref=e698]: "Groq - Layer: AI, used in 3 projects (RecruitMate AI, Atelier, Sri Vishnu Grand PG)"
+          - listitem [ref=e699]: "JWT - Layer: Ship, used in 1 projects (RecruitMate AI)"
+          - listitem [ref=e700]: "Cloudflare Turnstile - Layer: Ship, used in 1 projects (RecruitMate AI)"
+          - listitem [ref=e701]: "Vite - Layer: Build, used in 2 projects (Atelier, Sri Vishnu Grand PG)"
+          - listitem [ref=e702]: "TypeScript - Layer: Build, used in 3 projects (Atelier, charanEstates, Sri Vishnu Grand PG)"
+          - listitem [ref=e703]: "Tailwind CSS - Layer: Build, used in 1 projects (Atelier)"
+          - listitem [ref=e704]: "Supabase - Layer: Data, used in 1 projects (Atelier)"
+          - listitem [ref=e705]: "Framer Motion - Layer: Build, used in 1 projects (Atelier)"
+          - listitem [ref=e706]: "XGBoost - Layer: AI, used in 1 projects (IPL Win Predictor)"
+          - listitem [ref=e707]: "LightGBM - Layer: AI, used in 1 projects (IPL Win Predictor)"
+          - listitem [ref=e708]: "Random Forest - Layer: AI, used in 1 projects (IPL Win Predictor)"
+          - listitem [ref=e709]: "SHAP - Layer: AI, used in 1 projects (IPL Win Predictor)"
+          - listitem [ref=e710]: "FastAPI - Layer: Build, used in 2 projects (IPL Win Predictor, AI Business Doctor)"
+          - listitem [ref=e711]: "Docker - Layer: Ship, used in 2 projects (IPL Win Predictor, Sentinel Agent)"
+          - listitem [ref=e712]: "Tailwind - Layer: Build, used in 2 projects (charanEstates, Sri Vishnu Grand PG)"
+          - listitem [ref=e713]: "Web App - Layer: Build, used in 1 projects (charanEstates)"
+          - listitem [ref=e714]: "TanStack Router - Layer: Build, used in 1 projects (Sri Vishnu Grand PG)"
+          - listitem [ref=e715]: "Vercel Edge Functions - Layer: Ship, used in 1 projects (Sri Vishnu Grand PG)"
+          - listitem [ref=e716]: "pandas - Layer: Data, used in 1 projects (AI Business Doctor)"
+          - listitem [ref=e717]: "NumPy - Layer: Data, used in 1 projects (AI Business Doctor)"
+          - listitem [ref=e718]: "React 19 - Layer: Build, used in 1 projects (AI Business Doctor)"
+          - listitem [ref=e719]: "Recharts - Layer: Build, used in 1 projects (AI Business Doctor)"
+          - listitem [ref=e720]: "Groq (Llama 4 Scout) - Layer: AI, used in 1 projects (AI Business Doctor)"
+          - listitem [ref=e721]: "Python - Layer: Build, used in 3 projects (HackerRank Orchestrate (June 2026), Sentinel Agent, Nuerax Hackathon)"
+          - listitem [ref=e722]: "Vision LLMs - Layer: AI, used in 1 projects (HackerRank Orchestrate (June 2026))"
+          - listitem [ref=e723]: "Multi-Agent - Layer: AI, used in 1 projects (HackerRank Orchestrate (June 2026))"
+          - listitem [ref=e724]: "Image Analysis - Layer: AI, used in 1 projects (HackerRank Orchestrate (June 2026))"
+          - listitem [ref=e725]: "Policy Synthesis - Layer: AI, used in 1 projects (HackerRank Orchestrate (June 2026))"
+          - listitem [ref=e726]: "AI Agent - Layer: AI, used in 1 projects (Sentinel Agent)"
+          - listitem [ref=e727]: "Diagnostics - Layer: Build, used in 1 projects (Sentinel Agent)"
+          - listitem [ref=e728]: "Hackathon - Layer: Build, used in 2 projects (Sentinel Agent, Nuerax Hackathon)"
+          - listitem [ref=e729]: "AI Assistant - Layer: AI, used in 1 projects (Nuerax Hackathon)"
+      - generic [ref=e730]:
+        - generic [ref=e731]: Projects in Codebase
+        - generic [ref=e732]:
+          - generic [ref=e733]: RecruitMate AI
+          - generic [ref=e737]: Atelier
+          - generic [ref=e741]: IPL Win Predictor
+          - generic [ref=e745]: charanEstates
+          - generic [ref=e749]: Sri Vishnu Grand PG
+          - generic [ref=e753]: AI Business Doctor
+          - generic [ref=e757]: HackerRank Orchestrate (June 2026)
+          - generic [ref=e761]: Sentinel Agent
+          - generic [ref=e765]: Nuerax Hackathon
+    - generic [ref=e770]:
+      - generic [ref=e771]:
+        - generic [ref=e772]:
+          - generic [ref=e773]: Selected Case Studies
+          - heading "Featured Work" [level=2] [ref=e776]
+        - paragraph [ref=e777]: Multi-agent systems, full-stack commerce, real-time sports analytics, and production client applications with real deployments.
+      - generic [ref=e778]:
+        - generic [ref=e780] [cursor=pointer]:
+          - generic [ref=e782]:
+            - generic [ref=e783]:
+              - generic [ref=e784]:
+                - button "7-Agent Pipeline" [ref=e786]
+                - generic [ref=e792]: RecruitMate AI
+              - region "RecruitMate AI screenshots showcase" [ref=e793]:
+                - generic [ref=e794]:
+                  - generic [ref=e795]: RecruitMate AI Showcase
+                  - generic [ref=e802]: Real App
+                - generic [ref=e804]:
+                  - 'group "Slide 1 of 7: Dashboard"':
+                    - img "RecruitMate AI - Dashboard" [ref=e805]
+                  - button "Previous screenshot" [ref=e806]
+                  - button "Next screenshot" [ref=e809]
+                - generic [ref=e812]:
+                  - 'button "Go to slide 1 of 7: Dashboard" [ref=e813]'
+                  - 'button "Go to slide 2 of 7: Hiring pipeline" [ref=e814]'
+                  - 'button "Go to slide 3 of 7: Analytics" [ref=e815]'
+                  - 'button "Go to slide 4 of 7: Candidate detail" [ref=e816]'
+                  - 'button "Go to slide 5 of 7: Candidates" [ref=e817]'
+                  - 'button "Go to slide 6 of 7: Job management" [ref=e818]'
+                  - 'button "Go to slide 7 of 7: Sign in" [ref=e819]'
+            - generic [ref=e820]:
+              - generic [ref=e821]:
+                - generic [ref=e822]: Architecture
+                - generic [ref=e823]: 7 AI Agents in One Platform
+              - generic [ref=e824]:
+                - generic [ref=e825]: Backend API
+                - generic [ref=e826]: ~28 Endpoints Across 4 Flask Blueprints
+              - generic [ref=e827]:
+                - generic [ref=e828]: Security
+                - generic [ref=e829]: Custom JWT + Server-Side Cloudflare Turnstile
+          - generic [ref=e830]:
+            - generic [ref=e831]:
+              - generic [ref=e832]:
+                - generic [ref=e833]: "01"
+                - generic [ref=e834]:
+                  - generic [ref=e835]: AI & Agents
+                  - generic [ref=e836]: /
+                  - generic [ref=e837]: Solo-built SaaS Platform
+              - heading "RecruitMate AI" [level=3] [ref=e838]
+              - paragraph [ref=e839]: Solo-built multi-tenant AI recruitment platform with 7 specialized agents
+              - generic [ref=e840]: "The Challenge: Hiring teams struggle to manually parse job descriptions, generate role-specific interview assessments, and evaluate candidate responses consistently across high-volume pipelines."
+              - paragraph [ref=e841]: A full-stack, solo-built multi-tenant AI recruitment platform. Features seven specialized AI agents (JD parser, resume screener, question generator, AI interviewer, answer evaluator, scheduler, and candidate comparator) plus an automated email sender. Implements custom JWT authentication, token-based public interview links, server-side Cloudflare Turnstile verification, and approximately 28 API endpoints across 4 Flask blueprints.
+              - generic [ref=e842]:
+                - generic [ref=e843]: React
+                - generic [ref=e844]: Flask
+                - generic [ref=e845]: MongoDB
+                - generic [ref=e846]: Groq
+                - generic [ref=e847]: JWT
+                - generic [ref=e848]: Cloudflare Turnstile
+            - generic [ref=e849]:
+              - button "Deep Dive Case Study" [ref=e850]
+              - generic [ref=e854]:
+                - link "Live demo for RecruitMate AI" [ref=e855]:
+                  - /url: https://recruit-mate-chi.vercel.app
+                  - generic [ref=e856]: Live demo
+                - link "GitHub repository for RecruitMate AI" [ref=e861]:
+                  - /url: https://github.com/bonamukkala-bot/RecruitMate
+                  - generic [ref=e865]: GitHub
+        - generic [ref=e867] [cursor=pointer]:
+          - generic [ref=e869]:
+            - generic [ref=e870]:
+              - generic [ref=e871]:
+                - button "Architecture" [ref=e873]
+                - generic [ref=e879]: Atelier
+              - region "Atelier screenshots showcase" [ref=e880]:
+                - generic [ref=e881]:
+                  - generic [ref=e882]: Atelier Showcase
+                  - generic [ref=e889]: Real App
+                - generic [ref=e891]:
+                  - 'group "Slide 1 of 12: Storefront"':
+                    - img "Atelier - Storefront" [ref=e892]
+                  - button "Previous screenshot" [ref=e893]
+                  - button "Next screenshot" [ref=e896]
+                - generic [ref=e899]:
+                  - 'button "Go to slide 1 of 12: Storefront" [ref=e900]'
+                  - 'button "Go to slide 2 of 12: Collection" [ref=e901]'
+                  - 'button "Go to slide 3 of 12: Product page" [ref=e902]'
+                  - 'button "Go to slide 4 of 12: Delivery check" [ref=e903]'
+                  - 'button "Go to slide 5 of 12: Admin dashboard" [ref=e904]'
+                  - 'button "Go to slide 6 of 12: Review requests and stock alerts" [ref=e905]'
+                  - 'button "Go to slide 7 of 12: Add product" [ref=e906]'
+                  - 'button "Go to slide 8 of 12: Record order" [ref=e907]'
+                  - 'button "Go to slide 9 of 12: Deliveries" [ref=e908]'
+                  - 'button "Go to slide 10 of 12: Customers" [ref=e909]'
+                  - 'button "Go to slide 11 of 12: Workers and payroll" [ref=e910]'
+                  - 'button "Go to slide 12 of 12: Delivery zones" [ref=e911]'
+            - generic [ref=e912]:
+              - generic [ref=e913]:
+                - generic [ref=e914]: Storefront
+                - generic [ref=e915]: Product catalog with WhatsApp / call contact flow
+              - generic [ref=e916]:
+                - generic [ref=e917]: Admin CRM
+                - generic [ref=e918]: Product CRUD with multi-image upload and order tracking
+              - generic [ref=e919]:
+                - generic [ref=e920]: AI + Languages
+                - generic [ref=e921]: Groq-powered chatbot (Edge Function) and English / Telugu / Hindi toggle
+          - generic [ref=e922]:
+            - generic [ref=e923]:
+              - generic [ref=e924]:
+                - generic [ref=e925]: "02"
+                - generic [ref=e926]:
+                  - generic [ref=e927]: Full-Stack / E-commerce
+                  - generic [ref=e928]: /
+                  - generic [ref=e929]: Freelance Portfolio Piece
+              - heading "Atelier" [level=3] [ref=e930]
+              - paragraph [ref=e931]: Premium furniture storefront + admin CRM — React, Vite, Supabase
+              - generic [ref=e932]: "The Challenge: Furniture shops frequently struggle with complex, high-friction checkout carts when bespoke buyers prefer asking questions about materials, custom dimensions, and delivery directly via phone or WhatsApp."
+              - paragraph [ref=e933]: A premium furniture storefront with an admin CRM, built as a freelance portfolio piece for furniture shops. Customers contact the shop through WhatsApp or call instead of a cart and checkout.
+              - generic [ref=e934]:
+                - generic [ref=e935]: React
+                - generic [ref=e936]: Vite
+                - generic [ref=e937]: TypeScript
+                - generic [ref=e938]: Tailwind CSS
+                - generic [ref=e939]: Supabase
+                - generic [ref=e940]: Framer Motion
+                - generic [ref=e941]: Groq
+            - generic [ref=e942]:
+              - button "Deep Dive Case Study" [ref=e943]
+              - generic [ref=e947]:
+                - link "Live demo for Atelier" [ref=e948]:
+                  - /url: https://atelier-furniture-shop.vercel.app
+                  - generic [ref=e949]: Live demo
+                - link "GitHub repository for Atelier" [ref=e954]:
+                  - /url: https://github.com/bonamukkala-bot/atelier-furniture-shop
+                  - generic [ref=e958]: GitHub
+        - generic [ref=e960] [cursor=pointer]:
+          - generic [ref=e962]:
+            - generic [ref=e963]:
+              - generic [ref=e964]:
+                - generic [ref=e965]: Prediction Pipeline
+                - generic [ref=e970]: FastAPI + React
+              - generic [ref=e971]:
+                - generic [ref=e972]:
+                  - generic [ref=e973]:
+                    - generic [ref=e974]: 01 Ingest
+                    - generic [ref=e975]: IPL Data
+                    - generic [ref=e976]: 17 seasons
+                  - generic [ref=e977]:
+                    - generic [ref=e978]: 02 Models
+                    - generic [ref=e979]: XGBoost / LightGBM / RF
+                    - generic [ref=e980]: Ensemble ML
+                  - generic [ref=e981]:
+                    - generic [ref=e982]: 03 Explain
+                    - generic [ref=e983]: SHAP
+                    - generic [ref=e984]: Explanations
+                  - generic [ref=e985]:
+                    - generic [ref=e986]: 04 Backend
+                    - generic [ref=e987]: FastAPI
+                    - generic [ref=e988]: REST API
+                  - generic [ref=e989]:
+                    - generic [ref=e990]: 05 Frontend
+                    - generic [ref=e991]: React UI
+                    - generic [ref=e992]: Interactive
+                - generic [ref=e993]:
+                  - generic [ref=e994]: Screenshot coming soon
+                  - generic [ref=e995]: Docker Compose setup in repository
+              - generic [ref=e996]:
+                - generic [ref=e997]: Trained on 17 IPL seasons
+                - generic [ref=e998]: 88.73% accuracy
+            - generic [ref=e999]:
+              - generic [ref=e1000]:
+                - generic [ref=e1001]: Accuracy
+                - generic [ref=e1002]: 88.73% accuracy
+              - generic [ref=e1003]:
+                - generic [ref=e1004]: Dataset
+                - generic [ref=e1005]: Trained on 17 IPL seasons
+              - generic [ref=e1006]:
+                - generic [ref=e1007]: Explainability
+                - generic [ref=e1008]: SHAP explanations
+          - generic [ref=e1009]:
+            - generic [ref=e1010]:
+              - generic [ref=e1011]:
+                - generic [ref=e1012]: "03"
+                - generic [ref=e1013]:
+                  - generic [ref=e1014]: ML / Sports Analytics
+                  - generic [ref=e1015]: /
+                  - generic [ref=e1016]: Machine Learning Project
+              - heading "IPL Win Predictor" [level=3] [ref=e1017]
+              - paragraph [ref=e1018]: "IPL 2026 Win Predictor: 88.73% accuracy ML model with XGBoost, LightGBM, Random Forest, SHAP explanations, FastAPI + React"
+              - generic [ref=e1019]: "The Challenge: Cricket match forecasting requires evaluating complex historical patterns across past seasons while providing transparent explanations for prediction outputs rather than uncalibrated black-box guesses."
+              - paragraph [ref=e1020]: An IPL match outcome prediction system built with an 88.73% accuracy machine learning model using XGBoost, LightGBM, and Random Forest with SHAP explanations. Features a FastAPI backend, an interactive React frontend, and a Docker Compose setup in the repository, trained on 17 seasons of IPL data.
+              - generic [ref=e1021]:
+                - generic [ref=e1022]: XGBoost
+                - generic [ref=e1023]: LightGBM
+                - generic [ref=e1024]: Random Forest
+                - generic [ref=e1025]: SHAP
+                - generic [ref=e1026]: FastAPI
+                - generic [ref=e1027]: React
+                - generic [ref=e1028]: Docker
+            - generic [ref=e1029]:
+              - button "Deep Dive Case Study" [ref=e1030]
+              - generic [ref=e1034]:
+                - link "Live demo for IPL Win Predictor" [ref=e1035]:
+                  - /url: https://charan-reddy222-ipl-win-predictor.hf.space/
+                  - generic [ref=e1036]: Live demo
+                - link "GitHub repository for IPL Win Predictor" [ref=e1041]:
+                  - /url: https://github.com/bonamukkala-bot/ipl-win-predictor
+                  - generic [ref=e1045]: GitHub
+        - generic [ref=e1047] [cursor=pointer]:
+          - generic [ref=e1049]:
+            - generic [ref=e1050]:
+              - generic [ref=e1051]:
+                - generic [ref=e1052]: Property Discovery Architecture
+                - generic [ref=e1057]: React + TypeScript + Tailwind
+              - generic [ref=e1058]:
+                - generic [ref=e1059]:
+                  - generic [ref=e1060]:
+                    - text: 01 Ingest
+                    - generic [ref=e1061]: Listing Data
+                    - text: Property Catalog
+                  - generic [ref=e1062]:
+                    - text: 02 Filter Engine
+                    - generic [ref=e1063]: Category & Budget
+                    - text: Zero-latency state
+                  - generic [ref=e1064]:
+                    - text: 03 Presentation
+                    - generic [ref=e1065]: Property Cards
+                    - text: Structured Details
+                  - generic [ref=e1066]:
+                    - text: 04 Interface
+                    - generic [ref=e1067]: Responsive UI
+                    - text: Mobile & Desktop
+                - generic [ref=e1068]:
+                  - generic [ref=e1069]: Screenshot coming soon
+                  - generic [ref=e1070]: Repository on GitHub (bonamukkala-bot/charanEstates)
+              - generic [ref=e1071]:
+                - generic [ref=e1072]: Client-Side Filter Architecture
+                - generic [ref=e1073]: Full-stack Web App
+            - generic [ref=e1074]:
+              - generic [ref=e1075]:
+                - generic [ref=e1076]: Focus
+                - generic [ref=e1077]: Property Discovery & Filter Architecture
+              - generic [ref=e1078]:
+                - generic [ref=e1079]: Design
+                - generic [ref=e1080]: Mobile-Responsive Real Estate Interface
+              - generic [ref=e1081]:
+                - generic [ref=e1082]: Stack
+                - generic [ref=e1083]: React + TypeScript + Tailwind
+          - generic [ref=e1084]:
+            - generic [ref=e1085]:
+              - generic [ref=e1086]:
+                - generic [ref=e1087]: "04"
+                - generic [ref=e1088]:
+                  - generic [ref=e1089]: Full-stack
+                  - generic [ref=e1090]: /
+                  - generic [ref=e1091]: Full-stack Web Application
+              - heading "charanEstates" [level=3] [ref=e1092]
+              - paragraph [ref=e1093]: Real-estate web application with dynamic property discovery filters
+              - generic [ref=e1094]: "The Challenge: Home searchers need a straightforward interface to browse property listings by category, budget, and location without cluttered third-party advertisements."
+              - paragraph [ref=e1095]: A full-stack real-estate web application featuring interactive property browsing, structured listing views, category filtering, and clean responsive layouts.
+              - generic [ref=e1096]:
+                - generic [ref=e1097]: React
+                - generic [ref=e1098]: TypeScript
+                - generic [ref=e1099]: Tailwind
+                - generic [ref=e1100]: Web App
+            - generic [ref=e1101]:
+              - button "Deep Dive Case Study" [ref=e1102]
+              - generic [ref=e1106]:
+                - link "Live demo for charanEstates" [ref=e1107]:
+                  - /url: https://charan-estates.vercel.app/
+                  - generic [ref=e1108]: Live demo
+                - link "GitHub repository for charanEstates" [ref=e1113]:
+                  - /url: https://github.com/bonamukkala-bot/charanEstates
+                  - generic [ref=e1117]: GitHub
+        - generic [ref=e1119] [cursor=pointer]:
+          - generic [ref=e1121]:
+            - generic [ref=e1122]:
+              - generic [ref=e1123]:
+                - generic [ref=e1124]:
+                  - button "Video Walkthrough" [ref=e1125]
+                  - button "Concierge Pipeline" [ref=e1130]
+                - generic [ref=e1136]: Sri Vishnu Grand PG
+              - generic [ref=e1137]:
+                - generic [ref=e1138]:
+                  - generic [ref=e1143]: srivishnugrandpg.com
+                  - generic [ref=e1144]: LIVE
+                - generic [ref=e1147]:
+                  - generic: Click to expand
+                  - button "Expand video in fullscreen lightbox" [ref=e1149]
+                  - button "Play video" [ref=e1157]
+                - generic [ref=e1161]:
+                  - generic [ref=e1162]: Website walkthrough
+                  - generic [ref=e1163]: Click video to expand
+            - generic [ref=e1164]:
+              - generic [ref=e1165]:
+                - generic [ref=e1166]: Conversational Concierge
+                - generic [ref=e1167]: Groq AI Chatbot on Vercel Edge Function
+              - generic [ref=e1168]:
+                - generic [ref=e1169]: Direct Handoff
+                - generic [ref=e1170]: WhatsApp Booking Flow + Inline Google Maps
+              - generic [ref=e1171]:
+                - generic [ref=e1172]: Structured SEO
+                - generic [ref=e1173]: LodgingBusiness & FAQPage JSON-LD + llms.txt
+          - generic [ref=e1174]:
+            - generic [ref=e1175]:
+              - generic [ref=e1176]:
+                - generic [ref=e1177]: "05"
+                - generic [ref=e1178]:
+                  - generic [ref=e1179]: Client
+                  - generic [ref=e1180]: /
+                  - generic [ref=e1181]: Commercial Client — Hospitality (Hyderabad)
+              - heading "Sri Vishnu Grand PG" [level=3] [ref=e1182]
+              - paragraph [ref=e1183]: Production website for a hostel/PG business in Gachibowli, Hyderabad
+              - generic [ref=e1184]: "The Challenge: A hostel and PG business in Gachibowli, Hyderabad needed a modern web presence to handle inquiries automatically, present room amenities, and guide prospective residents without repetitive manual phone calls."
+              - paragraph [ref=e1185]: A production website for a hostel and paying-guest business in Gachibowli, Hyderabad. Engineered with React, TypeScript, Vite, Tailwind CSS, TanStack Router, Framer Motion, and deployed on Vercel. Features a Groq-powered AI chatbot deployed on a Vercel Edge Function with room booking flow, WhatsApp handoff buttons, and inline Google Maps integration; a blog system; an animated "Nearby Locations" section; and a comprehensive SEO setup including LodgingBusiness and FAQPage JSON-LD, GA4 analytics, Google Search Console, sitemap, and llms.txt.
+              - generic [ref=e1186]:
+                - generic [ref=e1187]: React
+                - generic [ref=e1188]: TypeScript
+                - generic [ref=e1189]: Vite
+                - generic [ref=e1190]: Tailwind
+                - generic [ref=e1191]: TanStack Router
+                - generic [ref=e1192]: Groq
+                - generic [ref=e1193]: Vercel Edge Functions
+            - generic [ref=e1194]:
+              - button "Deep Dive Case Study" [ref=e1195]
+              - generic [ref=e1199]:
+                - link "Live demo for Sri Vishnu Grand PG" [ref=e1200]:
+                  - /url: https://srivishnugrandpg.com
+                  - generic [ref=e1201]: Live demo
+                - link "GitHub repository for Sri Vishnu Grand PG" [ref=e1206]:
+                  - /url: https://github.com/bonamukkala-bot/srivishnugrandpg
+                  - generic [ref=e1210]: GitHub
+    - generic [ref=e1212]:
+      - generic [ref=e1213]:
+        - generic [ref=e1214]:
+          - generic [ref=e1215]: Extended Repositories
+          - heading "More Work & Prototypes" [level=2] [ref=e1218]
+        - generic [ref=e1219]:
+          - button "All" [ref=e1220]
+          - button "AI & Agents" [ref=e1222]
+          - button "Full-stack" [ref=e1223]
+          - button "Client" [ref=e1224]
+          - button "Hackathon" [ref=e1225]
+      - generic [ref=e1226]:
+        - generic [ref=e1227] [cursor=pointer]:
+          - generic [ref=e1228]:
+            - generic [ref=e1233]:
+              - generic [ref=e1234]: "#06"
+              - generic [ref=e1235]: AI & Agents
+            - generic: AI
+            - generic [ref=e1236]:
+              - link "Live site for AI Business Doctor" [ref=e1237]:
+                - /url: https://ai-business-doctor.vercel.app
+              - link "GitHub repo for AI Business Doctor" [ref=e1242]:
+                - /url: https://github.com/bonamukkala-bot/ai-business-doctor
+          - generic [ref=e1246]:
+            - generic [ref=e1247]:
+              - heading "AI Business Doctor" [level=3] [ref=e1249]
+              - paragraph [ref=e1253]: A diagnostic platform for small business sales and inventory data using a medical diagnostic metaphor (vitals, diagnosis, prescription, consultation). Built with FastAPI, pandas, NumPy, React 19, Vite, Recharts, and Groq (Llama 4 Scout). Generates a transparent 0–100 business health score, profit driver analysis, stop-selling detection, reorder alerts, anomaly detection, priority actions ranked by rupee impact, a session-memory "Consult the Doctor" chat, Board Meeting presentation mode, and PDF report export.
+              - generic [ref=e1254]: SMB Diagnostics Platform
+            - generic [ref=e1255]:
+              - generic [ref=e1256]: FastAPI
+              - generic [ref=e1257]: pandas
+              - generic [ref=e1258]: NumPy
+              - generic [ref=e1259]: "+3"
+        - generic [ref=e1260] [cursor=pointer]:
+          - generic [ref=e1261]:
+            - generic [ref=e1268]:
+              - generic [ref=e1269]: "#07"
+              - generic [ref=e1270]: Hackathon
+            - generic: Hac
+            - link "GitHub repo for HackerRank Orchestrate (June 2026)" [ref=e1272]:
+              - /url: https://github.com/bonamukkala-bot/hackerrank-orchestrate-june26
+          - generic [ref=e1276]:
+            - generic [ref=e1277]:
+              - heading "HackerRank Orchestrate (June 2026)" [level=3] [ref=e1279]
+              - paragraph [ref=e1283]: An autonomous multi-agent AI pipeline for insurance damage-claim verification built for HackerRank Orchestrate (June 2026). Utilizes vision-language models (VLMs) for image-based damage inspection, risk assessment, and policy synthesis across car, laptop, and package claims.
+              - generic [ref=e1284]: HackerRank Orchestrate Competition
+            - generic [ref=e1285]:
+              - generic [ref=e1286]: Python
+              - generic [ref=e1287]: Vision LLMs
+              - generic [ref=e1288]: Multi-Agent
+              - generic [ref=e1289]: "+2"
+        - generic [ref=e1290] [cursor=pointer]:
+          - generic [ref=e1291]:
+            - generic [ref=e1296]:
+              - generic [ref=e1297]: "#08"
+              - generic [ref=e1298]: Hackathon
+            - generic: Sen
+            - link "GitHub repo for Sentinel Agent" [ref=e1300]:
+              - /url: https://github.com/bonamukkala-bot/sentinel-agent
+          - generic [ref=e1304]:
+            - generic [ref=e1305]:
+              - heading "Sentinel Agent" [level=3] [ref=e1307]
+              - paragraph [ref=e1311]: An AI agent built for containerized microservice monitoring, automated incident diagnostics, and error pattern inspection across Docker environments.
+              - generic [ref=e1312]: Container Log Diagnostics & Monitoring
+            - generic [ref=e1313]:
+              - generic [ref=e1314]: Python
+              - generic [ref=e1315]: Docker
+              - generic [ref=e1316]: AI Agent
+              - generic [ref=e1317]: "+2"
+        - generic [ref=e1318] [cursor=pointer]:
+          - generic [ref=e1319]:
+            - generic [ref=e1326]:
+              - generic [ref=e1327]: "#09"
+              - generic [ref=e1328]: Hackathon
+            - generic: Nue
+            - link "GitHub repo for Nuerax Hackathon" [ref=e1330]:
+              - /url: https://github.com/bonamukkala-bot/nuerax-hackathon
+          - generic [ref=e1334]:
+            - generic [ref=e1335]:
+              - heading "Nuerax Hackathon" [level=3] [ref=e1337]
+              - paragraph [ref=e1341]: An adaptive AI assistant project designed to assist learning through structured topic breakdowns and interactive pacing, developed during a hackathon competition.
+              - generic [ref=e1342]: Adaptive Learning Assistant Concept
+            - generic [ref=e1343]:
+              - generic [ref=e1344]: React
+              - generic [ref=e1345]: Python
+              - generic [ref=e1346]: AI Assistant
+              - generic [ref=e1347]: "+1"
+    - generic [ref=e1349]:
+      - generic [ref=e1350]:
+        - generic [ref=e1351]:
+          - generic [ref=e1352]: Work With Me
+          - heading "Need something built? Let’s ship it." [level=2] [ref=e1355]
+        - generic [ref=e1356]:
+          - generic [ref=e1357]: Usually replies within 24 hours.
+          - button "Start a project" [ref=e1362]
+      - generic [ref=e1367]:
+        - generic [ref=e1368]:
+          - generic [ref=e1369]:
+            - generic [ref=e1370]: "01"
+            - heading "AI Chatbots & Multi-Agent Systems" [level=3] [ref=e1376]
+            - paragraph [ref=e1377]: WhatsApp, web concierge, and multi-agent task pipelines
+            - paragraph [ref=e1378]: Custom LLM-powered assistants engineered for specific operational flows. I build systems with structured outputs, vector knowledge retrieval, WhatsApp integrations, and specialized agent tasks.
+            - generic [ref=e1379]:
+              - generic [ref=e1380]: "What’s Included:"
+              - generic [ref=e1381]: WhatsApp Business API integration & web chat widgets
+              - generic [ref=e1385]: RAG knowledge retrieval over custom company documents & FAQs
+              - generic [ref=e1389]: Multi-agent task pipelines with role specialization
+              - generic [ref=e1393]: Bilingual Telugu & English conversational flows
+          - generic [ref=e1397]:
+            - generic [ref=e1398]: Hostels, agencies, and businesses with high customer inquiry volumes.
+            - button "Inquire" [ref=e1399]
+        - generic [ref=e1404]:
+          - generic [ref=e1405]:
+            - generic [ref=e1406]: "02"
+            - heading "Business Websites That Rank & Convert" [level=3] [ref=e1412]
+            - paragraph [ref=e1413]: Fast React architecture, structured schema, and local search setup
+            - paragraph [ref=e1414]: Engineered web applications built for speed, clean responsiveness, and high conversion. I implement semantic markup, local SEO structured data, and direct lead handoff systems.
+            - generic [ref=e1415]:
+              - generic [ref=e1416]: "What’s Included:"
+              - generic [ref=e1417]: Mobile-first React / TypeScript / Vite or Next.js engineering
+              - generic [ref=e1421]: Local Hyderabad & regional structured data (Schema.org JSON-LD)
+              - generic [ref=e1425]: Direct WhatsApp and email lead capture integrations
+              - generic [ref=e1429]: Optimized performance, fast load times, and clean UI
+          - generic [ref=e1433]:
+            - generic [ref=e1434]: Local businesses, founders, luxury studios, and commercial services.
+            - button "Inquire" [ref=e1435]
+        - generic [ref=e1440]:
+          - generic [ref=e1441]:
+            - generic [ref=e1442]: "03"
+            - heading "AI Automation For Small Businesses" [level=3] [ref=e1447]
+            - paragraph [ref=e1448]: Custom diagnostics, automated workflows, and data processing
+            - paragraph [ref=e1449]: Replace manual spreadsheet copy-pasting and repetitive analysis with deterministic software. I build web dashboards that compute business metrics and generate actionable summaries.
+            - generic [ref=e1450]:
+              - generic [ref=e1451]: "What’s Included:"
+              - generic [ref=e1452]: Deterministic sales, inventory, and expense diagnostics in pandas
+              - generic [ref=e1456]: Custom internal portals and order tracking workflows
+              - generic [ref=e1460]: Automated data ingestion and report generation
+              - generic [ref=e1464]: Clean interactive dashboards with Recharts & export features
+          - generic [ref=e1468]:
+            - generic [ref=e1469]: SMB owners, retail shops, wholesale distributors, and founders.
+            - button "Inquire" [ref=e1470]
+      - generic [ref=e1475]:
+        - generic [ref=e1476]:
+          - generic [ref=e1477]:
+            - text: Transparent Workflow
+            - heading "How I Go From Idea to Production" [level=3] [ref=e1478]
+          - generic [ref=e1479]: Turnaround timeline depends on project scope and deliverables.
+        - generic [ref=e1480]:
+          - generic [ref=e1481]:
+            - generic [ref=e1482]:
+              - generic [ref=e1483]: "01"
+              - generic [ref=e1485]: Initial Consultation
+            - heading "Discuss & Scope" [level=4] [ref=e1486]
+            - paragraph [ref=e1487]: I discuss your specific business problem, technical requirements, and target timeline. We establish clear, agreed deliverables and project scope before writing any code.
+          - generic [ref=e1488]:
+            - generic [ref=e1489]:
+              - generic [ref=e1490]: "02"
+              - generic [ref=e1492]: Active Development
+            - heading "Build & Iterate" [level=4] [ref=e1493]
+            - paragraph [ref=e1494]: I build the working product in transparent stages. You receive staging links to review features, provide feedback, and verify real progress.
+          - generic [ref=e1495]:
+            - generic [ref=e1496]:
+              - generic [ref=e1497]: "03"
+              - generic [ref=e1499]: Deployment
+            - heading "Launch & Handoff" [level=4] [ref=e1500]
+            - paragraph [ref=e1501]: I deploy the application to production on your domain with SSL, edge caching, and complete code handoff with documentation.
+    - generic [ref=e1503]:
+      - generic [ref=e1504]: Tech Education & Creator
+      - generic [ref=e1507]:
+        - generic [ref=e1509]:
+          - img "Charan coding on a laptop from behind in classroom" [ref=e1510]
+          - generic [ref=e1511]:
+            - generic [ref=e1512]: Bilingual Tech Series
+            - generic [ref=e1516]: Telugu · English
+        - generic [ref=e1517]:
+          - heading "I teach what I build." [level=2] [ref=e1518]
+          - paragraph [ref=e1519]: "I make tech content for student developers in India, in Telugu and English: real projects, honest lessons, no fluff."
+          - paragraph [ref=e1520]: Documenting the process of engineering generative AI applications, multi-agent frameworks, and building production software as a student in India.
+          - generic [ref=e1521]:
+            - generic [ref=e1522]: Telugu + English
+            - generic [ref=e1527]: Student developers in India
+            - generic [ref=e1534]: Instagram + YouTube
+          - generic [ref=e1538]:
+            - generic [ref=e1539]:
+              - generic [ref=e1540]:
+                - generic [ref=e1541]: Instagram
+                - generic [ref=e1546]: Charan Insights
+                - generic [ref=e1547]: "@charan.insights"
+                - paragraph [ref=e1548]: Engineering mindset, tech perspectives, and student developer journey.
+              - link "Follow on Instagram" [ref=e1549] [cursor=pointer]:
+                - /url: https://www.instagram.com/charan.insights
+            - generic [ref=e1554]:
+              - generic [ref=e1555]:
+                - generic [ref=e1556]: LinkedIn
+                - generic [ref=e1562]: Charan Bonamukkala
+                - generic [ref=e1563]: in/bonamukkala-charan
+                - paragraph [ref=e1564]: Professional profile, projects and experience.
+              - link "Connect on LinkedIn" [ref=e1565] [cursor=pointer]:
+                - /url: https://www.linkedin.com/in/bonamukkala-charan
+            - generic [ref=e1570]:
+              - generic [ref=e1571]:
+                - generic [ref=e1572]: YouTube
+                - generic [ref=e1577]: Charan Reddy’s Insights
+                - generic [ref=e1578]: "@charanreddysinsights"
+                - paragraph [ref=e1579]: In-depth video tutorials, technical walkthroughs, and practical guides in Telugu & English.
+              - link "View YouTube Channel" [ref=e1580] [cursor=pointer]:
+                - /url: https://www.youtube.com/@charanreddysinsights
+      - generic [ref=e1585]:
+        - generic [ref=e1586]:
+          - generic [ref=e1587]:
+            - generic [ref=e1588]: WATCH
+            - heading "Watch my work" [level=3] [ref=e1591]
+          - generic [ref=e1592]:
+            - button "Scroll left" [ref=e1593]
+            - button "Scroll right" [ref=e1596]
+        - generic [ref=e1599]:
+          - generic [ref=e1600]:
+            - 'button "Play YouTube video: Build Your Portfolio Website" [ref=e1601] [cursor=pointer]':
+              - img "Build Your Portfolio Website" [ref=e1602]
+              - generic [ref=e1603]: YouTube
+              - generic:
+                - heading "Build Your Portfolio Website" [level=4]
+            - link "Watch on YouTube" [ref=e1609] [cursor=pointer]:
+              - /url: https://youtu.be/GWJK1inbQxk
+          - generic [ref=e1615]:
+            - 'button "Play Instagram reel: 30 Days 30 AI Tools: Day 4" [ref=e1616] [cursor=pointer]':
+              - generic [ref=e1617]: Instagram Reel
+              - generic:
+                - 'heading "30 Days 30 AI Tools: Day 4" [level=4]'
+            - link "Open on Instagram" [ref=e1623] [cursor=pointer]:
+              - /url: https://www.instagram.com/reel/DRwuY8zE2yj/
+          - generic [ref=e1629]:
+            - 'button "Play Instagram reel: Client Project" [ref=e1630] [cursor=pointer]':
+              - generic [ref=e1631]: Instagram Reel
+              - generic:
+                - heading "Client Project" [level=4]
+            - link "Open on Instagram" [ref=e1637] [cursor=pointer]:
+              - /url: https://www.instagram.com/reel/DZ_tno9xUju/
+          - generic [ref=e1643]:
+            - 'button "Play Instagram reel: Text to Cinematic Video with Telugu Heroes" [ref=e1644] [cursor=pointer]':
+              - generic [ref=e1645]: Instagram Reel
+              - generic:
+                - heading "Text to Cinematic Video with Telugu Heroes" [level=4]
+            - link "Open on Instagram" [ref=e1651] [cursor=pointer]:
+              - /url: https://www.instagram.com/reel/DSpthswk5mu/
+          - generic [ref=e1657]:
+            - 'button "Play Instagram reel: IPL Win Predictor Project" [ref=e1658] [cursor=pointer]':
+              - generic [ref=e1659]: Instagram Reel
+              - generic:
+                - heading "IPL Win Predictor Project" [level=4]
+            - link "Open on Instagram" [ref=e1665] [cursor=pointer]:
+              - /url: https://www.instagram.com/reel/DYPQdKLo8ZV/
+          - generic [ref=e1671]:
+            - 'button "Play Instagram reel: How to Get Your Website Indexed on Google" [ref=e1672] [cursor=pointer]':
+              - generic [ref=e1673]: Instagram Reel
+              - generic:
+                - heading "How to Get Your Website Indexed on Google" [level=4]
+            - link "Open on Instagram" [ref=e1679] [cursor=pointer]:
+              - /url: https://www.instagram.com/reel/Dbiv-y3z0JS/
+    - generic [ref=e1686]:
+      - generic [ref=e1687]: Origin & Mindset
+      - heading "Behind the Terminal" [level=2] [ref=e1690]
+      - generic [ref=e1691]:
+        - generic [ref=e1693]:
+          - img "Charan (Bonamukkala Charan Reddy) smiling in red shirt" [ref=e1694]
+          - generic [ref=e1695]:
+            - generic [ref=e1696]: Hyderabad, India
+            - paragraph [ref=e1701]: Bonamukkala Charan Reddy · Generative AI Engineer
+        - generic [ref=e1702]:
+          - heading "Hi, I’m Charan. I build multi-agent intelligence and ship real products." [level=3] [ref=e1703]
+          - generic [ref=e1704]:
+            - paragraph [ref=e1705]: I am a second-year B.Sc Computer Science student at NIAT Hyderabad (degree conferred via BITS Pilani), specializing in Generative AI.
+            - paragraph [ref=e1706]: Rather than staying strictly in theoretical coursework, I focus on building practical applications with verified logic. From building multi-agent recruitment triage platforms to engineering deterministic small-business diagnostic software in pandas and FastAPI, I build software that solves real operational problems.
+            - paragraph [ref=e1707]: My current technical focus centers on multi-agent systems and vision LLMs, designing pipelines where specialized agents coordinate to verify complex data flows, extract structured schemas, and perform deterministic calculations.
+            - paragraph [ref=e1708]: I am preparing for Google Summer of Code 2027 by actively studying open-source codebases, and targeting AI/ML engineering roles in India while remaining open to select freelance client work.
+          - generic [ref=e1709]:
+            - generic [ref=e1710]: NIAT Hyderabad / BITS Pilani Degree
+            - generic [ref=e1715]: "Targeting: GSoC 2027 & AI/ML Roles"
+      - generic [ref=e1721]:
+        - generic [ref=e1722]: Engineering Principles
+        - heading "How I Work & Build" [level=3] [ref=e1723]
+        - generic [ref=e1724]:
+          - generic [ref=e1725]:
+            - generic [ref=e1726]: Principle 01
+            - heading "Ship early and touch reality" [level=4] [ref=e1727]
+            - paragraph [ref=e1728]: Code sitting on localhost teaches nothing. I deploy fast, test with real data, and verify behavior in production rather than relying on theoretical assumptions.
+          - generic [ref=e1729]:
+            - generic [ref=e1730]: Principle 02
+            - heading "Measure real business results" [level=4] [ref=e1731]
+            - paragraph [ref=e1732]: AI is only valuable if it produces a reliable outcome. I prioritize deterministic calculation for business logic, rigorous validation, and measurable improvements over unverified vanity metrics.
+          - generic [ref=e1733]:
+            - generic [ref=e1734]: Principle 03
+            - heading "Write things people can understand" [level=4] [ref=e1735]
+            - paragraph [ref=e1736]: Complex multi-agent architectures and machine learning ensembles should be explainable in clear, honest language. If an engineer, client, or student cannot follow it, the architecture is not finished.
+      - generic [ref=e1737]:
+        - generic [ref=e1738]: Active Roadmap
+        - heading "What I’m Focused on Now" [level=3] [ref=e1739]
+        - generic [ref=e1740]:
+          - generic [ref=e1741]:
+            - generic [ref=e1742]:
+              - heading "Building Multi-Agent AI Systems" [level=4] [ref=e1747]
+              - paragraph [ref=e1748]: Designing autonomous multi-agent pipelines with role specialization, structured outputs, and deterministic guardrails.
+            - generic [ref=e1749]: Active Priority · 2026/2027
+          - generic [ref=e1750]:
+            - generic [ref=e1751]:
+              - heading "Shipping Real Projects for Clients" [level=4] [ref=e1758]
+              - paragraph [ref=e1759]: Engineering high-performance web applications and diagnostic tools with clean authentication, API integrations, and production deployments.
+            - generic [ref=e1760]: Active Priority · 2026/2027
+          - generic [ref=e1761]:
+            - generic [ref=e1762]:
+              - heading "Preparing for Google Summer of Code 2027" [level=4] [ref=e1768]
+              - paragraph [ref=e1769]: Deepening open-source contributions, studying codebase architectures, and building production-grade software tools.
+            - generic [ref=e1770]: Active Priority · 2026/2027
+      - generic [ref=e1771]:
+        - generic [ref=e1772]:
+          - generic [ref=e1773]:
+            - generic [ref=e1774]: HACKATHONS & CERTIFICATIONS
+            - heading "Competitive Builds & Credentials" [level=3] [ref=e1779]
+            - paragraph [ref=e1780]: Verified submissions, national hackathons, and hands-on AI engineering workshops.
+          - generic [ref=e1781]:
+            - button "All 9" [ref=e1782] [cursor=pointer]:
+              - generic [ref=e1783]: All
+              - generic [ref=e1784]: "9"
+            - button "Achievement 2" [ref=e1785] [cursor=pointer]:
+              - generic [ref=e1786]: Achievement
+              - generic [ref=e1787]: "2"
+            - button "Hackathon 5" [ref=e1788] [cursor=pointer]:
+              - generic [ref=e1789]: Hackathon
+              - generic [ref=e1790]: "5"
+            - button "Workshop 2" [ref=e1791] [cursor=pointer]:
+              - generic [ref=e1792]: Workshop
+              - generic [ref=e1793]: "2"
+        - generic [ref=e1794]:
+          - 'button "HackerRank Orchestrate, June 2026 - HackerRank Achievement #619 / 1,773 HackerRank Orchestrate, June 2026 Final rank #619 of 1,773, for building and deploying an AI agent. HackerRank June 2026" [ref=e1795] [cursor=pointer]':
+            - img "HackerRank Orchestrate, June 2026 - HackerRank" [ref=e1797]
+            - generic [ref=e1804]:
+              - generic [ref=e1805]:
+                - generic [ref=e1806]:
+                  - generic [ref=e1807]: Achievement
+                  - generic [ref=e1808]: "#619 / 1,773"
+                - heading "HackerRank Orchestrate, June 2026" [level=4] [ref=e1809]
+                - paragraph [ref=e1810]: "Final rank #619 of 1,773, for building and deploying an AI agent."
+              - generic [ref=e1811]:
+                - generic [ref=e1812]: HackerRank
+                - generic [ref=e1813]: June 2026
+          - button "HackerRank Orchestrate, May 2026 - HackerRank Achievement 1007th Place HackerRank Orchestrate, May 2026 Certificate of Excellence, 1007th place, for building and submitting an AI agent. HackerRank May 2026" [ref=e1814] [cursor=pointer]:
+            - img "HackerRank Orchestrate, May 2026 - HackerRank" [ref=e1816]
+            - generic [ref=e1823]:
+              - generic [ref=e1824]:
+                - generic [ref=e1825]:
+                  - generic [ref=e1826]: Achievement
+                  - generic [ref=e1827]: 1007th Place
+                - heading "HackerRank Orchestrate, May 2026" [level=4] [ref=e1828]
+                - paragraph [ref=e1829]: Certificate of Excellence, 1007th place, for building and submitting an AI agent.
+              - generic [ref=e1830]:
+                - generic [ref=e1831]: HackerRank
+                - generic [ref=e1832]: May 2026
+          - button "Bharatiya Antariksh Hackathon 2026 - ISRO x Hack2skill Hackathon Bharatiya Antariksh Hackathon 2026 Idea submission, presented by ISRO, powered by Hack2skill. Certificate ID 2026H2S06BAH-P04872. ISRO x Hack2skill 2026" [ref=e1833] [cursor=pointer]:
+            - img "Bharatiya Antariksh Hackathon 2026 - ISRO x Hack2skill" [ref=e1835]
+            - generic [ref=e1842]:
+              - generic [ref=e1843]:
+                - generic [ref=e1844]: Hackathon
+                - heading "Bharatiya Antariksh Hackathon 2026" [level=4] [ref=e1846]
+                - paragraph [ref=e1847]: Idea submission, presented by ISRO, powered by Hack2skill. Certificate ID 2026H2S06BAH-P04872.
+              - generic [ref=e1848]:
+                - generic [ref=e1849]: ISRO x Hack2skill
+                - generic [ref=e1850]: "2026"
+          - button "NeuraX Hackathon 2.0, Round 2 - CMR Technical Campus x Salesforce Hackathon NeuraX Hackathon 2.0, Round 2 14th–15th March 2026, CMR Technical Campus, Dept. of CSE (AI & ML), in collaboration with Salesforce, powered by StepUpMark.AI. CMR Technical Campus x Salesforce 14–15 March 2026" [ref=e1851] [cursor=pointer]:
+            - img "NeuraX Hackathon 2.0, Round 2 - CMR Technical Campus x Salesforce" [ref=e1853]
+            - generic [ref=e1860]:
+              - generic [ref=e1861]:
+                - generic [ref=e1862]: Hackathon
+                - heading "NeuraX Hackathon 2.0, Round 2" [level=4] [ref=e1864]
+                - paragraph [ref=e1865]: 14th–15th March 2026, CMR Technical Campus, Dept. of CSE (AI & ML), in collaboration with Salesforce, powered by StepUpMark.AI.
+              - generic [ref=e1866]:
+                - generic [ref=e1867]: CMR Technical Campus x Salesforce
+                - generic [ref=e1868]: 14–15 March 2026
+          - button "IPL Crunch '26 - Wooble Hackathon IPL Crunch '26 Skill-based data hackathon on Wooble. Wooble 03 June 2026" [ref=e1869] [cursor=pointer]:
+            - img "IPL Crunch '26 - Wooble" [ref=e1871]
+            - generic [ref=e1878]:
+              - generic [ref=e1879]:
+                - generic [ref=e1880]: Hackathon
+                - heading "IPL Crunch '26" [level=4] [ref=e1882]
+                - paragraph [ref=e1883]: Skill-based data hackathon on Wooble.
+              - generic [ref=e1884]:
+                - generic [ref=e1885]: Wooble
+                - generic [ref=e1886]: 03 June 2026
+          - button "Takeover Hackathon - NIAT x Chevella Hackathon Takeover Hackathon Built under pressure and shipped. Mindset that creates technology. NIAT x Chevella 18-07-2026" [ref=e1887] [cursor=pointer]:
+            - img "Takeover Hackathon - NIAT x Chevella" [ref=e1889]
+            - generic [ref=e1896]:
+              - generic [ref=e1897]:
+                - generic [ref=e1898]: Hackathon
+                - heading "Takeover Hackathon" [level=4] [ref=e1900]
+                - paragraph [ref=e1901]: Built under pressure and shipped. Mindset that creates technology.
+              - generic [ref=e1902]:
+                - generic [ref=e1903]: NIAT x Chevella
+                - generic [ref=e1904]: 18-07-2026
+          - button "Vibe With India Virtual Hackathon - Devnovate / HackWithIndia Hackathon Vibe With India Virtual Hackathon Virtual Hackathon VIBE WITH INDIA. Devnovate / HackWithIndia 20 March 2026" [ref=e1905] [cursor=pointer]:
+            - img "Vibe With India Virtual Hackathon - Devnovate / HackWithIndia" [ref=e1907]
+            - generic [ref=e1914]:
+              - generic [ref=e1915]:
+                - generic [ref=e1916]: Hackathon
+                - heading "Vibe With India Virtual Hackathon" [level=4] [ref=e1918]
+                - paragraph [ref=e1919]: Virtual Hackathon VIBE WITH INDIA.
+              - generic [ref=e1920]:
+                - generic [ref=e1921]: Devnovate / HackWithIndia
+                - generic [ref=e1922]: 20 March 2026
+          - button "AI Agents 201 Hands-On Workshop - NxtWave Institute of Advanced Technologies (NIAT) Workshop AI Agents 201 Hands-On Workshop Demonstrating active participation in building AI-driven solutions and real-world problem solving. NxtWave Institute of Advanced Technologies (NIAT) 13-04-2026" [ref=e1923] [cursor=pointer]:
+            - img "AI Agents 201 Hands-On Workshop - NxtWave Institute of Advanced Technologies (NIAT)" [ref=e1925]
+            - generic [ref=e1932]:
+              - generic [ref=e1933]:
+                - generic [ref=e1934]: Workshop
+                - heading "AI Agents 201 Hands-On Workshop" [level=4] [ref=e1936]
+                - paragraph [ref=e1937]: Demonstrating active participation in building AI-driven solutions and real-world problem solving.
+              - generic [ref=e1938]:
+                - generic [ref=e1939]: NxtWave Institute of Advanced Technologies (NIAT)
+                - generic [ref=e1940]: 13-04-2026
+          - button "TagIT Workshop - Robotics Team (NIAT) Workshop TagIT Workshop Hosted by Robotics and Advanced Technologies Team of NIAT. Robotics Team (NIAT) 24-09-2026" [ref=e1941] [cursor=pointer]:
+            - img "TagIT Workshop - Robotics Team (NIAT)" [ref=e1943]
+            - generic [ref=e1950]:
+              - generic [ref=e1951]:
+                - generic [ref=e1952]: Workshop
+                - heading "TagIT Workshop" [level=4] [ref=e1954]
+                - paragraph [ref=e1955]: Hosted by Robotics and Advanced Technologies Team of NIAT.
+              - generic [ref=e1956]:
+                - generic [ref=e1957]: Robotics Team (NIAT)
+                - generic [ref=e1958]: 24-09-2026
+    - generic [ref=e1961]:
+      - generic [ref=e1962]:
+        - generic [ref=e1963]: Get In Touch
+        - heading "Let’s build something real." [level=2] [ref=e1966]
+        - paragraph [ref=e1967]: "Whether you need a multi-agent system, deterministic data diagnostic software, a high-converting web application, or want to discuss AI/ML roles in India: my inbox is open."
+        - generic [ref=e1968]:
+          - generic [ref=e1969]:
+            - generic [ref=e1970]: Direct Email
+            - link "bonamukkalacharan@gmail.com" [ref=e1971] [cursor=pointer]:
+              - /url: mailto:bonamukkalacharan@gmail.com
+          - generic [ref=e1972]:
+            - button "Copy email address" [ref=e1973]:
+              - generic [ref=e1977]: Copy
+            - link "Send email" [ref=e1978] [cursor=pointer]:
+              - /url: mailto:bonamukkalacharan@gmail.com
+        - generic [ref=e1982]: Usually replies within 24 hours.
+        - button "Project Inquiry Form" [ref=e1988]
+        - generic [ref=e1993]:
+          - link "GitHub" [ref=e1994] [cursor=pointer]:
+            - /url: https://github.com/bonamukkala-bot
+          - link "LinkedIn" [ref=e1999] [cursor=pointer]:
+            - /url: https://www.linkedin.com/in/bonamukkala-charan
+          - link "Instagram" [ref=e2005] [cursor=pointer]:
+            - /url: https://www.instagram.com/charan.insights
+          - link "YouTube" [ref=e2010] [cursor=pointer]:
+            - /url: https://www.youtube.com/@charanreddysinsights
+      - generic [ref=e2016]:
+        - img "Charan (Bonamukkala Charan Reddy) in light blue shirt" [ref=e2017]
+        - generic [ref=e2018]:
+          - generic [ref=e2019]: Availability
+          - paragraph [ref=e2020]: Open for freelance projects, AI contracts & engineering roles
+  - contentinfo [ref=e597]:
+    - generic [ref=e598]:
+      - generic [ref=e599]:
+        - link "Charan." [ref=e600] [cursor=pointer]:
+          - /url: "#"
+        - generic [ref=e601]: © 2026 Charan (Bonamukkala Charan Reddy). All rights reserved.
+      - generic [ref=e602]:
+        - generic [ref=e603]: Built by Charan · Hyderabad, IN
+        - button "Back to top" [ref=e604]
+  - generic:
+    - status [ref=e2021]: "I built RecruitMate AI alone. It is a multi-tenant AI recruitment platform with seven specialized agents: JD parser, resume screener, question generator, AI interviewer, answer evaluator, scheduler and candidate comparator, plus an automated email sender. Live: https://recruit-mate-chi.vercel.app."
+    - dialog [ref=e2027]:
+      - generic [ref=e2028]:
+        - generic [ref=e2029]:
+          - heading "ASK ABOUT CHARAN" [level=2] [ref=e2031]
+          - generic [ref=e2032]: AI ASSISTANT
+        - generic [ref=e2033]:
+          - button "Clear chat" [ref=e2064]
+          - button "Close chat" [ref=e2034]
+      - generic [ref=e2038]:
+        - generic [ref=e2040]:
+          - paragraph [ref=e2042]: Hi, I'm Charan's AI assistant. I answer from his portfolio data, in his voice. Ask me about my projects, skills, services or how to work with me.
+          - generic [ref=e2043]:
+            - generic [ref=e2044]: "TRY:"
+            - button "Who are you?" [ref=e2045]
+            - button "What's your strongest project?" [ref=e2046]
+            - button "Are you available for freelance?" [ref=e2047]
+            - button "What services do you offer?" [ref=e2048]
+            - button "How can I contact you?" [ref=e2049]
+        - paragraph [ref=e2067]: recruitmate
+        - generic [ref=e2069]:
+          - paragraph [ref=e2071]:
+            - text: "I built RecruitMate AI alone. It is a multi-tenant AI recruitment platform with seven specialized agents: JD parser, resume screener, question generator, AI interviewer, answer evaluator, scheduler and candidate comparator, plus an automated email sender.Live:"
+            - link "https://recruit-mate-chi.vercel.app" [ref=e2074] [cursor=pointer]:
+              - /url: https://recruit-mate-chi.vercel.app
+            - text: .
+          - generic [ref=e2075]:
+            - generic [ref=e2076]: "TRY:"
+            - button "Tell me more" [ref=e2077]
+            - button "What stack does it use?" [ref=e2078]
+            - button "Is it live?" [ref=e2079]
+      - generic [ref=e2057]:
+        - textbox "Ask anything about Charan" [active] [ref=e2058]
+        - button "Send" [disabled] [ref=e2059]

@@ -1,7 +1,8 @@
-import type { Answer, AnswerSource } from './types';
+import type { Answer, AnswerSource, Chunk, ConversationState } from './types';
 import type { RetrievalResult } from './retriever';
 import { DEFAULT_SUGGESTION_CHIPS } from './intents';
 import { tokenize } from './bm25';
+import { buildProjectSuggestions } from './followup';
 
 export const CONFIDENCE_HIGH = 0.55;
 export const CONFIDENCE_MEDIUM = 0.35;
@@ -9,6 +10,9 @@ export const STRONG_TITLE_MATCH = 0.85;
 
 export const LOW_CONFIDENCE_FALLBACK =
   "I don't have that information. The best way to get an answer is to email me at bonamukkalacharan@gmail.com or use the inquiry form on this site.";
+
+export const DETAIL_CUES_REGEX =
+  /\b(details?|detailed|in\s+depth|in\s+detail|full|everything|deep\s+dive|explain|elaborate|complete)\b/i;
 
 /**
  * Normalizes title for topic comparison by removing leading "Q: ", "Project: ", and punctuation.
@@ -69,8 +73,12 @@ function shouldAppendSecond(first: RetrievalResult, second: RetrievalResult): bo
     return false;
   }
 
-  // If the first chunk is an FAQ, prefer that concise answer and never append an info section or another FAQ
-  if (first.chunk.kind === 'faq') {
+  // If first chunk is an FAQ or a Project, never append a second chunk
+  if (
+    first.chunk.kind === 'faq' ||
+    first.chunk.kind === 'project' ||
+    first.chunk.id.startsWith('project-')
+  ) {
     return false;
   }
 
@@ -118,10 +126,63 @@ function shouldAppendSecond(first: RetrievalResult, second: RetrievalResult): bo
   return true;
 }
 
+export function buildOtherSuggestions(
+  chunk: Chunk,
+  state: ConversationState,
+  results?: RetrievalResult[]
+): string[] {
+  const chips: string[] = [];
+
+  // If chunk has detail not yet shown: the FIRST chip is exactly "Tell me more"
+  if (chunk.detail && !state.detailShown[chunk.id]) {
+    chips.push('Tell me more');
+  }
+
+  if (chunk.suggestion && !chips.includes(chunk.suggestion)) {
+    chips.push(chunk.suggestion);
+  }
+
+  if (results) {
+    for (const r of results) {
+      if (r.chunk.id !== chunk.id && r.chunk.suggestion) {
+        if (!chips.includes(r.chunk.suggestion)) {
+          chips.push(r.chunk.suggestion);
+          if (chips.length >= 3) break;
+        }
+      }
+    }
+  }
+
+  if (chips.length < 3) {
+    for (const def of DEFAULT_SUGGESTION_CHIPS) {
+      if (!chips.includes(def)) {
+        chips.push(def);
+        if (chips.length >= 3) break;
+      }
+    }
+  }
+
+  return chips.slice(0, 3);
+}
+
+export interface BuildAnswerResult {
+  answer: Answer;
+  state: ConversationState;
+}
+
 /**
- * Constructs an Answer from the ranked retrieval results.
+ * Constructs an Answer and updated ConversationState from the ranked retrieval results.
  */
-export function buildAnswer(results: RetrievalResult[]): Answer {
+export function buildAnswer(
+  results: RetrievalResult[],
+  query?: string,
+  state: ConversationState = { lastChunkId: null, detailShown: {} }
+): BuildAnswerResult {
+  const currentState: ConversationState = {
+    lastChunkId: state.lastChunkId,
+    detailShown: { ...state.detailShown },
+  };
+
   if (!results || results.length === 0 || results[0].score < CONFIDENCE_MEDIUM) {
     const fallbackSuggestions: string[] = [];
     if (results && results.length > 0) {
@@ -141,11 +202,14 @@ export function buildAnswer(results: RetrievalResult[]): Answer {
         : [...DEFAULT_SUGGESTION_CHIPS.slice(0, 3)];
 
     return {
-      text: LOW_CONFIDENCE_FALLBACK,
-      sources: [],
-      confidence: 'low',
-      kind: 'fallback',
-      suggestions,
+      answer: {
+        text: LOW_CONFIDENCE_FALLBACK,
+        sources: [],
+        confidence: 'low',
+        kind: 'fallback',
+        suggestions,
+      },
+      state: currentState, // fallbacks do not change lastChunkId
     };
   }
 
@@ -153,44 +217,61 @@ export function buildAnswer(results: RetrievalResult[]): Answer {
   const isHigh = first.score >= CONFIDENCE_HIGH;
   const confidence: 'high' | 'medium' = isHigh ? 'high' : 'medium';
 
-  let body = first.chunk.text;
+  // Short-first logic
+  let bodyText: string;
+  const isProject =
+    first.chunk.kind === 'project' || first.chunk.id.startsWith('project-');
+
+  if (first.chunk.short) {
+    const hasDetailCue = query ? DETAIL_CUES_REGEX.test(query) : false;
+    if (hasDetailCue) {
+      bodyText = first.chunk.text;
+      currentState.detailShown[first.chunk.id] = true;
+    } else {
+      bodyText = first.chunk.short;
+      currentState.detailShown[first.chunk.id] = false;
+    }
+  } else {
+    bodyText = first.chunk.text;
+  }
+
   const sources: AnswerSource[] = [{ title: first.chunk.title, id: first.chunk.id }];
   const usedIds = new Set<string>([first.chunk.id]);
 
-  // Check if second chunk should be appended
+  // Check if second chunk should be appended (only for non-project, non-FAQ chunks)
   if (results.length > 1) {
     const second = results[1];
     if (shouldAppendSecond(first, second)) {
-      body += `\n\n${second.chunk.text}`;
+      bodyText += `\n\n${second.chunk.text}`;
       sources.push({ title: second.chunk.title, id: second.chunk.id });
       usedIds.add(second.chunk.id);
     }
   }
 
-  const text = isHigh ? body : `Here is what I found:\n\n${body}`;
+  const text = isHigh ? bodyText : `Here is what I found:\n\n${bodyText}`;
 
-  let suggestions: string[] | undefined = undefined;
-  if (!isHigh) {
-    // For medium-confidence answers, set suggestions to the suggestion of the 2 next-best distinct chunks (score >= 0.25)
-    const mediumSuggestions: string[] = [];
-    for (const r of results) {
-      if (!usedIds.has(r.chunk.id) && r.score >= 0.25 && r.chunk.suggestion) {
-        if (!mediumSuggestions.includes(r.chunk.suggestion)) {
-          mediumSuggestions.push(r.chunk.suggestion);
-          if (mediumSuggestions.length === 2) break;
-        }
-      }
-    }
-    if (mediumSuggestions.length > 0) {
-      suggestions = mediumSuggestions;
-    }
+  // Update lastChunkId:
+  // "If a knowledge answer was produced, set lastChunkId to the answering chunk's relatedId
+  // when it has one, otherwise to the answering chunk's id.
+  // If the top chunk is an FAQ without relatedId, set lastChunkId to that FAQ's id."
+  currentState.lastChunkId = first.chunk.relatedId || first.chunk.id;
+
+  // Generate suggestions
+  let suggestions: string[];
+  if (isProject) {
+    suggestions = buildProjectSuggestions(first.chunk, currentState);
+  } else {
+    suggestions = buildOtherSuggestions(first.chunk, currentState, results);
   }
 
   return {
-    text,
-    sources,
-    confidence,
-    kind: 'knowledge',
-    ...(suggestions ? { suggestions } : {}),
+    answer: {
+      text,
+      sources,
+      confidence,
+      kind: 'knowledge',
+      suggestions,
+    },
+    state: currentState,
   };
 }

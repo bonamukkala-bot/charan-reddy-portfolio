@@ -20,50 +20,62 @@ Also asked as: What is your tech stack? | What technologies do you use? | What a
 
 ## Project: RecruitMate AI
 I built RecruitMate AI alone. It is a multi-tenant AI recruitment platform with seven specialized agents: JD parser, resume screener, question generator, AI interviewer, answer evaluator, scheduler and candidate comparator, plus an automated email sender. It helps hiring teams run high-volume pipelines without manually parsing job descriptions and evaluating answers. It also has a pipeline view, analytics and a heatmap. The stack is Flask, MongoDB, React and Groq, deployed on Vercel and Render. It uses custom JWT auth, token-based public interview links and Cloudflare Turnstile CAPTCHA, with about 28 API endpoints. Live: https://recruit-mate-chi.vercel.app. Code: https://github.com/bonamukkala-bot/RecruitMate
+Short: I built RecruitMate AI alone. It is a multi-tenant AI recruitment platform with seven specialized agents: JD parser, resume screener, question generator, AI interviewer, answer evaluator, scheduler and candidate comparator, plus an automated email sender.
 Also asked as: Tell me about your RecruitMate project | What is RecruitMate AI? | How does RecruitMate work? | recruitmate | Tell me about your recruitment platform | recrutmate
 
 ## Project: Atelier
 Atelier is a premium furniture storefront with an admin CRM, which I built as a portfolio piece for furniture shops. Instead of a cart, customers contact the shop on WhatsApp or by call, because custom furniture buyers ask about materials, dimensions and delivery first. Features include a product catalog, multi-image admin uploads, order tracking, a Groq-powered chatbot and an English, Telugu and Hindi language toggle. I also designed a delivery system with a pincode deliverability checker, delivery zones, a public tracking page and a Razorpay test-mode deposit. The stack is React, Vite, TypeScript, Tailwind, Supabase, Framer Motion and Groq. A live demo is on my portfolio.
+Short: Atelier is a premium furniture storefront with an admin CRM, which I built as a portfolio piece for furniture shops. Instead of a cart, customers contact the shop on WhatsApp or by call, because custom furniture buyers ask about materials, dimensions and delivery first.
 Also asked as: Tell me about Atelier | What is the Atelier project? | Tell me about your furniture website | atelier | furniture store project | furniture crm
 
 ## Project: IPL Win Predictor
 I built the IPL Win Predictor alone. It is a machine learning system that predicts IPL match outcomes and explains each prediction instead of giving uncalibrated black-box guesses. It supports pre-match and live-match prediction and Monte Carlo championship odds, with SHAP explanations. It uses an ensemble of XGBoost, LightGBM, Random Forest and LSTM with isotonic calibration, trained on 17 IPL seasons with more than 26 MLflow runs tracked. The backend is FastAPI, the frontend is React with Vite and Tailwind, and it runs with Docker Compose. A live demo is on my portfolio.
+Short: I built the IPL Win Predictor alone. It is a machine learning system that predicts IPL match outcomes and explains each prediction instead of giving uncalibrated black-box guesses. It supports pre-match and live-match prediction and Monte Carlo championship odds, with SHAP explanations.
 Also asked as: Tell me about your IPL Win Predictor | What is your IPL predictor project? | How does the IPL predictor work? | ipl predictor | ipl win predictor | cricket prediction model
 
 ## Project: charanEstates
 charanEstates is a real-estate web application I built as a client demo project. Users browse property listings by category, budget and location without cluttered ads. It has client-side filtering and responsive layouts. A 3D demo version uses scroll-animated video frames. The stack is React, TypeScript, Tailwind, GSAP and Three.js. A live demo is on my portfolio, and the code is at github.com/bonamukkala-bot/charanEstates.
+Short: charanEstates is a real-estate web application I built as a client demo project. Users browse property listings by category, budget and location without cluttered ads. It has client-side filtering and responsive layouts.
 Also asked as: Tell me about charanEstates | What is your real estate project? | charanestates | real estate website demo | 3d real estate project
 
 ## Project: Sri Vishnu Grand PG
 Sri Vishnu Grand PG is a production website I built for a men's hostel and paying-guest business in Gachibowli, Hyderabad. It is a real client project. The site handles inquiries automatically, presents amenities and guides prospective residents without repeated phone calls. It includes a Groq-powered chatbot with a room booking flow, WhatsApp handoff, inline Google Maps, a blog and a full SEO setup with structured data, Google Analytics and Search Console. The stack is React, TypeScript, Vite, Tailwind, TanStack Router, Framer Motion and Groq on a Vercel Edge Function. Live: https://srivishnugrandpg.com
+Short: Sri Vishnu Grand PG is a production website I built for a men's hostel and paying-guest business in Gachibowli, Hyderabad. It is a real client project. The site handles inquiries automatically, presents amenities and guides prospective residents without repeated phone calls.
 Also asked as: What is the Sri Vishnu Grand PG project? | Tell me about your PG hostel website | pg website | sri vishnu grand pg | Tell me about your client website in Gachibowli | hostel website project
 
 ## Project: AI Business Doctor
 I built AI Business Doctor alone. It is a diagnostic platform for small-business sales and inventory data, using a medical metaphor of vitals, diagnosis, prescription and consultation. It gives a 0 to 100 health score, profit driver analysis, stop-selling detection, reorder alerts, anomaly detection and priority actions ranked by rupee impact. It also has a "Consult the Doctor" chat and PDF export. Numbers are computed deterministically in pandas and NumPy, and the LLM is used only for explanations. The stack is FastAPI, React 19, Vite, Recharts and Groq Llama 4 Scout. Live: https://ai-business-doctor.vercel.app. Code: https://github.com/bonamukkala-bot/ai-business-doctor
+Short: I built AI Business Doctor alone. It is a diagnostic platform for small-business sales and inventory data, using a medical metaphor of vitals, diagnosis, prescription and consultation. It gives a 0 to 100 health score, profit driver analysis, stop-selling detection, reorder alerts, anomaly detection and priority actions ranked by rupee impact.
 Also asked as: What is AI Business Doctor? | Tell me about AI Business Doctor | How does AI Business Doctor work? | ai business doctor | business doctor project | small business diagnostic tool
 
 ## Project: HackerRank Orchestrate
 I entered HackerRank Orchestrate with an autonomous multi-agent pipeline for insurance damage-claim verification, using five sequential agents with vision LLMs. In the June 2026 edition I ranked #619 of 1,773 participants. In the May 2026 edition I earned a certificate of excellence for 1007th place. The code is in my bonamukkala-bot GitHub account.
+Short: I entered HackerRank Orchestrate with an autonomous multi-agent pipeline for insurance damage-claim verification, using five sequential agents with vision LLMs. In the June 2026 edition I ranked #619 of 1,773 participants. In the May 2026 edition I earned a certificate of excellence for 1007th place.
 Also asked as: Tell me about your HackerRank project | What was your HackerRank Orchestrate project? | insurance claim multi agent | hackerrank orchestrate | vision llm insurance claim
 
 ## Project: Sentinel Agent
 Sentinel Agent is an AI agent I built for monitoring containerized microservices, diagnosing incidents and inspecting error patterns across Docker. It has a five-step investigation engine, a FastAPI streaming backend and a React frontend, and uses Gemini 2.5 Flash. It is deployed on Hugging Face Spaces and Vercel. Live: https://sentinel-frontend-alpha.vercel.app. Code: https://github.com/bonamukkala-bot/sentinel-agent
+Short: Sentinel Agent is an AI agent I built for monitoring containerized microservices, diagnosing incidents and inspecting error patterns across Docker. It has a five-step investigation engine, a FastAPI streaming backend and a React frontend, and uses Gemini 2.5 Flash.
 Also asked as: What is Sentinel Agent? | Tell me about your Sentinel Agent project | sentinel agent | docker monitoring agent | microservices incident agent
 
 ## Project: Nuerax Hackathon
 For NeuraX Hackathon 2.0 I built an adaptive AI assistant that helps people learn through structured topic breakdowns, using a multi-agent design with WebSocket streaming. The stack is React on Vercel and FastAPI on Render. I earned a certificate of participation for Round 2. The code is at github.com/bonamukkala-bot/nuerax-hackathon.
+Short: For NeuraX Hackathon 2.0 I built an adaptive AI assistant that helps people learn through structured topic breakdowns, using a multi-agent design with WebSocket streaming. The stack is React on Vercel and FastAPI on Render. I earned a certificate of participation for Round 2.
 Also asked as: Tell me about your NeuraX hackathon project | What did you build for NeuraX? | neurax hackathon | adaptive ai learning assistant | neurax project
 
 ## Project: JalFlow
 JalFlow is a citizen-reporting platform for waterlogging in Hyderabad, built by me in three days for an Engineers Day hackathon campaign. Residents report waterlogging with a photo, location and severity, and a live map shows red, orange and green markers with an impact dashboard. The stack is React, Vite, Supabase, Leaflet with OpenStreetMap and Vercel.
+Short: JalFlow is a citizen-reporting platform for waterlogging in Hyderabad, built by me in three days for an Engineers Day hackathon campaign. Residents report waterlogging with a photo, location and severity, and a live map shows red, orange and green markers with an impact dashboard.
 Also asked as: What is JalFlow? | Tell me about your JalFlow project | jalflow | Hyderabad waterlogging platform | waterlogging map project
 
 ## Project: CodeBuddy Chrome extension
 CodeBuddy is a Grammarly-style AI coding assistant Chrome extension that I built in April 2026 using Groq (Llama 3.3 70B), Manifest V3 and vanilla JavaScript. It can fix bugs, explain code, complete code, add docs and detect bad practices, and it has a Ctrl+Shift+K shortcut and a history panel.
+Short: CodeBuddy is a Grammarly-style AI coding assistant Chrome extension that I built in April 2026 using Groq (Llama 3.3 70B), Manifest V3 and vanilla JavaScript. It can fix bugs, explain code, complete code, add docs and detect bad practices, and it has a Ctrl+Shift+K shortcut and a history panel.
 Also asked as: What is CodeBuddy? | Tell me about your Chrome extension | codebuddy | ai coding chrome extension | CodeBuddy extension
 
 ## Project: Telugu voice agents
 I have built Telugu voice AI prototypes: a Telugu voice companion using Bolna AI, Sarvam speech models and Mem0 memory, a Telugu counseling call agent on OmniDimension with a five-stage call flow, and a dental clinic booking agent in Telugu and English with Google Calendar and Sheets. My focus is natural spoken Hyderabad Telugu.
+Short: I have built Telugu voice AI prototypes: a Telugu voice companion using Bolna AI, Sarvam speech models and Mem0 memory, a Telugu counseling call agent on OmniDimension with a five-stage call flow, and a dental clinic booking agent in Telugu and English with Google Calendar and Sheets. My focus is natural spoken Hyderabad Telugu.
 Also asked as: Tell me about your Telugu voice agents | What Telugu AI projects have you built? | telugu voice ai | telugu voice bot | telugu speech assistant | telugu call agent
 
 ## Other projects
@@ -122,6 +134,7 @@ Also asked as: Who are you? | Tell me about yourself | introduce yourself | What
 
 ## Q: What is Charan's strongest project?
 RecruitMate AI is my featured project: a multi-tenant recruitment platform with seven AI agents, which I built solo and deployed on Vercel and Render.
+Topic: Project: RecruitMate AI
 Also asked as: What's your strongest project? | What is your best project? | wat is ur strongest projct | What is your strongest project? | Which project shows your best work? | your top project
 
 ## Q: Is Charan available for freelance work?
@@ -134,6 +147,7 @@ Also asked as: How can I contact you? | What is your email? | How can I reach yo
 
 ## Q: How much does Charan charge?
 My pricing depends on the project's scope and deliverables. Contact me by email at bonamukkalacharan@gmail.com or through the inquiry form for a quote.
+Topic: Pricing
 Also asked as: How much do you charge? | What are your rates? | How much would my project cost? | What is your fee? | what do you charge | your pricing
 
 ## Q: What tech stack does Charan use for AI projects?
@@ -162,6 +176,7 @@ Also asked as: Where are you based? | Where are you from? | Where do you live? |
 
 ## Q: What is Charan's Instagram?
 My Instagram is @charan.insights, where I share tech content for student developers in Telugu and English. I also have a YouTube channel called Charan Reddy's Insights.
+Topic: Content and Instagram
 Also asked as: What is your Instagram? | What is your Instagram handle? | Where can I follow you on Instagram? | your instagram profile | insta handle
 
 ## Q: Does Charan build WhatsApp bots?
@@ -174,6 +189,7 @@ Also asked as: Can you build a chatbot for my business? | Can you build a bot fo
 
 ## Q: What is Charan studying?
 I am a second-year B.Sc Computer Science student at NIAT Hyderabad, with the degree conferred via BITS Pilani. My specialization is Generative AI.
+Topic: Education
 Also asked as: What are you studying? | Which college do you go to? | What is your degree? | What is your college major? | what do you study | your college
 
 ## Q: What hackathons has Charan joined?
@@ -182,18 +198,21 @@ Also asked as: Which hackathons have you joined? | What hackathons have you part
 
 ## Q: What projects has Charan built?
 My main projects are RecruitMate AI, Atelier, IPL Win Predictor, charanEstates, Sri Vishnu Grand PG, AI Business Doctor, HackerRank Orchestrate, Sentinel Agent and NeuraX Hackathon. I have also built JalFlow, the CodeBuddy Chrome extension and Telugu voice agents.
-Also asked as: What have you built? | Which projects has Charan built? | Which projects have you built? | What are your main projects? | Tell me about your projects | list your projects
+Also asked as: What have you built? | Which projects has Charan built? | Which projects have you built? | What are your main projects? | Tell me about your projects | list your projects | What are your other projects? | Do you have other projects? | Do you have other projects like this? | Show me more of your projects | What else have you built?
 
 ## Q: What does Charan do?
 I build multi-agent AI systems, full-stack web applications, and websites for local businesses in Hyderabad, India. I also create tech content in Telugu and English for student developers.
+Topic: Who is Charan
 Also asked as: What do you do? | What does Charan do? | What is your work? | What kind of work do you do? | Tell me what you do | what do you work on
 
 ## Q: What are Charan's skills?
 My core skills cover Python, TypeScript, and JavaScript, full-stack web development with React and FastAPI, multi-agent AI systems using Groq and Gemini, RAG pipelines with FAISS, and machine learning with XGBoost and LightGBM.
+Topic: Skills and tech stack
 Also asked as: What are your skills? | ur skills | What are Charan's skills? | What skills do you have? | What can you do technically? | list your skills
 
 ## Q: What services does Charan offer?
 I offer three main services: AI chatbots and multi-agent systems (WhatsApp and web concierge bots), business websites that rank and convert with local SEO and lead capture, and AI automation for small businesses including diagnostics and dashboards.
+Topic: Services Charan offers
 Also asked as: What services do you offer? | Can you make a website for my shop? | What services does Charan offer? | What can you build for me? | What services do you provide? | what services do you have
 
 ## Q: How can I hire Charan?

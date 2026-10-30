@@ -9,6 +9,16 @@ export interface Chunk {
   variants?: string[];
   variantEmbeddings?: number[][];
   suggestion?: string;
+  short?: string;
+  detail?: string;
+  links?: string[];
+  relatedId?: string;
+  units?: string[];
+}
+
+export interface ConversationState {
+  lastChunkId: string | null;
+  detailShown: Record<string, boolean>;
 }
 
 export interface IndexFile {

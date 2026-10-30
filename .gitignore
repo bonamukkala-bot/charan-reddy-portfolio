@@ -7,3 +7,4 @@ coverage/
 .env*
 !.env.example
 knowledge.backup.md
+knowledge.backup2.md

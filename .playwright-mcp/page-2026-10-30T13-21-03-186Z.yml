@@ -1,0 +1,272 @@
+- generic [ref=f1e3]:
+  - link "Skip to content" [ref=f1e4] [cursor=pointer]:
+    - /url: "#hero"
+  - generic [ref=f1e5]:
+    - status [ref=f1e6]: Loading
+    - generic [ref=f1e8]:
+      - generic [ref=f1e9]: Charan
+      - generic [ref=f1e10]: .
+    - generic:
+      - generic:
+        - generic: AI ENGINEER • MULTI-AGENT SYSTEMS BUILDER • FULL STACK DEVELOPER • TECH CONTENT CREATOR •
+        - generic: AI ENGINEER • MULTI-AGENT SYSTEMS BUILDER • FULL STACK DEVELOPER • TECH CONTENT CREATOR •
+    - generic [ref=f1e17]:
+      - generic [ref=f1e19]:
+        - generic [ref=f1e20]: LOADING
+        - generic [ref=f1e21]: READY
+      - generic [ref=f1e24]:
+        - generic [ref=f1e27]:
+          - generic [ref=f1e28]: "0"
+          - generic [ref=f1e29]: "1"
+          - generic [ref=f1e30]: "2"
+          - generic [ref=f1e31]: "3"
+          - generic [ref=f1e32]: "4"
+          - generic [ref=f1e33]: "5"
+          - generic [ref=f1e34]: "6"
+          - generic [ref=f1e35]: "7"
+          - generic [ref=f1e36]: "8"
+          - generic [ref=f1e37]: "9"
+        - generic [ref=f1e38]: "%"
+  - generic [aria-hidden]:
+    - generic:
+      - generic:
+        - generic: →
+        - generic: 00%
+      - generic: 100% remaining
+  - banner:
+    - generic:
+      - link "Charan homepage":
+        - /url: "#"
+        - generic: Charan
+        - generic: .
+      - navigation "Primary navigation":
+        - link "Work":
+          - /url: "#work"
+        - link "Services":
+          - /url: "#services"
+        - link "Content":
+          - /url: "#content"
+        - link "About":
+          - /url: "#about"
+        - link "Contact":
+          - /url: "#contact"
+      - generic:
+        - button "Hire me"
+  - main [ref=f1e41]:
+    - generic [ref=f1e42]:
+      - generic [ref=f1e44]:
+        - generic [ref=f1e45]:
+          - generic [ref=f1e46]: HYDERABAD, INDIA — 06:51:02 pm
+          - heading "I build AI products that actually ship." [level=1] [ref=f1e49]:
+            - generic [ref=f1e50]: I build AI products that
+            - generic [ref=f1e52]: actually ship.
+          - generic [ref=f1e57]:
+            - generic [ref=f1e58]: ">"
+            - generic [ref=f1e59]: Generative AI Engineer
+          - paragraph [ref=f1e60]: Multi-agent systems, full-stack products, and client work. Second-year B.Sc Computer Science student at NIAT Hyderabad (degree via BITS Pilani), specializing in Generative AI.
+          - generic [ref=f1e61]:
+            - button "View my work" [ref=f1e62]
+            - button "Hire me" [ref=f1e66]
+        - generic [ref=f1e71]:
+          - generic [aria-hidden]:
+            - generic: CHARAN
+            - generic: REDDY
+          - generic [ref=f1e72]:
+            - img "Charan (Bonamukkala Charan Reddy) - Generative AI Engineer" [ref=f1e74]
+            - generic [ref=f1e75]: Open for freelance projects
+            - generic [ref=f1e80]:
+              - generic [ref=f1e81]: Now Building
+              - generic [ref=f1e86]: Multi-agent AI pipelines
+            - generic [ref=f1e87]:
+              - generic [ref=f1e88]: నమస్కారం
+              - generic [ref=f1e89]: "|"
+              - generic [ref=f1e90]: Telugu + English
+      - generic [ref=f1e91]:
+        - generic [ref=f1e92]: Scroll to explore
+        - generic [ref=f1e96]:
+          - link "GitHub profile" [ref=f1e97] [cursor=pointer]:
+            - /url: https://github.com/bonamukkala-bot
+          - link "LinkedIn profile" [ref=f1e101] [cursor=pointer]:
+            - /url: https://www.linkedin.com/in/bonamukkala-charan
+          - link "Instagram profile" [ref=f1e106] [cursor=pointer]:
+            - /url: https://www.instagram.com/charan.insights
+          - link "YouTube channel" [ref=f1e110] [cursor=pointer]:
+            - /url: https://www.youtube.com/@charanreddysinsights
+    - generic [ref=f1e114]:
+      - generic [ref=f1e116]:
+        - generic [ref=f1e117]:
+          - generic [ref=f1e118]: "00"
+          - generic [ref=f1e119]: Projects on GitHub
+          - generic [ref=f1e120]: Repositories across AI agents, full-stack & ML
+        - generic [ref=f1e121]:
+          - generic [ref=f1e122]: "00"
+          - generic [ref=f1e123]: AI Agents in One Platform
+          - generic [ref=f1e124]: Autonomous recruiting pipeline in RecruitMate
+        - generic [ref=f1e125]:
+          - generic [ref=f1e126]: 0.0%
+          - generic [ref=f1e128]: IPL Pre-Match Accuracy
+          - generic [ref=f1e129]: Ensemble model with AUC 0.93 and isotonic calibration
+        - generic [ref=f1e130]:
+          - generic [ref=f1e131]: "00"
+          - generic [ref=f1e132]: Client Sites Delivered
+          - generic [ref=f1e133]: Production websites shipped for active businesses
+      - generic [ref=f1e134]:
+        - generic [ref=f1e135]:
+          - generic [ref=f1e136]: React
+          - generic [ref=f1e139]: Flask
+          - generic [ref=f1e142]: MongoDB
+          - generic [ref=f1e145]: Groq
+          - generic [ref=f1e148]: JWT
+          - generic [ref=f1e151]: Cloudflare Turnstile
+          - generic [ref=f1e154]: Vite
+          - generic [ref=f1e157]: TypeScript
+          - generic [ref=f1e160]: Tailwind CSS
+          - generic [ref=f1e163]: Supabase
+          - generic [ref=f1e166]: Framer Motion
+          - generic [ref=f1e169]: XGBoost
+          - generic [ref=f1e172]: LightGBM
+          - generic [ref=f1e175]: Random Forest
+          - generic [ref=f1e178]: SHAP
+          - generic [ref=f1e181]: FastAPI
+          - generic [ref=f1e184]: Docker
+          - generic [ref=f1e187]: Tailwind
+          - generic [ref=f1e190]: Web App
+          - generic [ref=f1e193]: TanStack Router
+          - generic [ref=f1e196]: Vercel Edge Functions
+          - generic [ref=f1e199]: pandas
+          - generic [ref=f1e202]: NumPy
+          - generic [ref=f1e205]: React 19
+          - generic [ref=f1e208]: Recharts
+          - generic [ref=f1e211]: Groq (Llama 4 Scout)
+          - generic [ref=f1e214]: Python
+          - generic [ref=f1e217]: Vision LLMs
+          - generic [ref=f1e220]: Multi-Agent
+          - generic [ref=f1e223]: Image Analysis
+          - generic [ref=f1e226]: Policy Synthesis
+          - generic [ref=f1e229]: AI Agent
+          - generic [ref=f1e232]: Diagnostics
+          - generic [ref=f1e235]: Hackathon
+          - generic [ref=f1e238]: AI Assistant
+          - generic [ref=f1e241]: React
+          - generic [ref=f1e244]: Flask
+          - generic [ref=f1e247]: MongoDB
+          - generic [ref=f1e250]: Groq
+          - generic [ref=f1e253]: JWT
+          - generic [ref=f1e256]: Cloudflare Turnstile
+          - generic [ref=f1e259]: Vite
+          - generic [ref=f1e262]: TypeScript
+          - generic [ref=f1e265]: Tailwind CSS
+          - generic [ref=f1e268]: Supabase
+          - generic [ref=f1e271]: Framer Motion
+          - generic [ref=f1e274]: XGBoost
+          - generic [ref=f1e277]: LightGBM
+          - generic [ref=f1e280]: Random Forest
+          - generic [ref=f1e283]: SHAP
+          - generic [ref=f1e286]: FastAPI
+          - generic [ref=f1e289]: Docker
+          - generic [ref=f1e292]: Tailwind
+          - generic [ref=f1e295]: Web App
+          - generic [ref=f1e298]: TanStack Router
+          - generic [ref=f1e301]: Vercel Edge Functions
+          - generic [ref=f1e304]: pandas
+          - generic [ref=f1e307]: NumPy
+          - generic [ref=f1e310]: React 19
+          - generic [ref=f1e313]: Recharts
+          - generic [ref=f1e316]: Groq (Llama 4 Scout)
+          - generic [ref=f1e319]: Python
+          - generic [ref=f1e322]: Vision LLMs
+          - generic [ref=f1e325]: Multi-Agent
+          - generic [ref=f1e328]: Image Analysis
+          - generic [ref=f1e331]: Policy Synthesis
+          - generic [ref=f1e334]: AI Agent
+          - generic [ref=f1e337]: Diagnostics
+          - generic [ref=f1e340]: Hackathon
+          - generic [ref=f1e343]: AI Assistant
+        - generic [aria-hidden] [ref=f1e346]:
+          - generic [ref=f1e347]: React
+          - generic [ref=f1e350]: Flask
+          - generic [ref=f1e353]: MongoDB
+          - generic [ref=f1e356]: Groq
+          - generic [ref=f1e359]: JWT
+          - generic [ref=f1e362]: Cloudflare Turnstile
+          - generic [ref=f1e365]: Vite
+          - generic [ref=f1e368]: TypeScript
+          - generic [ref=f1e371]: Tailwind CSS
+          - generic [ref=f1e374]: Supabase
+          - generic [ref=f1e377]: Framer Motion
+          - generic [ref=f1e380]: XGBoost
+          - generic [ref=f1e383]: LightGBM
+          - generic [ref=f1e386]: Random Forest
+          - generic [ref=f1e389]: SHAP
+          - generic [ref=f1e392]: FastAPI
+          - generic [ref=f1e395]: Docker
+          - generic [ref=f1e398]: Tailwind
+          - generic [ref=f1e401]: Web App
+          - generic [ref=f1e404]: TanStack Router
+          - generic [ref=f1e407]: Vercel Edge Functions
+          - generic [ref=f1e410]: pandas
+          - generic [ref=f1e413]: NumPy
+          - generic [ref=f1e416]: React 19
+          - generic [ref=f1e419]: Recharts
+          - generic [ref=f1e422]: Groq (Llama 4 Scout)
+          - generic [ref=f1e425]: Python
+          - generic [ref=f1e428]: Vision LLMs
+          - generic [ref=f1e431]: Multi-Agent
+          - generic [ref=f1e434]: Image Analysis
+          - generic [ref=f1e437]: Policy Synthesis
+          - generic [ref=f1e440]: AI Agent
+          - generic [ref=f1e443]: Diagnostics
+          - generic [ref=f1e446]: Hackathon
+          - generic [ref=f1e449]: AI Assistant
+          - generic [ref=f1e452]: React
+          - generic [ref=f1e455]: Flask
+          - generic [ref=f1e458]: MongoDB
+          - generic [ref=f1e461]: Groq
+          - generic [ref=f1e464]: JWT
+          - generic [ref=f1e467]: Cloudflare Turnstile
+          - generic [ref=f1e470]: Vite
+          - generic [ref=f1e473]: TypeScript
+          - generic [ref=f1e476]: Tailwind CSS
+          - generic [ref=f1e479]: Supabase
+          - generic [ref=f1e482]: Framer Motion
+          - generic [ref=f1e485]: XGBoost
+          - generic [ref=f1e488]: LightGBM
+          - generic [ref=f1e491]: Random Forest
+          - generic [ref=f1e494]: SHAP
+          - generic [ref=f1e497]: FastAPI
+          - generic [ref=f1e500]: Docker
+          - generic [ref=f1e503]: Tailwind
+          - generic [ref=f1e506]: Web App
+          - generic [ref=f1e509]: TanStack Router
+          - generic [ref=f1e512]: Vercel Edge Functions
+          - generic [ref=f1e515]: pandas
+          - generic [ref=f1e518]: NumPy
+          - generic [ref=f1e521]: React 19
+          - generic [ref=f1e524]: Recharts
+          - generic [ref=f1e527]: Groq (Llama 4 Scout)
+          - generic [ref=f1e530]: Python
+          - generic [ref=f1e533]: Vision LLMs
+          - generic [ref=f1e536]: Multi-Agent
+          - generic [ref=f1e539]: Image Analysis
+          - generic [ref=f1e542]: Policy Synthesis
+          - generic [ref=f1e545]: AI Agent
+          - generic [ref=f1e548]: Diagnostics
+          - generic [ref=f1e551]: Hackathon
+          - generic [ref=f1e554]: AI Assistant
+    - generic [ref=f1e557]: Loading section...
+    - generic [ref=f1e562]: Loading section...
+    - generic [ref=f1e567]: Loading section...
+    - generic [ref=f1e572]: Loading section...
+    - generic [ref=f1e577]: Loading section...
+    - generic [ref=f1e582]: Loading section...
+    - generic [ref=f1e587]: Loading section...
+    - generic [ref=f1e592]: Loading section...
+  - contentinfo [ref=f1e597]:
+    - generic [ref=f1e598]:
+      - generic [ref=f1e599]:
+        - link "Charan." [ref=f1e600] [cursor=pointer]:
+          - /url: "#"
+        - generic [ref=f1e601]: © 2026 Charan (Bonamukkala Charan Reddy). All rights reserved.
+      - generic [ref=f1e602]:
+        - generic [ref=f1e603]: Built by Charan · Hyderabad, IN
+        - button "Back to top" [ref=f1e604]

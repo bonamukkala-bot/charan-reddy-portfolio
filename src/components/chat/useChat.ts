@@ -4,7 +4,7 @@ import { preload } from '../../lib/rag/embedder';
 import { respond } from '../../lib/rag/respond';
 import { LOW_CONFIDENCE_FALLBACK } from '../../lib/rag/answer';
 import { DEFAULT_SUGGESTION_CHIPS } from '../../lib/rag/intents';
-import type { AnswerSource } from '../../lib/rag/types';
+import type { AnswerSource, ConversationState } from '../../lib/rag/types';
 
 export interface ChatMessage {
   id: string;
@@ -51,6 +51,12 @@ export function useChat({
   const isSendingRef = useRef(false);
   const isFirstQuestionRef = useRef(true);
   const hasInitializedRef = useRef(false);
+
+  // Conversation memory state
+  const conversationStateRef = useRef<ConversationState>({
+    lastChunkId: null,
+    detailShown: {},
+  });
 
   // Active stream tracker to allow instantaneous completion or clean cancellation
   const activeStreamRef = useRef<{
@@ -141,7 +147,9 @@ export function useChat({
       const startTime = Date.now();
 
       try {
-        const answer = await respond(trimmed);
+        const respondResult = await respond(trimmed, conversationStateRef.current);
+        conversationStateRef.current = respondResult.state;
+        const answer = respondResult.answer;
 
         // Enforce 300ms minimum typing indicator
         const elapsed = Date.now() - startTime;
@@ -259,6 +267,10 @@ export function useChat({
    */
   const clearChat = useCallback(() => {
     finishCurrentStream();
+    conversationStateRef.current = {
+      lastChunkId: null,
+      detailShown: {},
+    };
     setMessages([
       {
         id: `welcome-${Date.now()}`,

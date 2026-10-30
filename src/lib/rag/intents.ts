@@ -23,6 +23,7 @@ export const INTENT_REPLIES = {
     'I can only help with questions about my work and background. Try asking about my projects, skills or services.',
   frustrated:
     "Sorry I couldn't help with that. You can ask about my projects, skills and services, or email me at bonamukkalacharan@gmail.com.",
+  ack: "Sure. Is there anything else you'd like to know about my work?",
 };
 
 function cleanForIntent(text: string): string {
@@ -138,6 +139,17 @@ export function detectIntent(
         confidence: 'high',
         kind: 'intent',
         sources: [],
+      };
+    }
+
+    // 9. ack
+    if (/^(ok|okay|cool|got\s+it|alright|fine|nice\s+one|makes\s+sense)$/i.test(text)) {
+      return {
+        text: INTENT_REPLIES.ack,
+        confidence: 'high',
+        kind: 'intent',
+        sources: [],
+        suggestions: [...DEFAULT_SUGGESTION_CHIPS],
       };
     }
   }

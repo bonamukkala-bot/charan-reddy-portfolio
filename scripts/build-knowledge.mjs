@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pipeline, env } from '@xenova/transformers';
+import { splitUnits } from '../src/lib/rag/sentences.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -9,6 +10,24 @@ const rootDir = path.resolve(__dirname, '..');
 
 // Configure transformers env
 env.allowLocalModels = false;
+
+function joinUnits(units) {
+  let result = '';
+  for (let i = 0; i < units.length; i++) {
+    const u = units[i];
+    if (i === 0) {
+      result = u;
+    } else {
+      const prev = units[i - 1];
+      if (u.startsWith('- ') || prev.startsWith('- ')) {
+        result += '\n' + u;
+      } else {
+        result += ' ' + u;
+      }
+    }
+  }
+  return result;
+}
 
 async function buildKnowledge() {
   const mdPath = path.join(rootDir, 'src', 'data', 'knowledge.md');
@@ -48,23 +67,32 @@ async function buildKnowledge() {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
 
-    // Parse and remove "Also asked as:" line from body
+    // Parse and remove "Also asked as:", "Short:", and "Topic:" lines from body
     let variants = [];
     let suggestion = undefined;
+    let shortRaw = undefined;
+    let topicRaw = undefined;
     const lines = body.split('\n');
     const cleanedLines = [];
 
     for (const line of lines) {
-      const match = line.match(/^Also asked as:\s*(.+)$/i);
-      if (match) {
-        const rawVariants = match[1]
+      const matchVariants = line.match(/^Also asked as:\s*(.+)$/i);
+      const matchShort = line.match(/^Short:\s*(.+)$/i);
+      const matchTopic = line.match(/^Topic:\s*(.+)$/i);
+
+      if (matchVariants) {
+        const rawVariants = matchVariants[1]
           .split('|')
           .map((s) => s.trim())
           .filter(Boolean);
-        variants = rawVariants.slice(0, 6);
+        variants = rawVariants.slice(0, 12);
         if (variants.length > 0) {
           suggestion = variants[0];
         }
+      } else if (matchShort) {
+        shortRaw = matchShort[1].trim();
+      } else if (matchTopic) {
+        topicRaw = matchTopic[1].trim();
       } else {
         cleanedLines.push(line);
       }
@@ -74,12 +102,60 @@ async function buildKnowledge() {
 
     rawChunks.push({
       id,
+      rawHeading,
       title,
       text: cleanedText,
       kind,
       variants,
       suggestion,
+      shortRaw,
+      topicRaw,
     });
+  }
+
+  // Create heading-to-id map to validate Topic: references
+  const headingToId = new Map();
+  for (const rc of rawChunks) {
+    headingToId.set(rc.rawHeading, rc.id);
+  }
+
+  // Process units, short, detail, links, relatedId for each chunk
+  for (const rc of rawChunks) {
+    const units = splitUnits(rc.text);
+    rc.units = units;
+
+    // links: array of unit strings starting with "Live:" or "Code:"
+    const links = units.filter((u) => u.startsWith('Live:') || u.startsWith('Code:'));
+    rc.links = links;
+
+    // short: the Short sentences, plus (if chunk text has a "Live:" unit not already in Short) a newline and that Live unit
+    if (rc.shortRaw) {
+      const liveUnit = units.find((u) => u.startsWith('Live:'));
+      if (liveUnit && !rc.shortRaw.includes(liveUnit)) {
+        rc.short = `${rc.shortRaw}\n${liveUnit}`;
+      } else {
+        rc.short = rc.shortRaw;
+      }
+
+      // detail: all units of full text NOT in short, joined with spaces (bullets with newlines)
+      const shortUnits = splitUnits(rc.short);
+      const shortUnitSet = new Set(shortUnits);
+      const detailUnits = units.filter((u) => !shortUnitSet.has(u));
+      if (detailUnits.length > 0) {
+        rc.detail = joinUnits(detailUnits).trim();
+      }
+    }
+
+    // relatedId: the id of the section named in Topic line
+    if (rc.topicRaw) {
+      const targetId = headingToId.get(rc.topicRaw);
+      if (!targetId) {
+        throw new Error(
+          `Build failed: Topic "${rc.topicRaw}" in section "${rc.rawHeading}" references a heading that does not exist!`
+        );
+      }
+      rc.relatedId = targetId;
+    }
   }
 
   console.log(`Parsed ${rawChunks.length} chunks from knowledge.md.`);
@@ -125,6 +201,11 @@ async function buildKnowledge() {
       ...(chunk.variants && chunk.variants.length > 0 ? { variants: chunk.variants } : {}),
       ...(chunk.suggestion ? { suggestion: chunk.suggestion } : {}),
       ...(variantEmbeddings.length > 0 ? { variantEmbeddings } : {}),
+      ...(chunk.short ? { short: chunk.short } : {}),
+      ...(chunk.detail ? { detail: chunk.detail } : {}),
+      ...(chunk.links && chunk.links.length > 0 ? { links: chunk.links } : {}),
+      ...(chunk.relatedId ? { relatedId: chunk.relatedId } : {}),
+      units: chunk.units,
     });
 
     kindCounts[chunk.kind] = (kindCounts[chunk.kind] || 0) + 1;
@@ -162,8 +243,8 @@ async function buildKnowledge() {
   console.log(`Output File: ${outPath}`);
   console.log(`File Size: ${sizeKB} KB (${sizeMB} MB)`);
 
-  if (stats.size > 1.5 * 1024 * 1024) {
-    console.warn('WARNING: File size exceeds 1.5 MB! Reduce to 6 variants per chunk if needed.');
+  if (stats.size > 1.6 * 1024 * 1024) {
+    console.warn('WARNING: File size exceeds 1.6 MB! Consider dropping units.');
   }
 }
 
