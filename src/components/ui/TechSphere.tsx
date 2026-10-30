@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { buildTechIconRegistry, TechIconDefinition } from './techIconRegistry';
+import { loadTechIcons, TechIconDefinition } from './techIconRegistry';
 
 export type TechLayer = 'Build' | 'AI' | 'Data' | 'Ship';
 
@@ -25,7 +25,7 @@ interface Point3D {
   z: number;
 }
 
-// Precomputed Fibonacci sphere coordinates (N = 35)
+// Precomputed Fibonacci sphere coordinates (N = 35) computed once outside the component
 function computeFibonacciSphere(n: number): Point3D[] {
   const points: Point3D[] = [];
   const phi = (1 + Math.sqrt(5)) / 2; // Golden ratio
@@ -40,11 +40,11 @@ function computeFibonacciSphere(n: number): Point3D[] {
   return points;
 }
 
-// Precomputed wireframe parallels and meridians
+// Precomputed wireframe parallels and meridians computed once outside the component
 function createWireframeGeometry() {
   const parallels: Point3D[][] = [];
   const yValues = [-0.72, -0.38, 0, 0.38, 0.72];
-  const steps = 40;
+  const steps = 32;
 
   for (const y of yValues) {
     const ring: Point3D[] = [];
@@ -79,6 +79,64 @@ function createWireframeGeometry() {
   return { parallels, meridians };
 }
 
+// Precomputed static data
+const FIBONACCI_POINTS_35 = computeFibonacciSphere(35);
+const WIREFRAME_GEO = createWireframeGeometry();
+
+// Pre-rendered 96x96 glow sprite to eliminate expensive ctx.shadowBlur on hover
+function createGlowSprite(): HTMLCanvasElement {
+  const size = 96;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return canvas;
+
+  const center = size / 2;
+  const grad = ctx.createRadialGradient(center, center, 0, center, center, center);
+  grad.addColorStop(0, 'rgba(198, 255, 61, 0.45)');
+  grad.addColorStop(0.4, 'rgba(198, 255, 61, 0.18)');
+  grad.addColorStop(1, 'rgba(198, 255, 61, 0)');
+
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.arc(center, center, center, 0, Math.PI * 2);
+  ctx.fill();
+
+  return canvas;
+}
+
+// Pre-rendered volumetric sphere backing canvas (sized once on ResizeObserver)
+function createSphereBacking(size: number): HTMLCanvasElement {
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return canvas;
+
+  const center = size / 2;
+  const sphereRadius = size * 0.35;
+
+  const bgGrad = ctx.createRadialGradient(center, center, 0, center, center, sphereRadius * 1.05);
+  bgGrad.addColorStop(0, 'rgba(198, 255, 61, 0.022)');
+  bgGrad.addColorStop(0.7, 'rgba(17, 17, 20, 0.25)');
+  bgGrad.addColorStop(0.96, 'rgba(10, 10, 11, 0.85)');
+  bgGrad.addColorStop(1, 'rgba(198, 255, 61, 0.06)');
+
+  ctx.fillStyle = bgGrad;
+  ctx.beginPath();
+  ctx.arc(center, center, sphereRadius, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.strokeStyle = 'rgba(198, 255, 61, 0.14)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(center, center, sphereRadius, 0, Math.PI * 2);
+  ctx.stroke();
+
+  return canvas;
+}
+
 export function TechSphere({
   items,
   activeFilter,
@@ -95,21 +153,63 @@ export function TechSphere({
   } | null>(null);
 
   const [isMobile, setIsMobile] = useState(false);
-  const [, setIconsLoadedCount] = useState(0);
 
-  // Precomputed Fibonacci Points & Wireframe
-  const fibonacciPoints = useMemo(() => computeFibonacciSphere(items.length), [items.length]);
-  const wireframeGeo = useMemo(() => createWireframeGeometry(), []);
+  // Progressive icon registry: items load in background and cross-fade in over 150ms
+  const iconRegistryRef = useRef<Map<string, TechIconDefinition>>(new Map());
 
-  // Icon registry (pre-rendered offscreen canvases)
-  const iconRegistryRef = useRef<Map<string, TechIconDefinition> | null>(null);
+  // Cached pre-rendered sprites
+  const glowSpriteRef = useRef<HTMLCanvasElement | null>(null);
+  const backingCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const labelWidthCache = useRef<Map<string, number>>(new Map());
 
+  // Reusable projection buffer (zero per-frame allocations)
+  const projectedBuffer = useRef(
+    Array.from({ length: 35 }, () => ({
+      index: 0,
+      item: null as unknown as TechSphereItem,
+      sx: 0,
+      sy: 0,
+      z: 0,
+      scale: 1,
+      opacity: 1,
+      isHovered: false,
+    }))
+  ).current;
+  const sortIndices = useRef(new Int32Array(35)).current;
+  const suppressedFlags = useRef(new Uint8Array(35)).current;
+
+  // Initialize glow sprite once
+  if (!glowSpriteRef.current && typeof document !== 'undefined') {
+    glowSpriteRef.current = createGlowSprite();
+  }
+
+  // Precomputed Fibonacci points for the current items count
+  const fibonacciPoints = useMemo(
+    () => (items.length === 35 ? FIBONACCI_POINTS_35 : computeFibonacciSphere(items.length)),
+    [items.length]
+  );
+
+  // Start background icon loading on mount (prioritizing front-facing items, never blocking the draw loop)
   useEffect(() => {
-    iconRegistryRef.current = buildTechIconRegistry(() => {
-      // Trigger re-render when async Lucide data-URIs finish drawing
-      setIconsLoadedCount((c) => c + 1);
+    if (typeof window !== 'undefined') {
+      (window as unknown as { __sphereMountTime: number }).__sphereMountTime = performance.now();
+    }
+    const sinTilt = Math.sin(0.26);
+    const cosTilt = Math.cos(0.26);
+    const frontNames: string[] = [];
+
+    items.forEach((item, i) => {
+      const pt = fibonacciPoints[i];
+      if (pt) {
+        const z = pt.y * sinTilt + pt.z * cosTilt;
+        if (z > 0.05) {
+          frontNames.push(item.name);
+        }
+      }
     });
-  }, []);
+
+    loadTechIcons(iconRegistryRef.current, frontNames);
+  }, [items, fibonacciPoints]);
 
   // Motion and rotation physics state in refs (zero-allocation 60fps loop)
   const physicsRef = useRef({
@@ -128,7 +228,7 @@ export function TechSphere({
     velocityY: 0,
     hoveredIndex: -1,
     spreadProgress: 0,
-    hasEntered: false,
+    hasEntered: true, // starts immediately on mount without waiting for late trigger
     prefersReducedMotion: false,
     width: 600,
     height: 600,
@@ -176,18 +276,55 @@ export function TechSphere({
     }
   }, [selectedTech, items]);
 
-  // Main Canvas Rendering & Animation Loop
+  // Sizing via ResizeObserver (capped at DPR 2, never sized per frame)
+  useEffect(() => {
+    const container = containerRef.current;
+    const canvas = canvasRef.current;
+    if (!container || !canvas) return;
+
+    const updateSize = (rectWidth: number) => {
+      const size = Math.min(rectWidth || 600, 680);
+      if (size <= 0) return;
+
+      physicsRef.current.width = size;
+      physicsRef.current.height = size;
+
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(size * dpr);
+      canvas.height = Math.round(size * dpr);
+      canvas.style.width = `${size}px`;
+      canvas.style.height = `${size}px`;
+
+      backingCanvasRef.current = createSphereBacking(size);
+    };
+
+    const initialRect = container.getBoundingClientRect();
+    updateSize(initialRect.width || 600);
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentRect.width > 0) {
+          updateSize(entry.contentRect.width);
+        }
+      }
+    });
+
+    resizeObserver.observe(container);
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  // Main Canvas Rendering & 60fps Animation Loop
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
-    let rafId: number;
+    let rafId = 0;
     let lastTime = performance.now();
     let isVisible = true;
 
-    // IntersectionObserver to pause loop when offscreen (with rootMargin ~300px)
+    // IntersectionObserver with rootMargin: 800px so canvas warms up well before entering screen
     const observer = new IntersectionObserver(
       ([entry]) => {
         const nowVisible = entry.isIntersecting;
@@ -203,15 +340,12 @@ export function TechSphere({
             rafId = 0;
           }
         }
-        if (entry.isIntersecting && !physicsRef.current.hasEntered) {
-          physicsRef.current.hasEntered = true;
-        }
       },
-      { rootMargin: '300px', threshold: 0 }
+      { rootMargin: '800px', threshold: 0 }
     );
     observer.observe(canvas);
 
-    // Tab visibility listener
+    // Tab visibility listener (pauses loop and resumes smoothly without a jump)
     const onVisibilityChange = () => {
       const nowVisible = document.visibilityState === 'visible';
       if (nowVisible !== isVisible) {
@@ -229,39 +363,7 @@ export function TechSphere({
     };
     document.addEventListener('visibilitychange', onVisibilityChange);
 
-    // Resize handling with devicePixelRatio scaling
-    const handleResize = () => {
-      if (!canvas || !containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      const size = Math.min(rect.width, 680);
-      physicsRef.current.width = size;
-      physicsRef.current.height = size;
-
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.round(size * dpr);
-      canvas.height = Math.round(size * dpr);
-      canvas.style.width = `${size}px`;
-      canvas.style.height = `${size}px`;
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-
-    // Projected items buffer (reused every frame)
-    const projectedItems: {
-      index: number;
-      item: TechSphereItem;
-      sx: number;
-      sy: number;
-      z: number;
-      scale: number;
-      opacity: number;
-      isHovered: boolean;
-    }[] = [];
-
-    // Suppressed labels set for crowded front items
-    const suppressedLabels = new Set<number>();
-
-    // Animation frame render function
+    // 60fps render loop
     const render = (now: number) => {
       if (!isVisible) {
         rafId = 0;
@@ -269,14 +371,14 @@ export function TechSphere({
       }
       rafId = requestAnimationFrame(render);
 
-      const dt = Math.min((now - lastTime) / 1000, 0.1);
+      const dt = Math.min((now - lastTime) / 1000, 0.05);
       lastTime = now;
 
       const p = physicsRef.current;
 
-      // Entrance spread animation (0 to 1 over ~1s)
-      if (p.hasEntered && p.spreadProgress < 1 && !p.prefersReducedMotion) {
-        p.spreadProgress = Math.min(1, p.spreadProgress + dt * 1.05);
+      // Short 400ms entrance animation starting immediately on mount
+      if (p.spreadProgress < 1 && !p.prefersReducedMotion) {
+        p.spreadProgress = Math.min(1, p.spreadProgress + dt / 0.4);
       } else if (p.prefersReducedMotion) {
         p.spreadProgress = 1;
       }
@@ -307,7 +409,6 @@ export function TechSphere({
 
       const cx = p.width / 2;
       const cy = p.height / 2;
-      // Radius ensures full sphere visibility with generous padding
       const sphereRadius = p.width * 0.35 * (0.85 + 0.15 * easeSpread);
       const cameraDistance = 2.4;
 
@@ -318,17 +419,14 @@ export function TechSphere({
 
       // Rotate 3D vector helper
       const projectPoint = (pt: Point3D, rMultiplier = 1) => {
-        // Y-axis rotation
         const x1 = pt.x * cosY + pt.z * sinY;
         const y1 = pt.y;
         const z1 = -pt.x * sinY + pt.z * cosY;
 
-        // X-axis tilt
         const x2 = x1;
         const y2 = y1 * cosX - z1 * sinX;
         const z2 = y1 * sinX + z1 * cosX;
 
-        // Perspective projection
         const k = cameraDistance / (cameraDistance - z2);
         const r = sphereRadius * rMultiplier;
         const sx = cx + x2 * r * k;
@@ -337,31 +435,18 @@ export function TechSphere({
         return { sx, sy, z: z2, k };
       };
 
-      // 1. Draw subtle inner sphere volumetric backing & glow
-      const bgGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, sphereRadius * 1.05);
-      bgGrad.addColorStop(0, 'rgba(198, 255, 61, 0.022)');
-      bgGrad.addColorStop(0.7, 'rgba(17, 17, 20, 0.25)');
-      bgGrad.addColorStop(0.96, 'rgba(10, 10, 11, 0.85)');
-      bgGrad.addColorStop(1, 'rgba(198, 255, 61, 0.06)');
+      // 1. Draw pre-rendered volumetric backing glow
+      if (backingCanvasRef.current) {
+        ctx.drawImage(backingCanvasRef.current, 0, 0);
+      }
 
-      ctx.fillStyle = bgGrad;
-      ctx.beginPath();
-      ctx.arc(cx, cy, sphereRadius, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Outer delicate rim circle
-      ctx.strokeStyle = 'rgba(198, 255, 61, 0.14)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.arc(cx, cy, sphereRadius, 0, Math.PI * 2);
-      ctx.stroke();
-
-      // 2. Draw wireframe latitude & longitude mesh
+      // 2. Draw wireframe mesh in batched passes
       ctx.save();
       // Back wireframe lines
       ctx.lineWidth = 0.75;
-      for (const parallel of wireframeGeo.parallels) {
-        ctx.beginPath();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.035)';
+      ctx.beginPath();
+      for (const parallel of WIREFRAME_GEO.parallels) {
         let started = false;
         for (let i = 0; i < parallel.length; i++) {
           const pt = projectPoint(parallel[i]);
@@ -376,12 +461,8 @@ export function TechSphere({
             started = false;
           }
         }
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.035)';
-        ctx.stroke();
       }
-
-      for (const meridian of wireframeGeo.meridians) {
-        ctx.beginPath();
+      for (const meridian of WIREFRAME_GEO.meridians) {
         let started = false;
         for (let i = 0; i < meridian.length; i++) {
           const pt = projectPoint(meridian[i]);
@@ -396,14 +477,14 @@ export function TechSphere({
             started = false;
           }
         }
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.035)';
-        ctx.stroke();
       }
+      ctx.stroke();
 
       // Front wireframe lines (crisp lime/white tinted)
       ctx.lineWidth = 0.9;
-      for (const parallel of wireframeGeo.parallels) {
-        ctx.beginPath();
+      ctx.strokeStyle = 'rgba(198, 255, 61, 0.09)';
+      ctx.beginPath();
+      for (const parallel of WIREFRAME_GEO.parallels) {
         let started = false;
         for (let i = 0; i < parallel.length; i++) {
           const pt = projectPoint(parallel[i]);
@@ -418,12 +499,8 @@ export function TechSphere({
             started = false;
           }
         }
-        ctx.strokeStyle = 'rgba(198, 255, 61, 0.09)';
-        ctx.stroke();
       }
-
-      for (const meridian of wireframeGeo.meridians) {
-        ctx.beginPath();
+      for (const meridian of WIREFRAME_GEO.meridians) {
         let started = false;
         for (let i = 0; i < meridian.length; i++) {
           const pt = projectPoint(meridian[i]);
@@ -438,13 +515,12 @@ export function TechSphere({
             started = false;
           }
         }
-        ctx.strokeStyle = 'rgba(198, 255, 61, 0.09)';
-        ctx.stroke();
       }
+      ctx.stroke();
 
-      // Small node dots at parallels/meridians intersections
-      for (let m = 0; m < wireframeGeo.meridians.length; m += 2) {
-        const meridian = wireframeGeo.meridians[m];
+      // Node dots at wireframe intersections
+      for (let m = 0; m < WIREFRAME_GEO.meridians.length; m += 2) {
+        const meridian = WIREFRAME_GEO.meridians[m];
         for (let i = 0; i < meridian.length; i += 8) {
           const pt = projectPoint(meridian[i]);
           if (pt.z > 0.1) {
@@ -457,22 +533,19 @@ export function TechSphere({
       }
       ctx.restore();
 
-      // 3. Project all 35 technology items
-      projectedItems.length = 0;
-      for (let i = 0; i < items.length; i++) {
+      // 3. Project all technology items into reusable buffer
+      const count = Math.min(items.length, 35);
+      for (let i = 0; i < count; i++) {
         const rawPt = fibonacciPoints[i] || { x: 0, y: 0, z: 0 };
         const itemRMult = 0.2 + 0.8 * easeSpread;
         const pt = projectPoint(rawPt, itemRMult);
 
-        const zNorm = (pt.z + 1) / 2; // 0 (back) to 1 (front)
-        // Scale: ~0.55 on back to 1.0 on front
+        const zNorm = (pt.z + 1) / 2;
         let scale = 0.55 + 0.45 * zNorm;
 
-        // Opacity: back items are at most 0.20; front items 0.20 to 1.0
         let opacity = pt.z <= 0 ? 0.2 * (1 + pt.z) : 0.2 + 0.8 * pt.z;
         opacity = Math.max(0.12, Math.min(1.0, opacity));
 
-        // Dim if not in active filter (20% opacity)
         if (activeFilter !== 'All' && items[i].category !== activeFilter) {
           opacity *= 0.2;
         }
@@ -483,95 +556,76 @@ export function TechSphere({
           opacity = 1.0;
         }
 
-        projectedItems.push({
-          index: i,
-          item: items[i],
-          sx: pt.sx,
-          sy: pt.sy,
-          z: pt.z,
-          scale,
-          opacity,
-          isHovered,
-        });
+        const slot = projectedBuffer[i];
+        slot.index = i;
+        slot.item = items[i];
+        slot.sx = pt.sx;
+        slot.sy = pt.sy;
+        slot.z = pt.z;
+        slot.scale = scale;
+        slot.opacity = opacity;
+        slot.isHovered = isHovered;
+
+        sortIndices[i] = i;
       }
 
-      // Depth sort: back items draw first, front items draw last
-      projectedItems.sort((a, b) => a.z - b.z);
+      // In-place sort indices by depth (back to front) without array allocation
+      sortIndices.subarray(0, count).sort((a, b) => projectedBuffer[a].z - projectedBuffer[b].z);
 
-      // Pre-compute overlapping labels on the front face to avoid collisions (only show on hover if crowded)
-      suppressedLabels.clear();
-      for (let i = projectedItems.length - 1; i >= 0; i--) {
-        const itemA = projectedItems[i];
+      // Suppress crowded front labels
+      suppressedFlags.fill(0);
+      for (let i = count - 1; i >= 0; i--) {
+        const idxA = sortIndices[i];
+        const itemA = projectedBuffer[idxA];
         if (itemA.z <= 0.15) continue;
         for (let j = i - 1; j >= 0; j--) {
-          const itemB = projectedItems[j];
+          const idxB = sortIndices[j];
+          const itemB = projectedBuffer[idxB];
           if (itemB.z <= 0.15) continue;
           const dx = itemA.sx - itemB.sx;
           const dy = itemA.sy - itemB.sy;
           if (dx * dx + dy * dy < 2704) {
-            // ~52px distance threshold
-            suppressedLabels.add(itemB.index);
+            suppressedFlags[idxB] = 1;
           }
         }
       }
 
-      // 4. Render each technology icon directly on the sphere
-      // Target front icon size: ~46 to 52px (scaled down on mobile)
+      // 4. Render each item: initials badge + lime dot immediately, cross-fading to icon once ready
       const baseIconSize = isMobile ? 40 : 48;
       const registry = iconRegistryRef.current;
+      const glowSprite = glowSpriteRef.current;
 
-      for (let i = 0; i < projectedItems.length; i++) {
-        const pItem = projectedItems[i];
+      for (let s = 0; s < count; s++) {
+        const pItem = projectedBuffer[sortIndices[s]];
         const { sx, sy, z, scale, opacity, isHovered, item } = pItem;
         const iconSize = baseIconSize * scale;
         const halfSize = iconSize / 2;
 
-        ctx.save();
-        ctx.globalAlpha = opacity;
+        const iconDef = registry.get(item.name);
 
-        const iconDef = registry?.get(item.name);
-
-        // Hover aura / glowing lime ring
+        // Hover aura sprite (pre-rendered for zero shadowBlur overhead)
         if (isHovered) {
-          ctx.save();
-          ctx.shadowColor = '#C6FF3D';
-          ctx.shadowBlur = 24;
+          if (glowSprite) {
+            const glowSize = halfSize * 3;
+            ctx.drawImage(glowSprite, sx - glowSize / 2, sy - glowSize / 2, glowSize, glowSize);
+          }
           ctx.strokeStyle = '#C6FF3D';
           ctx.lineWidth = 2;
           ctx.beginPath();
           ctx.arc(sx, sy, halfSize + 4, 0, Math.PI * 2);
           ctx.stroke();
-          ctx.restore();
         }
 
-        // Subtle dark circular backing (about 12% white / subtle dark contrast disc)
-        // Keeps logos readable as they cross wireframe mesh lines
-        if (iconDef?.needsBacking || z > 0) {
-          ctx.beginPath();
-          ctx.arc(sx, sy, halfSize * 0.95, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(18, 18, 22, 0.65)';
-          ctx.fill();
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-          ctx.lineWidth = 0.8;
-          ctx.stroke();
-        }
+        // Small lime dot indicator for item node
+        ctx.fillStyle = isHovered ? '#C6FF3D' : 'rgba(198, 255, 61, 0.7)';
+        ctx.beginPath();
+        ctx.arc(sx, sy - halfSize - 3, 1.5, 0, Math.PI * 2);
+        ctx.fill();
 
-        // Render the icon directly onto the sphere surface
-        if (iconDef?.canvas) {
-          // If at the back (z <= 0), gray-scale slightly so front stays cleanly readable
-          if (z <= 0) {
-            ctx.filter = 'grayscale(80%)';
-          }
-          ctx.drawImage(
-            iconDef.canvas,
-            sx - halfSize,
-            sy - halfSize,
-            iconSize,
-            iconSize
-          );
-          ctx.filter = 'none';
-        } else {
-          // Fallback order #3: Clean initials badge with lime outline
+        // Helper to draw clean initials badge with lime outline
+        const drawInitialsBadge = (badgeAlpha: number) => {
+          ctx.save();
+          ctx.globalAlpha = badgeAlpha;
           ctx.beginPath();
           ctx.arc(sx, sy, halfSize * 0.9, 0, Math.PI * 2);
           ctx.fillStyle = '#17171C';
@@ -585,16 +639,57 @@ export function TechSphere({
           ctx.textBaseline = 'middle';
           ctx.fillStyle = isHovered ? '#C6FF3D' : '#F4F4F0';
           ctx.fillText(item.initials, sx, sy + 0.5);
+          ctx.restore();
+        };
+
+        // Helper to draw rendered logo canvas
+        const drawLogo = (def: TechIconDefinition, logoAlpha: number) => {
+          ctx.save();
+          ctx.globalAlpha = logoAlpha;
+
+          // Circular backing disc for contrast over wireframe lines
+          if (def.needsBacking || z > 0) {
+            ctx.beginPath();
+            ctx.arc(sx, sy, halfSize * 0.95, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(18, 18, 22, 0.65)';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+          }
+
+          ctx.drawImage(
+            def.canvas,
+            sx - halfSize,
+            sy - halfSize,
+            iconSize,
+            iconSize
+          );
+          ctx.restore();
+        };
+
+        // Progressive swap: 150ms cross-fade once icon is ready
+        if (iconDef?.canvas) {
+          const readyElapsed = now - iconDef.readyAt;
+          if (readyElapsed < 150) {
+            const fadeRatio = Math.max(0, Math.min(1, readyElapsed / 150));
+            drawInitialsBadge(opacity * (1 - fadeRatio));
+            drawLogo(iconDef, opacity * fadeRatio);
+          } else {
+            drawLogo(iconDef, opacity);
+          }
+        } else {
+          // Frame 1 fallback: initials badge
+          drawInitialsBadge(opacity);
         }
 
-        // Text label under icon:
-        // - Back-facing items (z <= 0): NO label
-        // - Crowded front items: show label ONLY on hover
-        // - Clear front items (z > 0.15): crisp mono label
-        const isCrowded = suppressedLabels.has(pItem.index);
+        // Text label under icon
+        const isCrowded = suppressedFlags[pItem.index] === 1;
         const shouldShowLabel = isHovered || (z > 0.15 && !isCrowded);
 
         if (shouldShowLabel) {
+          ctx.save();
+          ctx.globalAlpha = opacity;
           const fontSize = Math.max(9, Math.round((isMobile ? 9.5 : 11) * scale));
           ctx.font = `${isHovered ? 'bold' : 'normal'} ${fontSize}px 'JetBrains Mono', monospace`;
           ctx.textAlign = 'center';
@@ -602,10 +697,15 @@ export function TechSphere({
 
           const labelY = sy + halfSize + (isMobile ? 3 : 5);
           const labelText = item.name;
-          const textMetrics = ctx.measureText(labelText);
-          const textW = textMetrics.width;
 
-          // Subtle dark backing scrim behind text for 100% legibility
+          // Memoized text width lookup (eliminates per-frame measureText)
+          let textW = labelWidthCache.current.get(labelText);
+          if (textW === undefined) {
+            textW = ctx.measureText(labelText).width;
+            labelWidthCache.current.set(labelText, textW);
+          }
+
+          // Dark backing scrim behind text for legibility
           ctx.fillStyle = 'rgba(10, 10, 11, 0.88)';
           ctx.beginPath();
           ctx.roundRect(
@@ -623,21 +723,20 @@ export function TechSphere({
             ? '#F4F4F0'
             : 'rgba(244, 244, 240, 0.85)';
           ctx.fillText(labelText, sx, labelY);
+          ctx.restore();
         }
-
-        ctx.restore();
       }
     };
 
+    // Draw immediately on mount!
     rafId = requestAnimationFrame(render);
 
     return () => {
       cancelAnimationFrame(rafId);
       observer.disconnect();
       document.removeEventListener('visibilitychange', onVisibilityChange);
-      window.removeEventListener('resize', handleResize);
     };
-  }, [items, fibonacciPoints, wireframeGeo, activeFilter, isMobile]);
+  }, [items, fibonacciPoints, activeFilter, isMobile]);
 
   // Hit-testing helper (only hits front-half items z > 0)
   const hitTest = useCallback(
@@ -661,7 +760,6 @@ export function TechSphere({
 
       const baseRadius = isMobile ? 20 : 24;
 
-      // Check in reverse order so closest front items hit first
       for (let i = items.length - 1; i >= 0; i--) {
         const rawPt = fibonacciPoints[i];
         if (!rawPt) continue;
@@ -674,7 +772,6 @@ export function TechSphere({
         const y2 = y1 * cosX - z1 * sinX;
         const z2 = y1 * sinX + z1 * cosX;
 
-        // Front half only
         if (z2 <= 0.05) continue;
 
         const k = cameraDistance / (cameraDistance - z2);
@@ -710,7 +807,6 @@ export function TechSphere({
 
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
 
-    // Hit test on touch tap
     const hit = hitTest(e.clientX, e.clientY);
     if (hit) {
       onSelectTech(hit.item.name);
@@ -740,7 +836,6 @@ export function TechSphere({
       return;
     }
 
-    // Desktop hover detection when not dragging
     if (!isMobile) {
       const hit = hitTest(e.clientX, e.clientY);
       if (hit) {

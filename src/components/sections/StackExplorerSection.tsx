@@ -1,9 +1,19 @@
-import { useState, useMemo, lazy, Suspense } from 'react';
+import { useState, useMemo, useEffect, lazy, Suspense } from 'react';
 import { allProjects } from '../../data/projects';
 import type { TechSphereItem, TechLayer } from '../ui/TechSphere';
 
+const loadTechSphere = () => import('../ui/TechSphere');
+let techSpherePrefetched = false;
+
+export function prefetchTechSphere() {
+  if (!techSpherePrefetched && typeof window !== 'undefined') {
+    techSpherePrefetched = true;
+    loadTechSphere();
+  }
+}
+
 const TechSphere = lazy(() =>
-  import('../ui/TechSphere').then((mod) => ({ default: mod.TechSphere }))
+  loadTechSphere().then((mod) => ({ default: mod.TechSphere }))
 );
 
 type Layer = 'Build' | 'AI' | 'Data' | 'Ship';
@@ -70,6 +80,11 @@ function getInitials(name: string): string {
 export function StackExplorerSection() {
   const [selectedTech, setSelectedTech] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<TechLayer | 'All'>('All');
+
+  // Prefetch TechSphere immediately when StackExplorerSection mounts
+  useEffect(() => {
+    prefetchTechSphere();
+  }, []);
 
   // Derive tech -> project names mapping strictly from existing project data
   const { techMap, categorizedTech, projectList, sphereItems } = useMemo(() => {
@@ -187,17 +202,13 @@ export function StackExplorerSection() {
           })}
         </div>
 
-        {/* 3D Rotating Tech-Sphere Visual (Lazy loaded with fixed height placeholder) */}
+        {/* 3D Rotating Tech-Sphere Visual (Lazy loaded with static placeholder of matching size) */}
         <Suspense
           fallback={
-            <div className="relative w-full aspect-square max-w-[680px] mx-auto rounded-3xl bg-[#0c0c0f] border border-white/5 flex items-center justify-center">
-              <div className="flex flex-col items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-[#C6FF3D] animate-ping" />
-                <span className="font-mono text-[11px] text-[#A1A1AA] uppercase tracking-wider">
-                  Initializing Interactive Orbit...
-                </span>
-              </div>
-            </div>
+            <div
+              className="relative aspect-square w-full max-w-[680px] mx-auto rounded-3xl bg-[#0c0c0f] border border-white/5 my-2"
+              aria-hidden="true"
+            />
           }
         >
           <TechSphere

@@ -90,6 +90,37 @@ export default function App() {
   const [isHeroReady, setIsHeroReady] = useState(false);
   const [isPageLoaded, setIsPageLoaded] = useState(false);
 
+  // Prefetch StackExplorerSection and TechSphere during idle time after preloader ends and on scroll
+  useEffect(() => {
+    if (!isPageLoaded) return;
+
+    const idleCallback =
+      typeof window !== 'undefined' && 'requestIdleCallback' in window
+        ? window.requestIdleCallback
+        : (cb: () => void) => setTimeout(cb, 100);
+
+    const idleId = idleCallback(() => {
+      import('./components/sections/StackExplorerSection').then((m) => {
+        if (m.prefetchTechSphere) m.prefetchTechSphere();
+      });
+    });
+
+    const onScrollNear = () => {
+      import('./components/sections/StackExplorerSection').then((m) => {
+        if (m.prefetchTechSphere) m.prefetchTechSphere();
+      });
+      window.removeEventListener('scroll', onScrollNear);
+    };
+    window.addEventListener('scroll', onScrollNear, { passive: true });
+
+    return () => {
+      if (typeof window !== 'undefined' && 'cancelIdleCallback' in window && typeof idleId === 'number') {
+        window.cancelIdleCallback(idleId);
+      }
+      window.removeEventListener('scroll', onScrollNear);
+    };
+  }, [isPageLoaded]);
+
   // Sync route on mount and browser navigation (popstate)
   useEffect(() => {
     const handleRouteChange = () => {
