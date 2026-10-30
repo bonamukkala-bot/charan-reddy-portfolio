@@ -14,6 +14,12 @@ import { FooterSection } from './components/sections/FooterSection';
 import { allProjects, Project } from './data/projects';
 
 // Lazy-loaded heavy sections and modals below the fold
+const TwoModesSection = lazy(() =>
+  import('./components/sections/TwoModesSection').then((m) => ({ default: m.TwoModesSection }))
+);
+const StackExplorerSection = lazy(() =>
+  import('./components/sections/StackExplorerSection').then((m) => ({ default: m.StackExplorerSection }))
+);
 const FeaturedWorkSection = lazy(() =>
   import('./components/sections/FeaturedWorkSection').then((m) => ({ default: m.FeaturedWorkSection }))
 );
@@ -215,8 +221,22 @@ export default function App() {
           isReady={isHeroReady}
         />
 
-        {/* 2. Marquee & 3. Proof Strip */}
+        {/* 2. Stats Strip & Tech Marquee */}
         <MarqueeAndProofSection />
+
+        {/* Two Modes Split-Screen Section */}
+        <div className="content-auto">
+          <Suspense fallback={<SectionPlaceholder minHeight="650px" />}>
+            <TwoModesSection />
+          </Suspense>
+        </div>
+
+        {/* Stack Explorer / Technology & System Layers */}
+        <div className="content-auto">
+          <Suspense fallback={<SectionPlaceholder minHeight="700px" />}>
+            <StackExplorerSection />
+          </Suspense>
+        </div>
 
         {/* 4. Featured Work (Stacked Case Studies with Real Architecture Diagrams) */}
         <div className="content-auto">

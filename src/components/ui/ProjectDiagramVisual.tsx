@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Bot, Activity, ShieldCheck, MessageSquare, Sparkles, Cpu, Store, Home, GitBranch, Layers, Image as ImageIcon, Video } from 'lucide-react';
 import { ProjectImageShowcase } from './ProjectImageShowcase';
 import { ProjectVideoShowcase } from './ProjectVideoShowcase';
@@ -9,33 +9,51 @@ interface ProjectDiagramVisualProps {
 }
 
 export function ProjectDiagramVisual({ projectId }: ProjectDiagramVisualProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [recruitMateView, setRecruitMateView] = useState<'showcase' | 'architecture'>('showcase');
   const [atelierView, setAtelierView] = useState<'showcase' | 'architecture'>('showcase');
   const [sriVishnuView, setSriVishnuView] = useState<'showcase' | 'architecture'>('showcase');
 
+  // Reset to default screenshot carousel when this project moves out of view (visitor moves to another project)
+  useEffect(() => {
+    if (typeof IntersectionObserver === 'undefined') return;
+    const el = containerRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) {
+            setRecruitMateView('showcase');
+            setAtelierView('showcase');
+          }
+        });
+      },
+      { threshold: 0 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Also reset to default screenshot carousel if projectId changes
+  useEffect(() => {
+    setRecruitMateView('showcase');
+    setAtelierView('showcase');
+  }, [projectId]);
+
   // 1. RecruitMate AI: Real screenshots showcase (auto-advancing slider) + optional 7-agent pipeline view
   if (projectId === 'recruitmate-ai') {
     return (
-      <div className="relative w-full flex flex-col gap-2">
+      <div ref={containerRef} className="relative w-full flex flex-col gap-2">
         {/* View toggle */}
         <div className="flex items-center justify-between px-0.5" onClick={(e) => e.stopPropagation()}>
-          <div className="flex items-center gap-1 p-0.5 rounded-lg bg-white/5 border border-white/10 text-[11px] font-mono">
+          <div className="flex items-center p-0.5 rounded-lg bg-white/5 border border-white/10 text-[11px] font-mono">
             <button
               type="button"
-              onClick={() => setRecruitMateView('showcase')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-colors ${
-                recruitMateView === 'showcase'
-                  ? 'bg-[#C6FF3D] text-[#0A0A0B] font-semibold'
-                  : 'text-[#8A8A92] hover:text-white'
-              }`}
-            >
-              <ImageIcon className="h-3 w-3" />
-              <span>Screenshots (7)</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setRecruitMateView('architecture')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-colors ${
+              onClick={() => setRecruitMateView((prev) => (prev === 'architecture' ? 'showcase' : 'architecture'))}
+              aria-pressed={recruitMateView === 'architecture'}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-colors cursor-pointer ${
                 recruitMateView === 'architecture'
                   ? 'bg-[#C6FF3D] text-[#0A0A0B] font-semibold'
                   : 'text-[#8A8A92] hover:text-white'
@@ -125,26 +143,15 @@ export function ProjectDiagramVisual({ projectId }: ProjectDiagramVisualProps) {
   // 2. Atelier: Real screenshots showcase (12 images) + Architecture diagram view
   if (projectId === 'atelier') {
     return (
-      <div className="relative w-full flex flex-col gap-2">
+      <div ref={containerRef} className="relative w-full flex flex-col gap-2">
         {/* View toggle */}
         <div className="flex items-center justify-between px-0.5" onClick={(e) => e.stopPropagation()}>
-          <div className="flex items-center gap-1 p-0.5 rounded-lg bg-white/5 border border-white/10 text-[11px] font-mono">
+          <div className="flex items-center p-0.5 rounded-lg bg-white/5 border border-white/10 text-[11px] font-mono">
             <button
               type="button"
-              onClick={() => setAtelierView('showcase')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-colors ${
-                atelierView === 'showcase'
-                  ? 'bg-[#C6FF3D] text-[#0A0A0B] font-semibold'
-                  : 'text-[#8A8A92] hover:text-white'
-              }`}
-            >
-              <ImageIcon className="h-3 w-3" />
-              <span>Screenshots (12)</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setAtelierView('architecture')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-colors ${
+              onClick={() => setAtelierView((prev) => (prev === 'architecture' ? 'showcase' : 'architecture'))}
+              aria-pressed={atelierView === 'architecture'}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-colors cursor-pointer ${
                 atelierView === 'architecture'
                   ? 'bg-[#C6FF3D] text-[#0A0A0B] font-semibold'
                   : 'text-[#8A8A92] hover:text-white'
@@ -376,7 +383,7 @@ export function ProjectDiagramVisual({ projectId }: ProjectDiagramVisualProps) {
   // 05. Sri Vishnu Grand PG: Real screen recording video showcase + optional concierge pipeline
   if (projectId === 'sri-vishnu-grand-pg') {
     return (
-      <div className="relative w-full flex flex-col gap-2">
+      <div ref={containerRef} className="relative w-full flex flex-col gap-2">
         {/* View toggle */}
         <div className="flex items-center justify-between px-0.5" onClick={(e) => e.stopPropagation()}>
           <div className="flex items-center gap-1 p-0.5 rounded-lg bg-white/5 border border-white/10 text-[11px] font-mono">
