@@ -3,6 +3,22 @@ import React from 'react';
 interface MessageContentProps {
   text: string;
   isUser?: boolean;
+  isStreaming?: boolean;
+}
+
+/**
+ * Removes dangling, unclosed double-asterisks during word-by-word streaming
+ * so partial text never displays broken markdown syntax.
+ */
+export function cleanPartialMarkdown(text: string): string {
+  const boldMatches = text.match(/\*\*/g);
+  if (boldMatches && boldMatches.length % 2 !== 0) {
+    const lastBoldIdx = text.lastIndexOf('**');
+    if (lastBoldIdx !== -1) {
+      return text.slice(0, lastBoldIdx) + text.slice(lastBoldIdx + 2);
+    }
+  }
+  return text;
 }
 
 /**
@@ -10,10 +26,6 @@ interface MessageContentProps {
  * Strictly avoids dangerouslySetInnerHTML.
  */
 function parseInline(text: string): React.ReactNode[] {
-  // Regex to match:
-  // 1. Bold: **text**
-  // 2. HTTPS URLs: https://...
-  // 3. Email addresses: ...@...
   const tokenRegex =
     /(\*\*[^*]+\*\*)|(https:\/\/[^\s<>)"]+)|([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g;
 
@@ -35,7 +47,7 @@ function parseInline(text: string): React.ReactNode[] {
         </strong>
       );
     } else if (match[2]) {
-      // HTTPS URL
+      // HTTPS URL: overflow-wrap: anywhere ONLY on the link, never on normal words
       let url = match[2];
       let trailingPunct = '';
       if (/[.,;:)\]]$/.test(url)) {
@@ -48,7 +60,8 @@ function parseInline(text: string): React.ReactNode[] {
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[#C6FF3D] underline underline-offset-2 hover:opacity-80 transition-opacity break-all"
+          style={{ overflowWrap: 'anywhere' }}
+          className="text-[#C6FF3D] underline underline-offset-2 hover:opacity-80 transition-opacity"
         >
           {url}
         </a>
@@ -57,13 +70,14 @@ function parseInline(text: string): React.ReactNode[] {
         nodes.push(trailingPunct);
       }
     } else if (match[3]) {
-      // Email address
+      // Email address: white-space: nowrap so it never breaks mid-address
       const email = match[3];
       nodes.push(
         <a
           key={`email-${match.index}`}
           href={`mailto:${email}`}
-          className="text-[#C6FF3D] underline underline-offset-2 hover:opacity-80 transition-opacity break-all"
+          style={{ whiteSpace: 'nowrap' }}
+          className="text-[#C6FF3D] underline underline-offset-2 hover:opacity-80 transition-opacity"
         >
           {email}
         </a>
@@ -80,16 +94,28 @@ function parseInline(text: string): React.ReactNode[] {
   return nodes;
 }
 
-export function MessageContent({ text, isUser = false }: MessageContentProps) {
+export function MessageContent({
+  text,
+  isUser = false,
+  isStreaming = false,
+}: MessageContentProps) {
   if (isUser) {
-    return <p className="whitespace-pre-wrap break-words">{text}</p>;
+    return <p className="whitespace-pre-wrap">{text}</p>;
   }
 
+  const rawText = isStreaming ? cleanPartialMarkdown(text) : text;
   // Split text by blank lines (double newlines) into paragraph blocks
-  const blocks = text.split(/\n\s*\n/);
+  const blocks = rawText.split(/\n\s*\n/);
+
+  const caretNode = isStreaming ? (
+    <span
+      aria-hidden="true"
+      className="inline-block w-[2px] h-[1.1em] bg-[#C6FF3D] ml-0.5 align-middle animate-pulse"
+    />
+  ) : null;
 
   return (
-    <div className="space-y-2.5 text-[13.5px] leading-relaxed text-[#D4D4D8] break-words">
+    <div className="space-y-2.5 text-[13.5px] leading-relaxed text-[#D4D4D8]">
       {blocks.map((block, bIdx) => {
         const lines = block
           .split('\n')
@@ -97,6 +123,7 @@ export function MessageContent({ text, isUser = false }: MessageContentProps) {
           .filter(Boolean);
 
         if (lines.length === 0) return null;
+        const isLastBlock = bIdx === blocks.length - 1;
 
         // Check if all lines in this block are bullet items
         const isAllBullets = lines.every((l) => l.startsWith('- '));
@@ -108,7 +135,14 @@ export function MessageContent({ text, isUser = false }: MessageContentProps) {
             >
               {lines.map((line, lIdx) => {
                 const itemText = line.replace(/^- \s*/, '');
-                return <li key={lIdx}>{parseInline(itemText)}</li>;
+                if (!itemText.trim()) return null;
+                const isLastLine = isLastBlock && lIdx === lines.length - 1;
+                return (
+                  <li key={lIdx}>
+                    {parseInline(itemText)}
+                    {isLastLine && caretNode}
+                  </li>
+                );
               })}
             </ul>
           );
@@ -120,18 +154,24 @@ export function MessageContent({ text, isUser = false }: MessageContentProps) {
           return (
             <div key={bIdx} className="space-y-1.5">
               {lines.map((line, lIdx) => {
+                const isLastLine = isLastBlock && lIdx === lines.length - 1;
                 if (line.startsWith('- ')) {
                   const itemText = line.replace(/^- \s*/, '');
+                  if (!itemText.trim()) return null;
                   return (
                     <div key={lIdx} className="flex items-start gap-2 pl-1">
                       <span className="text-[#C6FF3D] shrink-0 select-none leading-tight">•</span>
-                      <span>{parseInline(itemText)}</span>
+                      <span>
+                        {parseInline(itemText)}
+                        {isLastLine && caretNode}
+                      </span>
                     </div>
                   );
                 }
                 return (
                   <p key={lIdx} className="leading-relaxed">
                     {parseInline(line)}
+                    {isLastLine && caretNode}
                   </p>
                 );
               })}
@@ -145,6 +185,7 @@ export function MessageContent({ text, isUser = false }: MessageContentProps) {
             {lines.map((line, lIdx) => (
               <React.Fragment key={lIdx}>
                 {parseInline(line)}
+                {isLastBlock && lIdx === lines.length - 1 && caretNode}
                 {lIdx < lines.length - 1 && <br />}
               </React.Fragment>
             ))}

@@ -124,13 +124,13 @@ const TEST_CASES = [
   { query: 'How old are you?', expectedKind: 'fallback' },
 ];
 
-function checkDuplicateSentences(text: string): string | null {
+function checkDuplicateSentences(text) {
   const sentences = text
     .split(/(?<=[.!?])\s+|\n+/)
     .map((s) => s.trim().toLowerCase().replace(/[^\w\s]/g, ''))
     .filter((s) => s.length > 20);
 
-  const seen = new Set<string>();
+  const seen = new Set();
   for (const s of sentences) {
     if (seen.has(s)) {
       return s;
@@ -140,7 +140,7 @@ function checkDuplicateSentences(text: string): string | null {
   return null;
 }
 
-async function runTestSuite(modeName: string, useEmbedder: boolean, index: any) {
+async function runTestSuite(modeName, useEmbedder, index) {
   console.log(`\n================================================================`);
   console.log(`RUNNING MODE: ${modeName} (${TEST_CASES.length} queries)`);
   console.log(`================================================================\n`);

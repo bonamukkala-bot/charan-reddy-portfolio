@@ -10,7 +10,8 @@
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
     "build:kb": "node scripts/build-knowledge.mjs",
-    "test:kb": "tsx scripts/test-retrieval.mjs"
+    "test:kb": "tsx scripts/test-retrieval.mjs",
+    "test:kb:bm25": "tsx scripts/test-retrieval.mjs --no-embed"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

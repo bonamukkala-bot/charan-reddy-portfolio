@@ -14,10 +14,12 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
   const launcherRef = useRef<HTMLButtonElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const messageListRef = useRef<HTMLDivElement | null>(null);
   const lastActiveElementRef = useRef<HTMLElement | null>(null);
+  const shouldAutoScrollRef = useRef(true);
 
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [liveAnnouncement, setLiveAnnouncement] = useState('');
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -25,6 +27,19 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
     const listener = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
     mq.addEventListener('change', listener);
     return () => mq.removeEventListener('change', listener);
+  }, []);
+
+  const handleStreamTick = useCallback(() => {
+    if (shouldAutoScrollRef.current && messageListRef.current) {
+      messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
+    }
+  }, []);
+
+  const handleStreamFinished = useCallback((fullText: string) => {
+    setLiveAnnouncement(fullText);
+    if (shouldAutoScrollRef.current && messageListRef.current) {
+      messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
+    }
   }, []);
 
   const {
@@ -37,33 +52,46 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
     initChat,
     sendMessage,
     clearChat,
-  } = useChat();
+    finishCurrentStream,
+  } = useChat({
+    prefersReducedMotion,
+    onStreamTick: handleStreamTick,
+    onStreamFinished: handleStreamFinished,
+  });
 
   // Lock body scroll and pause Lenis smooth scroll while chat panel is open
   useScrollLock(isOpen);
 
-  // Auto-scroll to the newest message
+  // Monitor user scrolling: if they scroll up > 80px from bottom, stop auto-scrolling
+  const handleScroll = useCallback(() => {
+    const el = messageListRef.current;
+    if (!el) return;
+    const distFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    shouldAutoScrollRef.current = distFromBottom <= 80;
+  }, []);
+
+  // Instant scroll update on message/typing changes if auto-scroll is allowed
   useEffect(() => {
-    if (isOpen && messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({
-        behavior: prefersReducedMotion ? 'auto' : 'smooth',
-        block: 'nearest',
-      });
+    if (isOpen && shouldAutoScrollRef.current && messageListRef.current) {
+      messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
     }
-  }, [messages, isTyping, isOpen, prefersReducedMotion]);
+  }, [messages, isTyping, isOpen]);
 
   const handleOpen = useCallback(() => {
     lastActiveElementRef.current = document.activeElement as HTMLElement | null;
+    shouldAutoScrollRef.current = true;
     setIsOpen(true);
     initChat();
   }, [initChat]);
 
   const handleClose = useCallback(() => {
+    // Finish any currently streaming message immediately before closing
+    finishCurrentStream();
     setIsOpen(false);
     setTimeout(() => {
       launcherRef.current?.focus();
     }, 50);
-  }, []);
+  }, [finishCurrentStream]);
 
   // Move focus to input when opening
   useEffect(() => {
@@ -112,6 +140,7 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isTyping) return;
+    shouldAutoScrollRef.current = true;
     sendMessage(input);
   };
 
@@ -133,6 +162,16 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
 
   return (
     <div id="chat-widget">
+      {/* Visually hidden screen reader live announcement region */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {liveAnnouncement}
+      </div>
+
       {/* ============================================================== */}
       {/* 1. LAUNCHER BUTTON                                             */}
       {/* ============================================================== */}
@@ -156,7 +195,6 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
             aria-label="Ask about Charan"
             className="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-[#C6FF3D] hover:bg-[#d4ff66] text-[#0A0A0B] shadow-[0_4px_24px_rgba(198,255,61,0.45)] flex items-center justify-center transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6FF3D] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0B]"
           >
-            {/* Inline SVG chat bubble */}
             <svg
               width="24"
               height="24"
@@ -218,23 +256,21 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
               >
                 {/* HEADER */}
                 <div className="shrink-0 px-4 pt-3.5 pb-3 border-b border-white/10 bg-[#111114]/80 flex items-center justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-[#C6FF3D] animate-pulse" />
-                      <h2
-                        id="chat-widget-header"
-                        className="font-mono text-xs font-bold tracking-wider text-[#F4F4F0] uppercase"
-                      >
-                        ASK ABOUT CHARAN
-                      </h2>
-                    </div>
-                    <p className="font-mono text-[10px] text-[#A1A1AA] mt-0.5">
-                      Answers come only from Charan's portfolio data
-                    </p>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#C6FF3D] animate-pulse" />
+                    <h2
+                      id="chat-widget-header"
+                      className="font-mono text-xs font-bold tracking-wider text-[#F4F4F0] uppercase"
+                    >
+                      ASK ABOUT CHARAN
+                    </h2>
+                    <span className="font-mono text-[9px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-zinc-400 select-none tracking-wider uppercase">
+                      AI ASSISTANT
+                    </span>
                     {isModelLoading && (
-                      <p className="font-mono text-[10px] text-[#C6FF3D] mt-0.5 animate-pulse">
-                        Loading smart search...
-                      </p>
+                      <span className="font-mono text-[10px] text-[#C6FF3D] animate-pulse ml-1">
+                        Loading...
+                      </span>
                     )}
                   </div>
 
@@ -254,7 +290,6 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
                       aria-label="Close chat"
                       className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
                     >
-                      {/* Inline close X SVG */}
                       <svg
                         width="18"
                         height="18"
@@ -272,10 +307,11 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
                   </div>
                 </div>
 
-                {/* MESSAGE LIST */}
+                {/* MESSAGE LIST (without aria-live; live announcements go through polite region) */}
                 <div
+                  ref={messageListRef}
+                  onScroll={handleScroll}
                   data-lenis-prevent
-                  aria-live="polite"
                   className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3.5"
                 >
                   {messages.map((msg) => {
@@ -286,43 +322,27 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
                         className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}
                       >
                         <div
+                          aria-hidden={msg.isStreaming ? 'true' : undefined}
                           className={`max-w-[88%] sm:max-w-[85%] rounded-2xl p-3 sm:p-3.5 shadow-sm text-sm ${
                             isUser
                               ? 'bg-[#C6FF3D] text-[#0A0A0B] font-medium rounded-tr-sm'
                               : 'bg-[#121215] border border-white/10 text-[#F4F4F0] rounded-tl-sm'
                           }`}
                         >
-                          <MessageContent text={msg.text} isUser={isUser} />
+                          <MessageContent
+                            text={msg.text}
+                            isUser={isUser}
+                            isStreaming={msg.isStreaming}
+                          />
 
-                          {/* Sources chips on bot answers (hidden for intent answers) */}
-                          {!isUser &&
-                            msg.kind !== 'intent' &&
-                            msg.confidence !== 'low' &&
-                            msg.sources &&
-                            msg.sources.length > 0 && (
-                              <div className="mt-2.5 pt-2 border-t border-white/5 flex flex-wrap items-center gap-1.5">
-                                <span className="font-mono text-[10px] text-[#A1A1AA] uppercase tracking-wider">
-                                  Sources:
-                                </span>
-                                {msg.sources.map((src, idx) => {
-                                  const clean = src.title
-                                    .replace(/^Q:\s*/i, '')
-                                    .replace(/^Project:\s*/i, '');
-                                  return (
-                                    <span
-                                      key={idx}
-                                      className="font-mono text-[10px] px-2 py-0.5 rounded bg-white/5 border border-white/10 text-zinc-400 select-none"
-                                    >
-                                      {clean}
-                                    </span>
-                                  );
-                                })}
-                              </div>
-                            )}
-
-                          {/* Tappable suggestion chips under answer */}
-                          {!isUser && msg.suggestions && msg.suggestions.length > 0 && (
-                            <div className="mt-2.5 pt-2 border-t border-white/5 flex flex-wrap items-center gap-1.5">
+                          {/* Tappable suggestion chips under answer (rendered only after streaming finishes) */}
+                          {!isUser && !msg.isStreaming && msg.suggestions && msg.suggestions.length > 0 && (
+                            <motion.div
+                              initial={{ opacity: prefersReducedMotion ? 1 : 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
+                              className="mt-2.5 pt-2 border-t border-white/5 flex flex-wrap items-center gap-1.5"
+                            >
                               <span className="font-mono text-[10px] text-[#C6FF3D] font-bold tracking-wider select-none">
                                 TRY:
                               </span>
@@ -330,21 +350,29 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
                                 <button
                                   key={sIdx}
                                   type="button"
-                                  onClick={() => sendMessage(suggestion)}
+                                  onClick={() => {
+                                    shouldAutoScrollRef.current = true;
+                                    sendMessage(suggestion);
+                                  }}
                                   className="font-mono text-[10px] px-2 py-0.5 rounded bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#C6FF3D]/50 text-zinc-300 hover:text-[#C6FF3D] transition-colors text-left active:scale-95"
                                 >
                                   {suggestion}
                                 </button>
                               ))}
-                            </div>
+                            </motion.div>
                           )}
 
-                          {/* Fallback actions only for kind "fallback" */}
-                          {!isUser && msg.kind === 'fallback' && (
-                            <div className="mt-3 pt-2.5 border-t border-white/5 flex flex-wrap gap-2">
+                          {/* Fallback actions only for kind "fallback" after streaming finishes */}
+                          {!isUser && !msg.isStreaming && msg.kind === 'fallback' && (
+                            <motion.div
+                              initial={{ opacity: prefersReducedMotion ? 1 : 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
+                              className="mt-3 pt-2.5 border-t border-white/5 flex flex-wrap gap-2"
+                            >
                               <a
                                 href="mailto:bonamukkalacharan@gmail.com"
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#C6FF3D] hover:bg-[#d4ff66] text-[#0A0A0B] text-xs font-semibold tracking-wide transition-all shadow-sm active:scale-95"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#C6FF3D] hover:bg-[#d4ff66] text-[#0A0A0B] text-xs font-semibold tracking-wide transition-all shadow-sm active:scale-95 whitespace-nowrap"
                               >
                                 <span>Email Charan</span>
                               </a>
@@ -355,7 +383,7 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
                               >
                                 <span>Open inquiry form</span>
                               </button>
-                            </div>
+                            </motion.div>
                           )}
                         </div>
 
@@ -366,7 +394,10 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
                               <button
                                 key={chip}
                                 type="button"
-                                onClick={() => sendMessage(chip)}
+                                onClick={() => {
+                                  shouldAutoScrollRef.current = true;
+                                  sendMessage(chip);
+                                }}
                                 className="font-mono text-[11px] px-2.5 py-1.5 rounded-lg bg-[#18181B] hover:bg-[#27272A] border border-white/10 hover:border-[#C6FF3D]/50 text-[#E4E4E7] hover:text-[#C6FF3D] transition-all text-left active:scale-95"
                               >
                                 {chip}
@@ -409,14 +440,15 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
                       </div>
                     </div>
                   )}
-
-                  <div ref={messagesEndRef} />
                 </div>
 
-                {/* INPUT AREA */}
+                {/* INPUT AREA (with safe-area-inset-bottom + 12px padding; no separate footer) */}
                 <form
                   onSubmit={handleSubmit}
-                  className="shrink-0 p-3 border-t border-white/10 bg-[#111114]/80"
+                  style={{
+                    paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)',
+                  }}
+                  className="shrink-0 px-3 pt-3 border-t border-white/10 bg-[#111114]/80"
                 >
                   <div className="relative flex items-center">
                     <input
@@ -434,7 +466,6 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
                       aria-label="Send"
                       className="absolute right-1.5 p-2 rounded-lg bg-[#C6FF3D] text-[#0A0A0B] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#d4ff66] transition-all active:scale-95"
                     >
-                      {/* Inline Send arrow SVG */}
                       <svg
                         width="16"
                         height="16"
@@ -451,18 +482,6 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
                     </button>
                   </div>
                 </form>
-
-                {/* FOOTER */}
-                <div
-                  className="shrink-0 px-4 py-2 bg-[#0A0A0B] border-t border-white/5 text-center"
-                  style={{
-                    paddingBottom: 'max(0.5rem, calc(0.5rem + env(safe-area-inset-bottom, 0px)))',
-                  }}
-                >
-                  <span className="font-mono text-[10px] text-[#A1A1AA]">
-                    Automated assistant. Answers come from Charan's own portfolio data.
-                  </span>
-                </div>
               </motion.div>
             </div>
           </>
