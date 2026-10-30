@@ -148,6 +148,7 @@ export function ContactSection({ onOpenInquiryModal }: ContactSectionProps) {
                 alt="Charan (Bonamukkala Charan Reddy) in light blue shirt"
                 className="h-full w-full object-cover object-center filter contrast-105"
                 loading="lazy"
+                decoding="async"
                 width="500"
                 height="680"
               />

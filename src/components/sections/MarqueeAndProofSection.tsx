@@ -1,8 +1,12 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'react';
 import { motion, useInView } from 'motion/react';
 import { siteConfig } from '../../data/site';
 import { allProjects } from '../../data/projects';
-import { TechSphere, TechSphereItem, TechLayer } from '../ui/TechSphere';
+import type { TechSphereItem, TechLayer } from '../ui/TechSphere';
+
+const TechSphere = lazy(() =>
+  import('../ui/TechSphere').then((mod) => ({ default: mod.TechSphere }))
+);
 
 interface CounterProps {
   target: number;
@@ -293,13 +297,26 @@ export function MarqueeAndProofSection() {
           })}
         </div>
 
-        {/* 3D Rotating Tech-Sphere Visual */}
-        <TechSphere
-          items={sphereItems}
-          activeFilter={activeFilter}
-          selectedTech={selectedTech}
-          onSelectTech={setSelectedTech}
-        />
+        {/* 3D Rotating Tech-Sphere Visual (Lazy loaded with fixed height placeholder) */}
+        <Suspense
+          fallback={
+            <div className="relative w-full aspect-square max-w-[680px] mx-auto rounded-3xl bg-[#0c0c0f] border border-white/5 flex items-center justify-center">
+              <div className="flex flex-col items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-[#C6FF3D] animate-ping" />
+                <span className="font-mono text-[11px] text-[#A1A1AA] uppercase tracking-wider">
+                  Initializing Interactive Orbit...
+                </span>
+              </div>
+            </div>
+          }
+        >
+          <TechSphere
+            items={sphereItems}
+            activeFilter={activeFilter}
+            selectedTech={selectedTech}
+            onSelectTech={setSelectedTech}
+          />
+        </Suspense>
 
         {/* Below Chips: Compact Row of Project Names (Highlights when tech is hovered/tapped) */}
         <div>

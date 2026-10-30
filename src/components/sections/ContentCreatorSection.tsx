@@ -29,6 +29,7 @@ export function ContentCreatorSection() {
                 alt="Charan coding on a laptop from behind in classroom"
                 className="h-full w-full object-cover object-center"
                 loading="lazy"
+                decoding="async"
                 width="640"
                 height="800"
               />

@@ -32,6 +32,7 @@ export function AboutSection() {
                 alt="Charan (Bonamukkala Charan Reddy) smiling in red shirt"
                 className="h-full w-full object-cover object-[center_20%] filter contrast-105"
                 loading="lazy"
+                decoding="async"
                 width="600"
                 height="800"
               />

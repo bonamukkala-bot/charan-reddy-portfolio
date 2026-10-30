@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { getLenis } from '../../hooks/useLenis';
+import { onLenisScroll } from '../../hooks/useLenis';
 
 interface TerminalScrollBarProps {
   isReady?: boolean;
@@ -18,13 +18,9 @@ export function TerminalScrollBar({ isReady = true }: TerminalScrollBarProps) {
   const remainingTextRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    let currentProgress = 0;
-    let targetProgress = 0;
-    let rafId: number | null = null;
-    let isRunning = false;
+    let lastPct = -1;
+    let lastTypedText = '';
     let hasFlashedAtEnd = false;
-
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const computeProgress = (): number => {
       const scrollY = window.scrollY || window.pageYOffset || 0;
@@ -38,114 +34,87 @@ export function TerminalScrollBar({ isReady = true }: TerminalScrollBarProps) {
 
     const applyProgressToDOM = (progress: number) => {
       const pct = Math.round(progress * 100);
-      const paddedPct = pct < 10 ? `0${pct}%` : `${pct}%`;
 
-      // 1. Left Indicator: percentage
-      if (percentTextRef.current) {
-        percentTextRef.current.textContent = paddedPct;
-      }
-
-      // 2. Bar Fill: scaleX transform
+      // ScaleX transform for hardware accelerated fill
       if (fillRef.current) {
         fillRef.current.style.transform = `scaleX(${progress})`;
       }
 
-      // 3. Typed characters inside the bar
-      const totalChars = SECTION_SEQUENCE.length;
-      // At 0% progress, show empty or initial {; as scroll progresses, type out characters
-      const charCount = Math.floor(progress * totalChars);
-      const typedText = charCount > 0 ? SECTION_SEQUENCE.slice(0, charCount) : '';
-
-      if (unfilledTextRef.current) {
-        unfilledTextRef.current.textContent = typedText;
-      }
-      if (filledTextRef.current) {
-        filledTextRef.current.textContent = typedText;
-      }
-
-      // 4. Dual-contrast clipping: foreground dark text layer matches fill extent
+      // Foreground dual-contrast clip
       if (filledTextContainerRef.current) {
         const remainingClipPercent = (1 - progress) * 100;
         filledTextContainerRef.current.style.clipPath = `inset(0 ${remainingClipPercent}% 0 0)`;
       }
 
-      // 5. Right Indicator: remaining percentage or 'end of page'
-      if (remainingTextRef.current) {
-        if (pct >= 100) {
-          remainingTextRef.current.textContent = 'end of page';
+      // Update text only if pct integer changed to avoid layout thrashing
+      if (pct !== lastPct) {
+        lastPct = pct;
+        const paddedPct = pct < 10 ? `0${pct}%` : `${pct}%`;
 
-          // Single lime border flash at 100%
-          if (!hasFlashedAtEnd && trackRef.current) {
-            hasFlashedAtEnd = true;
-            trackRef.current.classList.add('border-[#C6FF3D]', 'shadow-[0_0_12px_rgba(198,255,61,0.35)]');
-            setTimeout(() => {
-              trackRef.current?.classList.remove('border-[#C6FF3D]', 'shadow-[0_0_12px_rgba(198,255,61,0.35)]');
-            }, 600);
+        if (percentTextRef.current) {
+          percentTextRef.current.textContent = paddedPct;
+        }
+
+        // Typed section sequence text: update only when visible characters change
+        const totalChars = SECTION_SEQUENCE.length;
+        const charCount = Math.floor(progress * totalChars);
+        const typedText = charCount > 0 ? SECTION_SEQUENCE.slice(0, charCount) : '';
+
+        if (typedText !== lastTypedText) {
+          lastTypedText = typedText;
+          if (unfilledTextRef.current) {
+            unfilledTextRef.current.textContent = typedText;
           }
-        } else {
-          hasFlashedAtEnd = false;
-          const remainingPct = Math.max(0, 100 - pct);
-          const remainingPadded = remainingPct < 10 ? `0${remainingPct}` : `${remainingPct}`;
-          remainingTextRef.current.innerHTML = `${remainingPadded}% <span class="text-zinc-500">remaining</span>`;
+          if (filledTextRef.current) {
+            filledTextRef.current.textContent = typedText;
+          }
+        }
+
+        // Right indicator
+        if (remainingTextRef.current) {
+          if (pct >= 100) {
+            remainingTextRef.current.textContent = 'end of page';
+
+            if (!hasFlashedAtEnd && trackRef.current) {
+              hasFlashedAtEnd = true;
+              trackRef.current.classList.add('border-[#C6FF3D]', 'shadow-[0_0_12px_rgba(198,255,61,0.35)]');
+              setTimeout(() => {
+                trackRef.current?.classList.remove('border-[#C6FF3D]', 'shadow-[0_0_12px_rgba(198,255,61,0.35)]');
+              }, 600);
+            }
+          } else {
+            hasFlashedAtEnd = false;
+            const remainingPct = Math.max(0, 100 - pct);
+            const remainingPadded = remainingPct < 10 ? `0${remainingPct}` : `${remainingPct}`;
+            remainingTextRef.current.innerHTML = `${remainingPadded}% <span class="text-zinc-500">remaining</span>`;
+          }
         }
       }
     };
 
-    const tick = () => {
-      if (prefersReducedMotion) {
-        currentProgress = targetProgress;
-        applyProgressToDOM(currentProgress);
-        isRunning = false;
-        return;
-      }
-
-      const delta = targetProgress - currentProgress;
-      if (Math.abs(delta) < 0.0005) {
-        currentProgress = targetProgress;
-        applyProgressToDOM(currentProgress);
-        isRunning = false;
-        rafId = null;
-        return;
-      }
-
-      // Smooth lerp: ~0.16 smoothing factor
-      currentProgress += delta * 0.16;
-      applyProgressToDOM(currentProgress);
-      rafId = requestAnimationFrame(tick);
-    };
-
+    let scheduled = false;
     const requestUpdate = () => {
-      targetProgress = computeProgress();
-      if (!isRunning) {
-        isRunning = true;
-        rafId = requestAnimationFrame(tick);
+      if (!scheduled) {
+        scheduled = true;
+        requestAnimationFrame(() => {
+          scheduled = false;
+          applyProgressToDOM(computeProgress());
+        });
       }
     };
 
-    // Initial calculation
-    targetProgress = computeProgress();
-    currentProgress = targetProgress;
-    applyProgressToDOM(currentProgress);
+    // Initial render
+    applyProgressToDOM(computeProgress());
 
-    // Listeners for window scroll, Lenis scroll, and resize
+    // Single subscription through Lenis and native passive window events
+    const unsubLenis = onLenisScroll(requestUpdate);
     window.addEventListener('scroll', requestUpdate, { passive: true });
     window.addEventListener('resize', requestUpdate, { passive: true });
 
-    // Poll for lenis instance if initialized slightly after
-    const lenis = getLenis();
-    if (lenis) {
-      lenis.on('scroll', requestUpdate);
-    }
-
     return () => {
+      unsubLenis();
       window.removeEventListener('scroll', requestUpdate);
       window.removeEventListener('resize', requestUpdate);
-      if (lenis) {
-        lenis.off('scroll', requestUpdate);
-      }
-      if (rafId !== null) {
-        cancelAnimationFrame(rafId);
-      }
     };
   }, []);
 

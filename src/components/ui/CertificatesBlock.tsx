@@ -256,6 +256,7 @@ export function CertificatesBlock() {
                     width={640}
                     height={400}
                     loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-contain select-none transition-transform duration-300 group-hover:scale-[1.02]"
                   />
 

@@ -348,25 +348,30 @@ export function ProjectImageShowcase({
             <img
               src={currentSlide.src}
               alt={currentSlide.alt}
+              width={1600}
+              height={1000}
+              loading="lazy"
+              decoding="async"
               onClick={(e) => {
                 e.stopPropagation();
                 setIsLightboxOpen(true);
               }}
               className="max-w-full max-h-full w-full h-full object-contain object-center rounded-lg shadow-xl cursor-zoom-in pointer-events-auto transition-transform duration-200 hover:scale-[1.01]"
-              loading="eager"
-              decoding="async"
             />
           </motion.div>
         </AnimatePresence>
 
-        {/* Hidden preloader for next slide image */}
+        {/* Preload only the immediate next slide image */}
         {slides.length > 1 && (
           <img
             src={slides[(currentIndex + 1) % slides.length].src}
             alt=""
+            width={1600}
+            height={1000}
             className="hidden"
             aria-hidden="true"
-            loading="eager"
+            loading="lazy"
+            decoding="async"
           />
         )}
 

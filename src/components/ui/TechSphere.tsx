@@ -187,22 +187,45 @@ export function TechSphere({
     let lastTime = performance.now();
     let isVisible = true;
 
-    // IntersectionObserver to pause loop when offscreen
+    // IntersectionObserver to pause loop when offscreen (with rootMargin ~300px)
     const observer = new IntersectionObserver(
       ([entry]) => {
-        isVisible = entry.isIntersecting;
+        const nowVisible = entry.isIntersecting;
+        if (nowVisible !== isVisible) {
+          isVisible = nowVisible;
+          if (isVisible) {
+            lastTime = performance.now();
+            if (!rafId) {
+              rafId = requestAnimationFrame(render);
+            }
+          } else if (rafId) {
+            cancelAnimationFrame(rafId);
+            rafId = 0;
+          }
+        }
         if (entry.isIntersecting && !physicsRef.current.hasEntered) {
           physicsRef.current.hasEntered = true;
         }
       },
-      { threshold: 0.1 }
+      { rootMargin: '300px', threshold: 0 }
     );
     observer.observe(canvas);
 
     // Tab visibility listener
     const onVisibilityChange = () => {
-      isVisible = document.visibilityState === 'visible';
-      if (isVisible) lastTime = performance.now();
+      const nowVisible = document.visibilityState === 'visible';
+      if (nowVisible !== isVisible) {
+        isVisible = nowVisible;
+        if (isVisible) {
+          lastTime = performance.now();
+          if (!rafId) {
+            rafId = requestAnimationFrame(render);
+          }
+        } else if (rafId) {
+          cancelAnimationFrame(rafId);
+          rafId = 0;
+        }
+      }
     };
     document.addEventListener('visibilitychange', onVisibilityChange);
 
@@ -240,8 +263,11 @@ export function TechSphere({
 
     // Animation frame render function
     const render = (now: number) => {
+      if (!isVisible) {
+        rafId = 0;
+        return;
+      }
       rafId = requestAnimationFrame(render);
-      if (!isVisible) return;
 
       const dt = Math.min((now - lastTime) / 1000, 0.1);
       lastTime = now;

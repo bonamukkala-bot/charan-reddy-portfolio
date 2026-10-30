@@ -28,36 +28,44 @@ export function Navbar({ onOpenContactModal, isReady = true }: NavbarProps) {
   useScrollLock(mobileMenuOpen);
 
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(() => {
+          ticking = false;
+          const currentScrollY = window.scrollY;
 
-      // Navbar elevation
-      setScrolled(currentScrollY > 40);
+          // Navbar elevation
+          setScrolled(currentScrollY > 40);
 
-      // Hide on scroll down, reveal on scroll up
-      if (currentScrollY > 140 && currentScrollY > lastScrollY && !mobileMenuOpen) {
-        setHidden(true);
-      } else {
-        setHidden(false);
-      }
-      setLastScrollY(currentScrollY);
-
-      // Section spy: If near the top (in hero), clear active section
-      if (currentScrollY < 320) {
-        setActiveSection('');
-        return;
-      }
-
-      const sections = ['work', 'services', 'content', 'about', 'contact'];
-      for (const sectionId of sections) {
-        const el = document.getElementById(sectionId);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= 240 && rect.bottom >= 240) {
-            setActiveSection(sectionId);
-            break;
+          // Hide on scroll down, reveal on scroll up
+          if (currentScrollY > 140 && currentScrollY > lastScrollY && !mobileMenuOpen) {
+            setHidden(true);
+          } else {
+            setHidden(false);
           }
-        }
+          setLastScrollY(currentScrollY);
+
+          // Section spy: If near the top (in hero), clear active section
+          if (currentScrollY < 320) {
+            setActiveSection('');
+            return;
+          }
+
+          const sections = ['work', 'services', 'content', 'about', 'contact'];
+          for (const sectionId of sections) {
+            const el = document.getElementById(sectionId);
+            if (el) {
+              const rect = el.getBoundingClientRect();
+              if (rect.top <= 240 && rect.bottom >= 240) {
+                setActiveSection(sectionId);
+                break;
+              }
+            }
+          }
+        });
       }
     };
 
@@ -99,7 +107,7 @@ export function Navbar({ onOpenContactModal, isReady = true }: NavbarProps) {
             : 'translate-y-0 opacity-100'
         } ${
           scrolled
-            ? 'bg-[#0A0A0B]/85 backdrop-blur-md border-b border-white/5 py-3'
+            ? 'bg-[#0A0A0B]/95 sm:bg-[#0A0A0B]/85 sm:backdrop-blur-md border-b border-white/5 py-3'
             : 'bg-transparent py-5'
         }`}
       >

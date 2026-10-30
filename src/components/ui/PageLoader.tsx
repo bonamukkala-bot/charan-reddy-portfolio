@@ -121,10 +121,10 @@ export function PageLoader({ onExitStart, onComplete }: PageLoaderProps) {
     return () => cancelAnimationFrame(rafId);
   }, [prefersReducedMotion]);
 
-  // Organic counter animation tied to real fonts & window loading
+  // Organic counter animation tied to real fonts & hero image loading (capped at ~1.5s total)
   useEffect(() => {
     let fontsLoaded = false;
-    let windowLoaded = false;
+    let heroImageLoaded = false;
 
     if (document.fonts) {
       document.fonts.ready
@@ -138,13 +138,18 @@ export function PageLoader({ onExitStart, onComplete }: PageLoaderProps) {
       fontsLoaded = true;
     }
 
-    if (document.readyState === 'complete') {
-      windowLoaded = true;
+    // Check hero cutout image
+    const heroImg = new Image();
+    heroImg.src = '/images/charan-hero-cutout.png';
+    if (heroImg.complete) {
+      heroImageLoaded = true;
     } else {
-      const handleLoad = () => {
-        windowLoaded = true;
+      heroImg.onload = () => {
+        heroImageLoaded = true;
       };
-      window.addEventListener('load', handleLoad, { once: true });
+      heroImg.onerror = () => {
+        heroImageLoaded = true;
+      };
     }
 
     const startTime = performance.now();
@@ -158,7 +163,7 @@ export function PageLoader({ onExitStart, onComplete }: PageLoaderProps) {
       setIsReady(true);
       setBorderFlashed(true);
 
-      // Hold for about 300ms after reaching READY
+      // Hold briefly (~200ms) after reaching READY
       setTimeout(() => {
         // Trigger hero and nav staggered entrance
         if (onExitStart) {
@@ -170,65 +175,43 @@ export function PageLoader({ onExitStart, onComplete }: PageLoaderProps) {
         setTimeout(() => {
           setIsExiting(true);
 
-          // Full completion after 1000ms transition
+          // Full completion after curtain transition
           setTimeout(() => {
             setIsRemoved(true);
             window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
             startLenis();
             onComplete();
-          }, 1000);
-        }, 120);
-      }, 300);
+          }, 800);
+        }, 100);
+      }, 200);
     };
 
     const updateCounter = (now: number) => {
       const elapsed = now - startTime;
-      const assetsReady = fontsLoaded && (windowLoaded || document.readyState === 'complete');
+      const isWindowComplete = document.readyState === 'complete';
+      const assetsReady = fontsLoaded && (heroImageLoaded || isWindowComplete);
 
-      // Fast-track for reduced motion
+      // Fast-track for reduced motion (capped at 400ms)
       if (prefersReducedMotion) {
-        if (elapsed > 700 && assetsReady) {
+        if ((elapsed > 400 && assetsReady) || elapsed >= 800) {
           setProgress(100);
           triggerCompletion();
           return;
         }
-        const p = Math.min(99, Math.floor((elapsed / 700) * 100));
+        const p = Math.min(99, Math.floor((elapsed / 400) * 100));
         setProgress(p);
         rafId = requestAnimationFrame(updateCounter);
         return;
       }
 
-      // Eased, slightly irregular curve with natural pauses around ~30%, ~60%, ~85%
-      // Minimum duration ~2.4s - 2.8s, maximum ~4.5s
+      // Smooth progression capped at ~1400ms total
       let target = 0;
-      if (elapsed < 380) {
-        // Quick start: 0% -> 28%
-        target = (elapsed / 380) * 28;
-      } else if (elapsed < 880) {
-        // Small pause around 30%: 28% -> 33%
-        target = 28 + ((elapsed - 380) / 500) * 5;
-      } else if (elapsed < 1450) {
-        // Advance: 33% -> 58%
-        target = 33 + ((elapsed - 880) / 570) * 25;
-      } else if (elapsed < 1850) {
-        // Small pause around 60%: 58% -> 63%
-        target = 58 + ((elapsed - 1450) / 400) * 5;
-      } else if (elapsed < 2350) {
-        // Advance: 63% -> 85%
-        target = 63 + ((elapsed - 1850) / 500) * 22;
-      } else if (elapsed < 2700) {
-        // Pause around 85%: 85% -> 88%
-        target = 85 + ((elapsed - 2350) / 350) * 3;
+      if (assetsReady || elapsed >= 1400) {
+        // Smoothly accelerate to 100%
+        target = Math.min(100, (elapsed / 1100) * 100);
       } else {
-        // Final stretch (2700ms+)
-        if (assetsReady || elapsed >= 4500) {
-          // Fast final push to 100%
-          const pushElapsed = elapsed - 2700;
-          target = 88 + (pushElapsed / 320) * 12;
-        } else {
-          // Creep gracefully up to 96% until assets are ready or 4500ms max
-          target = 88 + Math.min(8, ((elapsed - 2700) / 1600) * 8);
-        }
+        // Naturally progress up to 94% while waiting for readiness
+        target = Math.min(94, (elapsed / 1200) * 94);
       }
 
       const currentP = Math.min(100, Math.floor(target));

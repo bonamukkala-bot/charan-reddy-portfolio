@@ -3,25 +3,63 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useLenis } from './hooks/useLenis';
 import { CustomCursor } from './components/ui/CustomCursor';
 import { PageLoader } from './components/ui/PageLoader';
 import { Navbar } from './components/ui/Navbar';
 import { HeroSection } from './components/sections/HeroSection';
 import { MarqueeAndProofSection } from './components/sections/MarqueeAndProofSection';
-import { FeaturedWorkSection } from './components/sections/FeaturedWorkSection';
-import { MoreWorkSection } from './components/sections/MoreWorkSection';
-import { ServicesSection } from './components/sections/ServicesSection';
-import { ContentCreatorSection } from './components/sections/ContentCreatorSection';
-import { AboutSection } from './components/sections/AboutSection';
-import { ContactSection } from './components/sections/ContactSection';
 import { FooterSection } from './components/sections/FooterSection';
-import { CaseStudyModal } from './components/ui/CaseStudyModal';
-import { ProjectInquiryModal } from './components/ui/ProjectInquiryModal';
-import { CaseStudyPage } from './pages/CaseStudyPage';
-import { NotFoundPage } from './pages/NotFoundPage';
 import { allProjects, Project } from './data/projects';
+
+// Lazy-loaded heavy sections and modals below the fold
+const FeaturedWorkSection = lazy(() =>
+  import('./components/sections/FeaturedWorkSection').then((m) => ({ default: m.FeaturedWorkSection }))
+);
+const MoreWorkSection = lazy(() =>
+  import('./components/sections/MoreWorkSection').then((m) => ({ default: m.MoreWorkSection }))
+);
+const ServicesSection = lazy(() =>
+  import('./components/sections/ServicesSection').then((m) => ({ default: m.ServicesSection }))
+);
+const ContentCreatorSection = lazy(() =>
+  import('./components/sections/ContentCreatorSection').then((m) => ({ default: m.ContentCreatorSection }))
+);
+const AboutSection = lazy(() =>
+  import('./components/sections/AboutSection').then((m) => ({ default: m.AboutSection }))
+);
+const ContactSection = lazy(() =>
+  import('./components/sections/ContactSection').then((m) => ({ default: m.ContactSection }))
+);
+const CaseStudyModal = lazy(() =>
+  import('./components/ui/CaseStudyModal').then((m) => ({ default: m.CaseStudyModal }))
+);
+const ProjectInquiryModal = lazy(() =>
+  import('./components/ui/ProjectInquiryModal').then((m) => ({ default: m.ProjectInquiryModal }))
+);
+const CaseStudyPage = lazy(() =>
+  import('./pages/CaseStudyPage').then((m) => ({ default: m.CaseStudyPage }))
+);
+const NotFoundPage = lazy(() =>
+  import('./pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage }))
+);
+
+// Fallback skeleton placeholder with reserved height to eliminate cumulative layout shift (CLS)
+function SectionPlaceholder({ minHeight = '500px' }: { minHeight?: string }) {
+  return (
+    <div
+      style={{ minHeight }}
+      className="w-full flex items-center justify-center bg-[#0A0A0B] py-16 border-b border-white/5 opacity-50"
+      aria-hidden="true"
+    >
+      <div className="flex items-center gap-2 font-mono text-xs text-[#A1A1AA]">
+        <span className="h-1.5 w-1.5 rounded-full bg-[#C6FF3D] animate-ping" />
+        <span>Loading section...</span>
+      </div>
+    </div>
+  );
+}
 
 // Ready for Vercel Analytics or Web Vitals monitoring:
 // import { inject } from '@vercel/analytics';
@@ -107,14 +145,20 @@ export default function App() {
         <CustomCursor />
         <Navbar onOpenContactModal={() => handleOpenInquiry()} />
         <main id="main-content">
-          <CaseStudyPage project={selectedCaseStudy} onBack={navigateToHome} />
+          <Suspense fallback={<SectionPlaceholder minHeight="80vh" />}>
+            <CaseStudyPage project={selectedCaseStudy} onBack={navigateToHome} />
+          </Suspense>
         </main>
         <FooterSection />
-        <ProjectInquiryModal
-          isOpen={inquiryModalOpen}
-          onClose={() => setInquiryModalOpen(false)}
-          initialService={inquiryService}
-        />
+        {inquiryModalOpen && (
+          <Suspense fallback={null}>
+            <ProjectInquiryModal
+              isOpen={inquiryModalOpen}
+              onClose={() => setInquiryModalOpen(false)}
+              initialService={inquiryService}
+            />
+          </Suspense>
+        )}
       </div>
     );
   }
@@ -126,7 +170,9 @@ export default function App() {
         <CustomCursor />
         <Navbar onOpenContactModal={() => handleOpenInquiry()} />
         <main id="main-content">
-          <NotFoundPage onGoHome={navigateToHome} />
+          <Suspense fallback={<SectionPlaceholder minHeight="80vh" />}>
+            <NotFoundPage onGoHome={navigateToHome} />
+          </Suspense>
         </main>
         <FooterSection />
       </div>
@@ -173,40 +219,72 @@ export default function App() {
         <MarqueeAndProofSection />
 
         {/* 4. Featured Work (Stacked Case Studies with Real Architecture Diagrams) */}
-        <FeaturedWorkSection onSelectProject={setModalProject} />
+        <div className="content-auto">
+          <Suspense fallback={<SectionPlaceholder minHeight="800px" />}>
+            <FeaturedWorkSection onSelectProject={setModalProject} />
+          </Suspense>
+        </div>
 
         {/* 5. More Work (Filterable Grid with Visual Headers) */}
-        <MoreWorkSection onSelectProject={setModalProject} />
+        <div className="content-auto">
+          <Suspense fallback={<SectionPlaceholder minHeight="600px" />}>
+            <MoreWorkSection onSelectProject={setModalProject} />
+          </Suspense>
+        </div>
 
         {/* 6. Freelance / Services ("Work with me") */}
-        <ServicesSection onOpenInquiryModal={handleOpenInquiry} />
+        <div className="content-auto">
+          <Suspense fallback={<SectionPlaceholder minHeight="600px" />}>
+            <ServicesSection onOpenInquiryModal={handleOpenInquiry} />
+          </Suspense>
+        </div>
 
         {/* 7. Content Creator ("I teach what I build") */}
-        <ContentCreatorSection />
+        <div className="content-auto">
+          <Suspense fallback={<SectionPlaceholder minHeight="700px" />}>
+            <ContentCreatorSection />
+          </Suspense>
+        </div>
 
         {/* 8. About (Story, Principles, Roadmap) */}
-        <AboutSection />
+        <div className="content-auto">
+          <Suspense fallback={<SectionPlaceholder minHeight="800px" />}>
+            <AboutSection />
+          </Suspense>
+        </div>
 
         {/* 9. Contact */}
-        <ContactSection onOpenInquiryModal={() => handleOpenInquiry()} />
+        <div className="content-auto">
+          <Suspense fallback={<SectionPlaceholder minHeight="500px" />}>
+            <ContactSection onOpenInquiryModal={() => handleOpenInquiry()} />
+          </Suspense>
+        </div>
       </main>
 
       {/* 10. Footer */}
       <FooterSection />
 
       {/* Quick Modal Case Study View */}
-      <CaseStudyModal
-        project={modalProject}
-        onClose={() => setModalProject(null)}
-        onSelectProject={navigateToCaseStudy}
-      />
+      {modalProject && (
+        <Suspense fallback={null}>
+          <CaseStudyModal
+            project={modalProject}
+            onClose={() => setModalProject(null)}
+            onSelectProject={navigateToCaseStudy}
+          />
+        </Suspense>
+      )}
 
       {/* Project Inquiry Modal */}
-      <ProjectInquiryModal
-        isOpen={inquiryModalOpen}
-        onClose={() => setInquiryModalOpen(false)}
-        initialService={inquiryService}
-      />
+      {inquiryModalOpen && (
+        <Suspense fallback={null}>
+          <ProjectInquiryModal
+            isOpen={inquiryModalOpen}
+            onClose={() => setInquiryModalOpen(false)}
+            initialService={inquiryService}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }

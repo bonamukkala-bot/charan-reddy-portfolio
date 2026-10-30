@@ -2,9 +2,18 @@ import { useEffect } from 'react';
 import Lenis from 'lenis';
 
 let globalLenis: Lenis | null = null;
+type ScrollCallback = (lenis: Lenis) => void;
+const scrollListeners = new Set<ScrollCallback>();
 
 export function getLenis(): Lenis | null {
   return globalLenis;
+}
+
+export function onLenisScroll(cb: ScrollCallback): () => void {
+  scrollListeners.add(cb);
+  return () => {
+    scrollListeners.delete(cb);
+  };
 }
 
 export function stopLenis() {
@@ -33,6 +42,7 @@ export function useLenis() {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) return;
 
+    // Use smoothWheel: true on desktops, but native touch on mobile/touch devices (do not hijack touch scroll)
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -40,11 +50,23 @@ export function useLenis() {
       gestureOrientation: 'vertical',
       smoothWheel: true,
       wheelMultiplier: 1.0,
-      touchMultiplier: 1.5,
+      touchMultiplier: 1.0,
+      syncTouch: false, // Ensure native touch scrolling on touch devices
     });
 
     globalLenis = lenis;
 
+    lenis.on('scroll', (e) => {
+      scrollListeners.forEach((listener) => {
+        try {
+          listener(e);
+        } catch {
+          // ignore error
+        }
+      });
+    });
+
+    // Single requestAnimationFrame loop driving Lenis
     let rafId: number;
     function raf(time: number) {
       lenis.raf(time);

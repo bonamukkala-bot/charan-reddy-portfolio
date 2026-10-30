@@ -25,6 +25,19 @@ export function WatchMyWorkShowcase() {
   const openModal = (index: number) => {
     lastActiveElementRef.current = document.activeElement as HTMLElement | null;
     setSelectedVideoIndex(index);
+
+    // Dynamically load Instagram embed script on demand when modal opens
+    if (showcaseVideos[index]?.platform === 'instagram') {
+      if (!document.getElementById('instagram-embed-script')) {
+        const script = document.createElement('script');
+        script.id = 'instagram-embed-script';
+        script.src = 'https://www.instagram.com/embed.js';
+        script.async = true;
+        document.body.appendChild(script);
+      } else if ((window as unknown as { instgrm?: { Embeds: { process: () => void } } }).instgrm) {
+        (window as unknown as { instgrm: { Embeds: { process: () => void } } }).instgrm.Embeds.process();
+      }
+    }
   };
 
   const closeModal = useCallback(() => {
@@ -168,8 +181,11 @@ export function WatchMyWorkShowcase() {
                   <img
                     src={`https://img.youtube.com/vi/${video.id}/hqdefault.jpg`}
                     alt={video.title}
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    width={480}
+                    height={360}
                     loading="lazy"
+                    decoding="async"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 ) : (
                   <InstagramPoster videoId={video.id} />
@@ -354,9 +370,12 @@ function InstagramPoster({ videoId }: { videoId: string }) {
         <img
           src={`/reels/${videoId}.jpg`}
           alt=""
+          width={400}
+          height={711}
+          loading="lazy"
+          decoding="async"
           onError={() => setHasError(true)}
           className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          loading="lazy"
         />
       )}
       {/* Dark fallback background with subtle lime accents */}

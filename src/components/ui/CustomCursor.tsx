@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { motion, useSpring } from 'motion/react';
+import { useEffect, useState, useRef } from 'react';
+import { motion } from 'motion/react';
 
 interface CursorState {
   visible: boolean;
@@ -13,13 +13,10 @@ export function CustomCursor() {
     type: 'default',
   });
   const [isTouch, setIsTouch] = useState(true);
-
-  // Smooth spring physics
-  const cursorX = useSpring(-100, { stiffness: 500, damping: 28 });
-  const cursorY = useSpring(-100, { stiffness: 500, damping: 28 });
+  const cursorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Check for touch / fine pointer and reduced motion
+    // Completely disabled on touch devices and for reduced motion
     const isFinePointer = window.matchMedia('(pointer: fine)').matches;
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!isFinePointer || prefersReducedMotion) {
@@ -28,20 +25,53 @@ export function CustomCursor() {
     }
     setIsTouch(false);
 
+    let currentX = -100;
+    let currentY = -100;
+    let targetX = -100;
+    let targetY = -100;
+    let isVisible = false;
+    let rafId = 0;
+
+    const render = () => {
+      // Smooth interpolation: 0.2 factor for crisp responsiveness
+      currentX += (targetX - currentX) * 0.2;
+      currentY += (targetY - currentY) * 0.2;
+
+      if (cursorRef.current) {
+        cursorRef.current.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+      }
+
+      if (Math.abs(targetX - currentX) > 0.1 || Math.abs(targetY - currentY) > 0.1) {
+        rafId = requestAnimationFrame(render);
+      } else {
+        rafId = 0;
+      }
+    };
+
     const handleMouseMove = (e: MouseEvent) => {
-      // If pointer is within window bounds
       if (
         e.clientX < 0 ||
         e.clientY < 0 ||
         e.clientX > window.innerWidth ||
         e.clientY > window.innerHeight
       ) {
-        setCursorState((prev) => ({ ...prev, visible: false }));
+        if (isVisible) {
+          isVisible = false;
+          setCursorState((prev) => ({ ...prev, visible: false }));
+        }
         return;
       }
 
-      cursorX.set(e.clientX);
-      cursorY.set(e.clientY);
+      targetX = e.clientX;
+      targetY = e.clientY;
+
+      if (!rafId) {
+        rafId = requestAnimationFrame(render);
+      }
+
+      if (!isVisible) {
+        isVisible = true;
+      }
 
       const target = e.target as HTMLElement | null;
       if (!target) return;
@@ -50,22 +80,31 @@ export function CustomCursor() {
       const button = target.closest('button, [data-cursor="pointer"]');
       const link = target.closest('a');
 
+      let newType: CursorState['type'] = 'default';
+      let text: string | undefined = undefined;
+
       if (projectCard) {
-        setCursorState({ visible: true, type: 'card', text: 'View' });
+        newType = 'card';
+        text = 'View';
       } else if (button) {
-        setCursorState({ visible: true, type: 'button' });
+        newType = 'button';
       } else if (link) {
-        setCursorState({ visible: true, type: 'link' });
-      } else {
-        setCursorState({ visible: true, type: 'default' });
+        newType = 'link';
       }
+
+      setCursorState((prev) => {
+        if (prev.visible && prev.type === newType && prev.text === text) return prev;
+        return { visible: true, type: newType, text };
+      });
     };
 
     const handleMouseLeave = () => {
+      isVisible = false;
       setCursorState((prev) => ({ ...prev, visible: false }));
     };
 
     const handleMouseEnter = () => {
+      isVisible = true;
       setCursorState((prev) => ({ ...prev, visible: true }));
     };
 
@@ -77,8 +116,9 @@ export function CustomCursor() {
       window.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseleave', handleMouseLeave);
       document.removeEventListener('mouseenter', handleMouseEnter);
+      if (rafId) cancelAnimationFrame(rafId);
     };
-  }, [cursorX, cursorY]);
+  }, []);
 
   if (isTouch || !cursorState.visible) return null;
 
@@ -87,11 +127,11 @@ export function CustomCursor() {
   const isLink = cursorState.type === 'link';
 
   return (
-    <motion.div
-      className="pointer-events-none fixed top-0 left-0 z-[9999] -translate-x-1/2 -translate-y-1/2"
+    <div
+      ref={cursorRef}
+      className="pointer-events-none fixed top-0 left-0 z-[9999] -translate-x-1/2 -translate-y-1/2 will-change-transform"
       style={{
-        x: cursorX,
-        y: cursorY,
+        transform: 'translate3d(-100px, -100px, 0)',
       }}
     >
       {isCard ? (
@@ -116,6 +156,6 @@ export function CustomCursor() {
           <div className="absolute h-5 w-5 rounded-full border border-[#C6FF3D]/40" />
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }
