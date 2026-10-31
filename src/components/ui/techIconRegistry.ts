@@ -105,16 +105,16 @@ async function createLucideIconCanvas(
   const img = new Image();
   img.src = `data:image/svg+xml;utf8,${encodeURIComponent(svgString)}`;
 
-  if ('decode' in img) {
-    try {
+  try {
+    if (typeof (img as any).decode === 'function') {
       await img.decode();
-    } catch {
+    } else {
       await new Promise<void>((resolve) => {
         img.onload = () => resolve();
         img.onerror = () => resolve();
       });
     }
-  } else {
+  } catch {
     await new Promise<void>((resolve) => {
       img.onload = () => resolve();
       img.onerror = () => resolve();

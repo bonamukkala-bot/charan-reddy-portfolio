@@ -78,6 +78,7 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
   }, [messages, isTyping, isOpen]);
 
   const handleOpen = useCallback(() => {
+    window.dispatchEvent(new CustomEvent('close-voice-widget'));
     lastActiveElementRef.current = document.activeElement as HTMLElement | null;
     shouldAutoScrollRef.current = true;
     setIsOpen(true);
@@ -92,6 +93,23 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
       launcherRef.current?.focus();
     }, 50);
   }, [finishCurrentStream]);
+
+  // Two-way mutual exclusivity & external trigger with VoiceAgent
+  useEffect(() => {
+    const handleCloseFromOutside = () => {
+      finishCurrentStream();
+      setIsOpen(false);
+    };
+    const handleOpenFromOutside = () => {
+      handleOpen();
+    };
+    window.addEventListener('close-chat-widget', handleCloseFromOutside);
+    window.addEventListener('open-chat-widget', handleOpenFromOutside);
+    return () => {
+      window.removeEventListener('close-chat-widget', handleCloseFromOutside);
+      window.removeEventListener('open-chat-widget', handleOpenFromOutside);
+    };
+  }, [finishCurrentStream, handleOpen]);
 
   // Move focus to input when opening
   useEffect(() => {

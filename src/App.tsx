@@ -17,6 +17,9 @@ import { allProjects, Project } from './data/projects';
 const ChatWidget = lazy(() =>
   import('./components/chat/ChatWidget').then((m) => ({ default: m.ChatWidget }))
 );
+const VoiceAgent = lazy(() =>
+  import('./components/VoiceAgent').then((m) => ({ default: m.VoiceAgent }))
+);
 const TwoModesSection = lazy(() =>
   import('./components/sections/TwoModesSection').then((m) => ({ default: m.TwoModesSection }))
 );
@@ -343,6 +346,11 @@ export default function App() {
       {/* Portfolio RAG Chatbot */}
       <Suspense fallback={null}>
         <ChatWidget isPageLoaded={isPageLoaded} />
+      </Suspense>
+
+      {/* Portfolio Voice Agent */}
+      <Suspense fallback={null}>
+        <VoiceAgent isPageLoaded={isPageLoaded} />
       </Suspense>
     </div>
   );
