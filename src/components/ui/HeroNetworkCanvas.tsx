@@ -33,6 +33,9 @@ export function HeroNetworkCanvas() {
       height = canvas.height = canvas.parentElement?.clientHeight || window.innerHeight;
     };
 
+    const isTouch = window.matchMedia('(pointer: coarse)').matches;
+    const isSmall = window.innerWidth < 768;
+
     const handleMouseMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
       mouse.x = e.clientX - rect.left;
@@ -40,10 +43,13 @@ export function HeroNetworkCanvas() {
     };
 
     window.addEventListener('resize', handleResize);
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    if (!isTouch) {
+      window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    }
 
-    // Sparse points count based on screen width
-    const numPoints = Math.min(36, Math.floor(width / 38));
+    // Sparse points count based on screen width (lower on mobile to save GPU/battery)
+    const maxPoints = isSmall ? 14 : 36;
+    const numPoints = Math.min(maxPoints, Math.floor(width / (isSmall ? 28 : 38)));
     const points: Point[] = [];
 
     for (let i = 0; i < numPoints; i++) {

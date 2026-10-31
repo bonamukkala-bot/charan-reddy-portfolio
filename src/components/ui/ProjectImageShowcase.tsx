@@ -392,7 +392,7 @@ export function ProjectImageShowcase({
           />
         )}
 
-        {/* Desktop Prev / Next Subtle Chevrons on hover */}
+        {/* Prev / Next Chevrons: always visible on touch/mobile for direct access, hover on desktop */}
         <button
           type="button"
           onClick={(e) => {
@@ -400,7 +400,7 @@ export function ProjectImageShowcase({
             handleManualPrev();
           }}
           aria-label="Previous screenshot"
-          className="absolute left-2.5 top-1/2 -translate-y-1/2 p-2 rounded-full bg-[#0A0A0B]/80 backdrop-blur-sm border border-white/15 text-[#F4F4F0] hover:text-[#C6FF3D] hover:border-[#C6FF3D]/50 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 z-10 hidden sm:flex items-center justify-center shadow-lg"
+          className="absolute left-2 top-1/2 -translate-y-1/2 h-10 w-10 sm:h-9 sm:w-9 rounded-full bg-[#0A0A0B]/85 backdrop-blur-sm border border-white/15 text-[#F4F4F0] hover:text-[#C6FF3D] hover:border-[#C6FF3D]/50 transition-all sm:opacity-0 sm:group-hover:opacity-100 sm:focus:opacity-100 z-10 flex items-center justify-center shadow-lg cursor-pointer"
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
@@ -411,15 +411,15 @@ export function ProjectImageShowcase({
             handleManualNext();
           }}
           aria-label="Next screenshot"
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 p-2 rounded-full bg-[#0A0A0B]/80 backdrop-blur-sm border border-white/15 text-[#F4F4F0] hover:text-[#C6FF3D] hover:border-[#C6FF3D]/50 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 z-10 hidden sm:flex items-center justify-center shadow-lg"
+          className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 sm:h-9 sm:w-9 rounded-full bg-[#0A0A0B]/85 backdrop-blur-sm border border-white/15 text-[#F4F4F0] hover:text-[#C6FF3D] hover:border-[#C6FF3D]/50 transition-all sm:opacity-0 sm:group-hover:opacity-100 sm:focus:opacity-100 z-10 flex items-center justify-center shadow-lg cursor-pointer"
         >
           <ChevronRight className="h-4 w-4" />
         </button>
       </div>
 
-      {/* Pagination Dots Bar: Placed directly beneath the stage with minimal spacing */}
+      {/* Pagination Dots Bar: 44px tap targets for easy touch interaction */}
       <div
-        className="py-2.5 px-3 bg-[#0c0c0f] border-t border-white/5 flex items-center justify-center gap-1.5 select-none shrink-0"
+        className="py-1 px-3 bg-[#0c0c0f] border-t border-white/5 flex items-center justify-center gap-0.5 sm:gap-1.5 select-none shrink-0"
         onClick={(e) => e.stopPropagation()}
       >
         {slides.map((slide, dotIdx) => {
@@ -431,12 +431,16 @@ export function ProjectImageShowcase({
               onClick={() => goToIndex(dotIdx)}
               aria-label={`Go to slide ${dotIdx + 1} of ${slides.length}: ${slide.caption}`}
               aria-current={isActive ? 'true' : undefined}
-              className={`h-1.5 transition-all duration-300 rounded-full focus:outline-none focus:ring-1 focus:ring-[#C6FF3D] ${
-                isActive
-                  ? 'w-6 bg-[#C6FF3D] shadow-[0_0_8px_rgba(198,255,61,0.5)]'
-                  : 'w-1.5 bg-white/20 hover:bg-white/40'
-              }`}
-            />
+              className="min-h-[44px] min-w-[28px] sm:min-w-[32px] flex items-center justify-center focus:outline-none focus-visible:ring-1 focus-visible:ring-[#C6FF3D] rounded-full cursor-pointer"
+            >
+              <span
+                className={`h-1.5 transition-all duration-300 rounded-full pointer-events-none ${
+                  isActive
+                    ? 'w-6 bg-[#C6FF3D] shadow-[0_0_8px_rgba(198,255,61,0.5)]'
+                    : 'w-1.5 bg-white/20 hover:bg-white/40'
+                }`}
+              />
+            </button>
           );
         })}
       </div>
@@ -462,18 +466,18 @@ export function ProjectImageShowcase({
               transition={{ duration: 0.2 }}
               onClick={(e) => e.stopPropagation()}
               data-lenis-prevent="true"
-              className="relative w-[92vw] h-[88vh] max-w-7xl max-h-[88vh] flex flex-col rounded-2xl bg-[#111114] border border-white/15 shadow-2xl overflow-hidden"
+              className="relative w-[96vw] sm:w-[92vw] h-[92dvh] sm:h-[88vh] max-w-7xl max-h-[92dvh] sm:max-h-[88vh] flex flex-col rounded-2xl bg-[#111114] border border-white/15 shadow-2xl overflow-hidden"
               role="dialog"
               aria-modal="true"
               aria-label={`${projectName} fullscreen screenshot`}
             >
               {/* Top Bar inside Lightbox */}
-              <div className="flex items-center justify-between border-b border-white/10 px-5 py-3.5 bg-[#141418] shrink-0">
-                <div className="flex items-center gap-3">
-                  <span className="font-mono text-sm sm:text-base font-bold text-white">
+              <div className="flex items-center justify-between border-b border-white/10 px-4 sm:px-5 py-3 sm:py-3.5 bg-[#141418] shrink-0">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <span className="font-mono text-xs sm:text-base font-bold text-white truncate max-w-[200px] sm:max-w-none">
                     {currentSlide.caption}
                   </span>
-                  <span className="font-mono text-xs text-[#C6FF3D] bg-[#C6FF3D]/10 px-2 py-0.5 rounded border border-[#C6FF3D]/20">
+                  <span className="font-mono text-[10px] sm:text-xs text-[#C6FF3D] bg-[#C6FF3D]/10 px-2 py-0.5 rounded border border-[#C6FF3D]/20">
                     {currentIndex + 1} of {slides.length}
                   </span>
                 </div>
@@ -482,14 +486,14 @@ export function ProjectImageShowcase({
                   type="button"
                   onClick={() => setIsLightboxOpen(false)}
                   aria-label="Close lightbox"
-                  className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 text-[#A1A1AA] hover:border-white/30 hover:text-white transition-colors"
+                  className="flex h-11 w-11 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-white/15 text-[#A1A1AA] hover:border-white/30 hover:text-white transition-colors cursor-pointer"
                 >
                   <X className="h-4 w-4" />
                 </button>
               </div>
 
               {/* Lightbox Image Container: Contained and uncropped */}
-              <div className="relative flex-1 min-h-0 w-full flex items-center justify-center p-3 sm:p-6 bg-[#070709] overflow-hidden">
+              <div className="relative flex-1 min-h-0 w-full flex items-center justify-center p-2 sm:p-6 bg-[#070709] overflow-hidden">
                 <img
                   src={currentSlide.src}
                   alt={currentSlide.alt}
@@ -501,9 +505,9 @@ export function ProjectImageShowcase({
                   type="button"
                   onClick={handleManualPrev}
                   aria-label="Previous screenshot"
-                  className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/85 border border-white/20 text-white hover:text-[#C6FF3D] hover:border-[#C6FF3D]/50 transition-all shadow-xl"
+                  className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 min-h-[44px] min-w-[44px] p-2.5 sm:p-3 rounded-full bg-black/85 border border-white/20 text-white hover:text-[#C6FF3D] hover:border-[#C6FF3D]/50 transition-all shadow-xl flex items-center justify-center cursor-pointer"
                 >
-                  <ChevronLeft className="h-6 w-6" />
+                  <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
                 </button>
 
                 {/* Next Button in Lightbox */}
@@ -511,9 +515,9 @@ export function ProjectImageShowcase({
                   type="button"
                   onClick={handleManualNext}
                   aria-label="Next screenshot"
-                  className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/85 border border-white/20 text-white hover:text-[#C6FF3D] hover:border-[#C6FF3D]/50 transition-all shadow-xl"
+                  className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 min-h-[44px] min-w-[44px] p-2.5 sm:p-3 rounded-full bg-black/85 border border-white/20 text-white hover:text-[#C6FF3D] hover:border-[#C6FF3D]/50 transition-all shadow-xl flex items-center justify-center cursor-pointer"
                 >
-                  <ChevronRight className="h-6 w-6" />
+                  <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
                 </button>
               </div>
 

@@ -145,20 +145,20 @@ export function ProjectInquiryModal({ isOpen, onClose, initialService }: Project
           aria-labelledby="inquiry-modal-title"
         >
           {/* Header */}
-          <div className="flex-shrink-0 flex items-center justify-between border-b border-white/10 px-6 py-4 bg-[#141418]">
+          <div className="flex-shrink-0 flex items-center justify-between border-b border-white/10 px-5 sm:px-6 py-3.5 sm:py-4 bg-[#141418] pt-[max(0.875rem,env(safe-area-inset-top,0px))] sm:pt-4">
             <div>
               <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-[#C6FF3D]">
                 <span>Start a Project</span>
                 <span className="text-white/20">·</span>
                 <span>{siteConfig.contact.responseSpeed}</span>
               </div>
-              <h2 id="inquiry-modal-title" className="font-display text-xl sm:text-2xl font-bold tracking-tight text-[#F4F4F0] mt-0.5">
+              <h2 id="inquiry-modal-title" className="font-display text-lg sm:text-2xl font-bold tracking-tight text-[#F4F4F0] mt-0.5">
                 Let’s ship something real.
               </h2>
             </div>
             <button
               onClick={onClose}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-[#A1A1AA] hover:text-white hover:border-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6FF3D]"
+              className="flex h-11 w-11 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-white/10 text-[#A1A1AA] hover:text-white hover:border-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6FF3D] cursor-pointer"
               aria-label="Close dialog"
             >
               <X className="h-4 w-4" />
@@ -172,7 +172,7 @@ export function ProjectInquiryModal({ isOpen, onClose, initialService }: Project
             data-lenis-prevent="true"
             data-lenis-prevent-wheel="true"
             data-lenis-prevent-touch="true"
-            className="flex-1 min-h-0 overflow-y-auto overscroll-contain focus-visible:outline-none px-6 py-6 sm:px-8 space-y-4"
+            className="flex-1 min-h-0 overflow-y-auto overscroll-contain focus-visible:outline-none px-5 py-5 sm:px-8 space-y-4"
             style={{
               WebkitOverflowScrolling: 'touch',
               overscrollBehavior: 'contain',
@@ -200,10 +200,11 @@ export function ProjectInquiryModal({ isOpen, onClose, initialService }: Project
                       <input
                         type="text"
                         required
+                        autoComplete="name"
                         placeholder="e.g. Rahul Sharma"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full rounded-lg border border-white/10 bg-[#16161A] px-3.5 py-2.5 text-sm text-[#F4F4F0] placeholder-[#8A8A92]/50 focus:border-[#C6FF3D] focus:outline-none focus:ring-1 focus:ring-[#C6FF3D]"
+                        className="w-full rounded-lg border border-white/10 bg-[#16161A] px-3.5 py-2.5 text-base sm:text-sm text-[#F4F4F0] placeholder-[#8A8A92]/50 focus:border-[#C6FF3D] focus:outline-none focus:ring-1 focus:ring-[#C6FF3D]"
                       />
                     </div>
                     <div>
@@ -213,10 +214,12 @@ export function ProjectInquiryModal({ isOpen, onClose, initialService }: Project
                       <input
                         type="email"
                         required
+                        autoComplete="email"
+                        inputMode="email"
                         placeholder="rahul@company.com"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full rounded-lg border border-white/10 bg-[#16161A] px-3.5 py-2.5 text-sm text-[#F4F4F0] placeholder-[#8A8A92]/50 focus:border-[#C6FF3D] focus:outline-none focus:ring-1 focus:ring-[#C6FF3D]"
+                        className="w-full rounded-lg border border-white/10 bg-[#16161A] px-3.5 py-2.5 text-base sm:text-sm text-[#F4F4F0] placeholder-[#8A8A92]/50 focus:border-[#C6FF3D] focus:outline-none focus:ring-1 focus:ring-[#C6FF3D]"
                       />
                     </div>
                   </div>
@@ -229,7 +232,7 @@ export function ProjectInquiryModal({ isOpen, onClose, initialService }: Project
                       <select
                         value={formData.projectType}
                         onChange={(e) => setFormData({ ...formData, projectType: e.target.value })}
-                        className="w-full rounded-lg border border-white/10 bg-[#16161A] px-3.5 py-2.5 text-sm text-[#F4F4F0] focus:border-[#C6FF3D] focus:outline-none focus:ring-1 focus:ring-[#C6FF3D]"
+                        className="w-full rounded-lg border border-white/10 bg-[#16161A] px-3.5 py-2.5 text-base sm:text-sm text-[#F4F4F0] focus:border-[#C6FF3D] focus:outline-none focus:ring-1 focus:ring-[#C6FF3D]"
                       >
                         <option value="AI Chatbot & Agent">AI Chatbot & Agent</option>
                         <option value="Business Website / SEO">Business Website / SEO</option>
@@ -246,7 +249,7 @@ export function ProjectInquiryModal({ isOpen, onClose, initialService }: Project
                       <select
                         value={formData.budgetRange}
                         onChange={(e) => setFormData({ ...formData, budgetRange: e.target.value })}
-                        className="w-full rounded-lg border border-white/10 bg-[#16161A] px-3.5 py-2.5 text-sm text-[#F4F4F0] focus:border-[#C6FF3D] focus:outline-none focus:ring-1 focus:ring-[#C6FF3D]"
+                        className="w-full rounded-lg border border-white/10 bg-[#16161A] px-3.5 py-2.5 text-base sm:text-sm text-[#F4F4F0] focus:border-[#C6FF3D] focus:outline-none focus:ring-1 focus:ring-[#C6FF3D]"
                       >
                         <option value="₹15,000 – ₹30,000">₹15,000 – ₹30,000</option>
                         <option value="₹30,000 – ₹75,000">₹30,000 – ₹75,000</option>
@@ -267,11 +270,11 @@ export function ProjectInquiryModal({ isOpen, onClose, initialService }: Project
                       placeholder="Briefly describe what you need built, existing systems, and target delivery timeframe..."
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="w-full rounded-lg border border-white/10 bg-[#16161A] px-3.5 py-2.5 text-sm text-[#F4F4F0] placeholder-[#8A8A92]/50 focus:border-[#C6FF3D] focus:outline-none focus:ring-1 focus:ring-[#C6FF3D]"
+                      className="w-full rounded-lg border border-white/10 bg-[#16161A] px-3.5 py-2.5 text-base sm:text-sm text-[#F4F4F0] placeholder-[#8A8A92]/50 focus:border-[#C6FF3D] focus:outline-none focus:ring-1 focus:ring-[#C6FF3D]"
                     />
                   </div>
 
-                  <div className="pt-2 flex items-center justify-between">
+                  <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                     <div className="text-[11px] font-mono text-[#A1A1AA]">
                       {hasWhatsapp ? (
                         <>
@@ -280,7 +283,7 @@ export function ProjectInquiryModal({ isOpen, onClose, initialService }: Project
                             href={`https://wa.me/${siteConfig.contact.whatsappNumber}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-[#C6FF3D] underline"
+                            className="text-[#C6FF3D] underline inline-block py-1"
                           >
                             Chat directly
                           </a>
@@ -293,7 +296,7 @@ export function ProjectInquiryModal({ isOpen, onClose, initialService }: Project
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="inline-flex items-center gap-2 rounded-full bg-[#C6FF3D] px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#0A0A0B] hover:bg-[#d4ff66] transition-colors disabled:opacity-50"
+                      className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-[#C6FF3D] px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#0A0A0B] hover:bg-[#d4ff66] transition-colors disabled:opacity-50 cursor-pointer"
                     >
                       <span>{isSubmitting ? 'Sending...' : 'Send Inquiry'}</span>
                       <Send className="h-3.5 w-3.5" />

@@ -7,9 +7,13 @@ import { getLenis } from '../../hooks/useLenis';
 
 interface ChatWidgetProps {
   isPageLoaded?: boolean;
+  isOverlayOpen?: boolean;
 }
 
-export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
+export function ChatWidget({
+  isPageLoaded = true,
+  isOverlayOpen = false,
+}: ChatWidgetProps) {
   const [isOpen, setIsOpen] = useState(false);
   const launcherRef = useRef<HTMLButtonElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -138,6 +142,13 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
     };
   }, [finishCurrentStream, handleOpen]);
 
+  // Hide or close if an overlay/modal/mobile-menu opens
+  useEffect(() => {
+    if (isOverlayOpen && isOpen) {
+      handleClose();
+    }
+  }, [isOverlayOpen, isOpen, handleClose]);
+
   // Move focus to input when opening
   useEffect(() => {
     if (isOpen) {
@@ -220,7 +231,7 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
       {/* ============================================================== */}
       {/* 1. LAUNCHER BUTTON                                             */}
       {/* ============================================================== */}
-      {!isOpen && isPageLoaded && (
+      {!isOpen && isPageLoaded && !isOverlayOpen && (
         <div
           className="fixed right-5 sm:right-8 z-[70] flex items-center gap-2 select-none"
           style={{

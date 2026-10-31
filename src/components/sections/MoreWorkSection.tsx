@@ -62,7 +62,7 @@ export function MoreWorkSection({ onSelectProject }: MoreWorkSectionProps) {
                 <button
                   key={cat}
                   onClick={() => setActiveFilter(cat)}
-                  className={`relative px-3.5 py-1.5 font-mono text-xs font-medium rounded-lg transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C6FF3D] ${
+                  className={`relative px-3.5 py-2 sm:py-1.5 min-h-[44px] inline-flex items-center justify-center font-mono text-xs font-medium rounded-lg transition-colors whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C6FF3D] ${
                     isSelected ? 'text-[#0A0A0B] font-semibold' : 'text-[#A1A1AA] hover:text-[#F4F4F0]'
                   }`}
                 >
@@ -120,15 +120,15 @@ export function MoreWorkSection({ onSelectProject }: MoreWorkSectionProps) {
                     {project.title.slice(0, 3)}
                   </div>
 
-                  {/* Action links */}
-                  <div className="relative z-10 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                  {/* Action links with 44px tap target padding */}
+                  <div className="relative z-10 flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                     {project.liveUrl && (
                       <a
                         href={project.liveUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={`Live site for ${project.title}`}
-                        className="text-[#A1A1AA] hover:text-[#C6FF3D] transition-colors p-1"
+                        className="text-[#A1A1AA] hover:text-[#C6FF3D] transition-colors h-11 w-11 flex items-center justify-center rounded-lg hover:bg-white/5 cursor-pointer"
                       >
                         <ExternalLink className="h-4 w-4" />
                       </a>
@@ -139,7 +139,7 @@ export function MoreWorkSection({ onSelectProject }: MoreWorkSectionProps) {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={`GitHub repo for ${project.title}`}
-                        className="text-[#A1A1AA] hover:text-[#C6FF3D] transition-colors p-1"
+                        className="text-[#A1A1AA] hover:text-[#C6FF3D] transition-colors h-11 w-11 flex items-center justify-center rounded-lg hover:bg-white/5 cursor-pointer"
                       >
                         <Github className="h-4 w-4" />
                       </a>

@@ -61,13 +61,13 @@ export function HeroSection({ onOpenContactModal, onExploreWork, isReady = true 
   return (
     <section
       id="hero"
-      className="relative min-h-screen w-full overflow-hidden bg-[#0A0A0B] bg-grain pt-28 pb-10 flex flex-col justify-between"
+      className="relative min-h-[100dvh] w-full overflow-hidden bg-[#0A0A0B] bg-grain pt-24 sm:pt-28 pb-8 sm:pb-10 flex flex-col justify-between"
     >
       {/* Node Network Canvas in background */}
       <HeroNetworkCanvas />
 
       {/* Main Container */}
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-6 md:px-10 my-auto">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 md:px-10 my-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 items-center min-h-[72vh]">
           {/* Left Column: 6.5 Cols - Clean Uncluttered Dark Space */}
           <div className="lg:col-span-7 flex flex-col items-start z-30 pt-4 lg:pt-0">
@@ -85,7 +85,7 @@ export function HeroSection({ onOpenContactModal, onExploreWork, isReady = true 
             </motion.div>
 
             {/* Main Headline with Masked Rising Lines and Animated Underline */}
-            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-[#F4F4F0] leading-[1.08] max-w-2xl text-balance">
+            <h1 className="font-display text-[clamp(2.15rem,7.5vw,4.5rem)] font-bold tracking-tight text-[#F4F4F0] leading-[1.08] max-w-2xl text-balance">
               <span className="block overflow-hidden pb-1">
                 <motion.span
                   className="block"
@@ -164,12 +164,12 @@ export function HeroSection({ onOpenContactModal, onExploreWork, isReady = true 
               initial={{ opacity: 0, y: 18 }}
               animate={isReady ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
               transition={{ duration: 0.5, delay: 0.40 }}
-              className="mt-7 flex flex-wrap items-center gap-4"
+              className="mt-6 sm:mt-7 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto"
             >
               <button
                 onClick={onExploreWork}
                 data-cursor="pointer"
-                className="group relative inline-flex items-center gap-2 rounded-full bg-[#C6FF3D] px-6 sm:px-7 py-3 text-xs sm:text-sm font-semibold tracking-wider text-[#0A0A0B] uppercase transition-all duration-200 hover:bg-[#d4ff66] hover:shadow-[0_0_28px_rgba(198,255,61,0.4)] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6FF3D]"
+                className="group relative inline-flex items-center justify-center gap-2 rounded-full bg-[#C6FF3D] px-6 sm:px-7 py-3 text-xs sm:text-sm font-semibold tracking-wider text-[#0A0A0B] uppercase transition-all duration-200 hover:bg-[#d4ff66] hover:shadow-[0_0_28px_rgba(198,255,61,0.4)] active:scale-95 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6FF3D]"
               >
                 <span>View my work</span>
                 <ArrowDown className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" />
@@ -178,7 +178,7 @@ export function HeroSection({ onOpenContactModal, onExploreWork, isReady = true 
               <button
                 onClick={onOpenContactModal}
                 data-cursor="pointer"
-                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 sm:px-7 py-3 text-xs sm:text-sm font-semibold tracking-wider text-[#F4F4F0] uppercase backdrop-blur-sm transition-all duration-200 hover:border-[#C6FF3D]/60 hover:bg-white/10 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6FF3D]"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 sm:px-7 py-3 text-xs sm:text-sm font-semibold tracking-wider text-[#F4F4F0] uppercase backdrop-blur-sm transition-all duration-200 hover:border-[#C6FF3D]/60 hover:bg-white/10 active:scale-95 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6FF3D]"
               >
                 <span>Hire me</span>
                 <ArrowUpRight className="h-4 w-4 text-[#C6FF3D]" />
@@ -187,10 +187,10 @@ export function HeroSection({ onOpenContactModal, onExploreWork, isReady = true 
           </div>
 
           {/* Right Column: 5.5 Cols - Stage with Giant Outlined CHARAN + Photo Overlap */}
-          <div className="lg:col-span-5 relative flex items-end justify-center lg:justify-end min-h-[460px] md:min-h-[580px] lg:min-h-[72vh]">
+          <div className="lg:col-span-5 relative flex items-end justify-center lg:justify-end min-h-[380px] sm:min-h-[480px] md:min-h-[580px] lg:min-h-[72vh] mt-4 lg:mt-0">
             {/* Radial Lime Glow behind Subject */}
             <div
-              className="pointer-events-none absolute right-[10%] top-[25%] -z-5 h-[360px] w-[360px] md:h-[440px] md:w-[440px] rounded-full bg-[#C6FF3D]/12 blur-[100px] transition-transform duration-500 ease-out"
+              className="pointer-events-none absolute right-[10%] top-[25%] -z-5 h-[280px] w-[280px] sm:h-[360px] sm:w-[360px] md:h-[440px] md:w-[440px] rounded-full bg-[#C6FF3D]/12 blur-[80px] sm:blur-[100px] transition-transform duration-500 ease-out"
               style={{ transform: parallaxGlow }}
             />
 
@@ -214,13 +214,13 @@ export function HeroSection({ onOpenContactModal, onExploreWork, isReady = true 
               </span>
             </div>
 
-            {/* Cutout Photo - Breaking out of any box, 85vh tall, feathering at waist */}
+            {/* Cutout Photo */}
             <div
               className="relative z-10 w-full flex justify-center items-end transition-transform duration-300 ease-out"
               style={{ transform: parallaxPhoto }}
             >
               <div
-                className="relative flex justify-center items-end max-w-[420px] sm:max-w-[480px] lg:max-w-[540px] w-full"
+                className="relative flex justify-center items-end max-w-[340px] sm:max-w-[420px] md:max-w-[480px] lg:max-w-[540px] w-full"
                 style={{
                   maskImage: 'linear-gradient(to bottom, black 65%, transparent 100%)',
                   WebkitMaskImage: 'linear-gradient(to bottom, black 65%, transparent 100%)',
@@ -229,7 +229,7 @@ export function HeroSection({ onOpenContactModal, onExploreWork, isReady = true 
                 <img
                   src="/images/charan-hero-cutout.png"
                   alt="Charan (Bonamukkala Charan Reddy) - Generative AI Engineer"
-                  className="h-[62vh] sm:h-[72vh] md:h-[82vh] lg:h-[86vh] w-auto max-w-none object-contain object-bottom filter contrast-[1.04]"
+                  className="h-[52vh] sm:h-[68vh] md:h-[78vh] lg:h-[86vh] w-auto max-w-full object-contain object-bottom filter contrast-[1.04]"
                   width="700"
                   height="960"
                   loading="eager"
@@ -242,23 +242,23 @@ export function HeroSection({ onOpenContactModal, onExploreWork, isReady = true 
                 initial={{ opacity: 0, x: -16 }}
                 animate={isReady ? { opacity: 1, x: 0 } : { opacity: 0, x: -16 }}
                 transition={{ duration: 0.5, delay: 0.48 }}
-                className="absolute top-10 -left-2 sm:-left-4 z-20 flex items-center gap-2 rounded-full border border-white/10 bg-[#111114]/90 px-3 py-1.5 shadow-xl backdrop-blur-md"
+                className="absolute top-2 left-0 sm:-left-4 sm:top-10 z-20 flex items-center gap-2 rounded-full border border-white/10 bg-[#111114]/90 px-2.5 sm:px-3 py-1.5 shadow-xl backdrop-blur-md"
               >
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#C6FF3D] opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-[#C6FF3D]" />
                 </span>
-                <span className="font-mono text-[11px] font-medium text-[#F4F4F0]">
+                <span className="font-mono text-[10px] sm:text-[11px] font-medium text-[#F4F4F0]">
                   {siteConfig.status.openForWorkLabel}
                 </span>
               </motion.div>
 
-              {/* Floating Status Chip 2: Now building */}
+              {/* Floating Status Chip 2: Now building (Desktop/Tablet only) */}
               <motion.div
                 initial={{ opacity: 0, x: 16 }}
                 animate={isReady ? { opacity: 1, x: 0 } : { opacity: 0, x: 16 }}
                 transition={{ duration: 0.5, delay: 0.56 }}
-                className="absolute bottom-28 -right-2 sm:-right-4 z-20 max-w-[210px] rounded-xl border border-white/10 bg-[#111114]/90 p-2.5 shadow-xl backdrop-blur-md"
+                className="hidden sm:block absolute bottom-28 -right-2 sm:-right-4 z-20 max-w-[210px] rounded-xl border border-white/10 bg-[#111114]/90 p-2.5 shadow-xl backdrop-blur-md"
               >
                 <div className="flex items-center gap-1.5 font-mono text-[10px] text-[#A1A1AA] uppercase">
                   <Sparkles className="h-3 w-3 text-[#C6FF3D]" />
@@ -274,13 +274,13 @@ export function HeroSection({ onOpenContactModal, onExploreWork, isReady = true 
                 initial={{ opacity: 0, y: 12 }}
                 animate={isReady ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
                 transition={{ duration: 0.5, delay: 0.64 }}
-                className="absolute -bottom-2 left-4 sm:left-8 z-20 flex items-center gap-2 rounded-lg border border-[#C6FF3D]/30 bg-[#16161A]/95 px-3 py-1.5 shadow-lg backdrop-blur-md"
+                className="absolute -bottom-2 left-2 sm:left-8 z-20 flex items-center gap-2 rounded-lg border border-[#C6FF3D]/30 bg-[#16161A]/95 px-2.5 sm:px-3 py-1.5 shadow-lg backdrop-blur-md text-[11px] sm:text-xs"
               >
-                <span className="font-display text-xs font-medium text-[#C6FF3D]">
+                <span className="font-display font-medium text-[#C6FF3D]">
                   {siteConfig.status.greetingTelugu}
                 </span>
                 <span className="text-white/20">|</span>
-                <span className="font-mono text-[11px] text-[#A1A1AA]">
+                <span className="font-mono text-[10px] sm:text-[11px] text-[#A1A1AA]">
                   {siteConfig.status.languages}
                 </span>
               </motion.div>

@@ -332,7 +332,7 @@ export function WatchMyWorkShowcase() {
               }}
               className={`flex-none snap-start flex flex-col justify-between ${
                 isYouTube
-                  ? 'w-[498px] sm:w-[604px]'
+                  ? 'w-[min(498px,calc(100vw-3rem))] sm:w-[604px]'
                   : 'w-[158px] sm:w-[191px]'
               }`}
             >
@@ -558,7 +558,7 @@ export function WatchMyWorkShowcase() {
                         type="button"
                         onClick={handlePrevVideo}
                         aria-label="Previous video"
-                        className="flex h-9 w-9 items-center justify-center rounded-full bg-[#111114] text-white/80 hover:text-[#C6FF3D] hover:border-[#C6FF3D] border border-white/20 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C6FF3D]"
+                        className="flex h-11 w-11 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-[#111114] text-white/80 hover:text-[#C6FF3D] hover:border-[#C6FF3D] border border-white/20 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C6FF3D] cursor-pointer"
                       >
                         <ChevronLeft className="h-4 w-4" />
                       </button>
@@ -566,7 +566,7 @@ export function WatchMyWorkShowcase() {
                         type="button"
                         onClick={handleNextVideo}
                         aria-label="Next video"
-                        className="flex h-9 w-9 items-center justify-center rounded-full bg-[#111114] text-white/80 hover:text-[#C6FF3D] hover:border-[#C6FF3D] border border-white/20 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C6FF3D]"
+                        className="flex h-11 w-11 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-[#111114] text-white/80 hover:text-[#C6FF3D] hover:border-[#C6FF3D] border border-white/20 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C6FF3D] cursor-pointer"
                       >
                         <ChevronRight className="h-4 w-4" />
                       </button>
@@ -579,7 +579,7 @@ export function WatchMyWorkShowcase() {
                     type="button"
                     onClick={closeModal}
                     aria-label="Close modal player"
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-[#111114] text-white/90 hover:text-[#C6FF3D] border border-white/20 hover:border-[#C6FF3D] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6FF3D]"
+                    className="flex h-11 w-11 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-[#111114] text-white/90 hover:text-[#C6FF3D] border border-white/20 hover:border-[#C6FF3D] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6FF3D] cursor-pointer"
                   >
                     <X className="h-4 w-4" />
                   </button>

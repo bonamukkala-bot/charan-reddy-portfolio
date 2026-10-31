@@ -86,7 +86,7 @@ export function TerminalScrollBar({ isReady = true }: TerminalScrollBarProps) {
             hasFlashedAtEnd = false;
             const remainingPct = Math.max(0, 100 - pct);
             const remainingPadded = remainingPct < 10 ? `0${remainingPct}` : `${remainingPct}`;
-            remainingTextRef.current.innerHTML = `${remainingPadded}% <span class="text-zinc-500">remaining</span>`;
+            remainingTextRef.current.innerHTML = `${remainingPadded}% <span class="text-zinc-500 hidden sm:inline">rem</span>`;
           }
         }
       }
@@ -119,13 +119,21 @@ export function TerminalScrollBar({ isReady = true }: TerminalScrollBarProps) {
   }, []);
 
   return (
-    <div
-      ref={containerRef}
-      aria-hidden="true"
-      className={`fixed top-0 left-0 right-0 z-[60] h-[22px] md:h-[34px] bg-[#0A0A0B] border-b border-white/10 px-3 md:px-6 pointer-events-none select-none flex items-center transition-opacity duration-500 ${
-        isReady ? 'opacity-100' : 'opacity-0'
-      }`}
-    >
+    <>
+      {/* Notch filler on iOS safe areas */}
+      <div
+        className="fixed top-0 left-0 right-0 z-[60] bg-[#0A0A0B] pointer-events-none"
+        style={{ height: 'env(safe-area-inset-top, 0px)' }}
+        aria-hidden="true"
+      />
+      <div
+        ref={containerRef}
+        aria-hidden="true"
+        style={{ top: 'env(safe-area-inset-top, 0px)' }}
+        className={`fixed left-0 right-0 z-[60] h-[22px] md:h-[34px] bg-[#0A0A0B] border-b border-white/10 px-2.5 sm:px-3 md:px-6 pointer-events-none select-none flex items-center transition-opacity duration-500 ${
+          isReady ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-2.5 md:gap-4 font-mono text-[10px] md:text-xs">
         {/* Left Indicator: Arrow + Percentage */}
         <div className="flex items-center gap-1 shrink-0 text-[#C6FF3D] font-bold tabular-nums w-auto md:w-[62px]">
@@ -173,5 +181,6 @@ export function TerminalScrollBar({ isReady = true }: TerminalScrollBarProps) {
         </div>
       </div>
     </div>
+    </>
   );
 }

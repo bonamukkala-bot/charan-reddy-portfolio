@@ -5,6 +5,7 @@ import { useScrollLock } from '../hooks/useScrollLock';
 
 interface VoiceAgentProps {
   isPageLoaded?: boolean;
+  isOverlayOpen?: boolean;
 }
 
 function formatRemainingTime(seconds: number): string {
@@ -13,7 +14,10 @@ function formatRemainingTime(seconds: number): string {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
-export function VoiceAgent({ isPageLoaded = true }: VoiceAgentProps) {
+export function VoiceAgent({
+  isPageLoaded = true,
+  isOverlayOpen = false,
+}: VoiceAgentProps) {
   const {
     isOpen,
     callState,
@@ -133,6 +137,13 @@ export function VoiceAgent({ isPageLoaded = true }: VoiceAgentProps) {
     }
   }, [isOpen, callState]);
 
+  // Hide or close if an overlay/modal/mobile-menu opens
+  useEffect(() => {
+    if (isOverlayOpen && isOpen) {
+      closePanel();
+    }
+  }, [isOverlayOpen, isOpen, closePanel]);
+
   return (
     <>
       {/* ============================================================== */}
@@ -141,7 +152,7 @@ export function VoiceAgent({ isPageLoaded = true }: VoiceAgentProps) {
       {/* Chatbot is at bottom 1.5rem (24px). Chatbot height is 56px.     */}
       {/* Voice button is positioned at bottom 1.5rem + 4.25rem = 5.75rem */}
       {/* ============================================================== */}
-      {!isOpen && isPageLoaded && (
+      {!isOpen && isPageLoaded && !isOverlayOpen && (
         <div
           className="fixed right-5 sm:right-8 z-[70] flex items-center gap-2 select-none"
           style={{

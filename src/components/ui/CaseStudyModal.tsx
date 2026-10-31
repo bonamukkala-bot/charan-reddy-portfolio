@@ -108,8 +108,8 @@ export function CaseStudyModal({ project, onClose }: CaseStudyModalProps) {
           aria-labelledby="case-study-title"
         >
           {/* Header (flex-shrink-0, sticky top) */}
-          <div className="flex-shrink-0 flex items-center justify-between border-b border-white/10 px-6 py-4 bg-[#141418]">
-            <div className="flex items-center gap-3">
+          <div className="flex-shrink-0 flex items-center justify-between border-b border-white/10 px-5 sm:px-6 py-3.5 sm:py-4 bg-[#141418] pt-[max(0.875rem,env(safe-area-inset-top,0px))] sm:pt-4">
+            <div className="flex items-center gap-2 sm:gap-3">
               <span className="font-mono text-xs font-semibold text-[#C6FF3D]">
                 CASE STUDY #{project.indexNumber}
               </span>
@@ -118,7 +118,7 @@ export function CaseStudyModal({ project, onClose }: CaseStudyModalProps) {
             </div>
             <button
               onClick={onClose}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-[#A1A1AA] hover:border-white/30 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6FF3D]"
+              className="flex h-11 w-11 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-white/10 text-[#A1A1AA] hover:border-white/30 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6FF3D] cursor-pointer"
               aria-label="Close case study dialog"
             >
               <X className="h-4 w-4" />
@@ -176,7 +176,7 @@ export function CaseStudyModal({ project, onClose }: CaseStudyModalProps) {
                 <Layers className="h-3.5 w-3.5 text-[#C6FF3D]" />
                 <span>Architecture Flow: {project.architecture.title}</span>
               </div>
-              <div className="w-full">
+              <div className="w-full overflow-x-auto scrollbar-thin">
                 <ProjectDiagramVisual projectId={project.id} />
               </div>
             </div>
@@ -273,13 +273,13 @@ export function CaseStudyModal({ project, onClose }: CaseStudyModalProps) {
           </div>
 
           {/* Footer (flex-shrink-0, stays visible, does NOT overlap content) */}
-          <div className="flex-shrink-0 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 px-6 py-4 bg-[#141418]">
-            <div className="flex items-center gap-3">
+          <div className="flex-shrink-0 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 px-5 sm:px-6 py-3.5 sm:py-4 bg-[#141418]">
+            <div className="flex flex-wrap items-center gap-2.5">
               <a
                 href={project.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-1.5 text-xs font-mono uppercase text-[#F4F4F0] hover:border-[#C6FF3D] hover:text-[#C6FF3D] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C6FF3D]"
+                className="inline-flex min-h-[44px] items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs font-mono uppercase text-[#F4F4F0] hover:border-[#C6FF3D] hover:text-[#C6FF3D] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C6FF3D] cursor-pointer"
               >
                 <Github className="h-3.5 w-3.5" />
                 <span>GitHub Repository</span>
@@ -289,7 +289,7 @@ export function CaseStudyModal({ project, onClose }: CaseStudyModalProps) {
                   href={project.liveUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full bg-[#C6FF3D] px-4 py-1.5 text-xs font-mono font-semibold uppercase text-[#0A0A0B] hover:bg-[#d4ff66] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C6FF3D]"
+                  className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-[#C6FF3D] px-4 py-2 text-xs font-mono font-semibold uppercase text-[#0A0A0B] hover:bg-[#d4ff66] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C6FF3D] cursor-pointer"
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
                   <span>Live Demo</span>
@@ -299,7 +299,7 @@ export function CaseStudyModal({ project, onClose }: CaseStudyModalProps) {
 
             <button
               onClick={onClose}
-              className="text-xs font-mono text-[#A1A1AA] hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C6FF3D] py-1 px-2"
+              className="text-xs font-mono text-[#A1A1AA] hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C6FF3D] min-h-[44px] px-3 flex items-center cursor-pointer"
             >
               Close [ESC]
             </button>

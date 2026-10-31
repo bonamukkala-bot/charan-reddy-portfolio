@@ -42,15 +42,21 @@ export function useLenis() {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) return;
 
-    // Use smoothWheel: true on desktops, but native touch on mobile/touch devices (do not hijack touch scroll)
+    // Detect touch-only environment to ensure native 120Hz momentum scrolling on phones
+    const isTouchDevice =
+      typeof window !== 'undefined' &&
+      ('ontouchstart' in window || navigator.maxTouchPoints > 0) &&
+      window.matchMedia('(pointer: coarse)').matches;
+
+    // Use smoothWheel on desktop, pure native scrolling on touch phones
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
-      smoothWheel: true,
+      smoothWheel: !isTouchDevice,
       wheelMultiplier: 1.0,
-      touchMultiplier: 1.0,
+      touchMultiplier: 0,
       syncTouch: false, // Ensure native touch scrolling on touch devices
     });
 

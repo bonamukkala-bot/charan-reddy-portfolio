@@ -7,6 +7,7 @@ import { TerminalScrollBar } from './TerminalScrollBar';
 interface NavbarProps {
   onOpenContactModal: () => void;
   isReady?: boolean;
+  onMobileMenuToggle?: (isOpen: boolean) => void;
 }
 
 const navItems = [
@@ -17,12 +18,17 @@ const navItems = [
   { label: 'Contact', href: '#contact' },
 ];
 
-export function Navbar({ onOpenContactModal, isReady = true }: NavbarProps) {
+export function Navbar({ onOpenContactModal, isReady = true, onMobileMenuToggle }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [activeSection, setActiveSection] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Notify parent of mobile menu open/close to hide floating widgets
+  useEffect(() => {
+    onMobileMenuToggle?.(mobileMenuOpen);
+  }, [mobileMenuOpen, onMobileMenuToggle]);
 
   // Lock scroll when mobile menu is open
   useScrollLock(mobileMenuOpen);
@@ -99,7 +105,7 @@ export function Navbar({ onOpenContactModal, isReady = true }: NavbarProps) {
 
       {/* Main Sticky Header (offset below TerminalScrollBar) */}
       <header
-        className={`fixed top-[22px] md:top-[34px] left-0 right-0 z-50 transition-all duration-500 ease-out ${
+        className={`fixed top-[calc(env(safe-area-inset-top,0px)+22px)] md:top-[calc(env(safe-area-inset-top,0px)+34px)] left-0 right-0 z-50 transition-all duration-500 ease-out ${
           !isReady
             ? '-translate-y-[calc(100%+34px)] opacity-0 pointer-events-none'
             : hidden
@@ -107,11 +113,11 @@ export function Navbar({ onOpenContactModal, isReady = true }: NavbarProps) {
             : 'translate-y-0 opacity-100'
         } ${
           scrolled
-            ? 'bg-[#0A0A0B]/95 sm:bg-[#0A0A0B]/85 sm:backdrop-blur-md border-b border-white/5 py-3'
-            : 'bg-transparent py-5'
+            ? 'bg-[#0A0A0B]/95 sm:bg-[#0A0A0B]/85 sm:backdrop-blur-md border-b border-white/5 py-2.5 sm:py-3'
+            : 'bg-transparent py-3.5 sm:py-5'
         }`}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-8 px-6 md:px-10">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 sm:gap-8 px-4 sm:px-6 md:px-10">
           {/* Brand Wordmark */}
           <a
             href="#"
@@ -165,10 +171,10 @@ export function Navbar({ onOpenContactModal, isReady = true }: NavbarProps) {
               <ArrowUpRight className="h-3.5 w-3.5" />
             </button>
 
-            {/* Mobile Hamburger */}
+            {/* Mobile Hamburger (44x44px touch target) */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-[#F4F4F0] md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6FF3D]"
+              className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 text-[#F4F4F0] md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6FF3D] active:scale-95"
               aria-label={mobileMenuOpen ? 'Close menu' : 'Open navigation menu'}
               aria-expanded={mobileMenuOpen}
             >
@@ -189,15 +195,17 @@ export function Navbar({ onOpenContactModal, isReady = true }: NavbarProps) {
             data-lenis-prevent="true"
             data-lenis-prevent-wheel="true"
             data-lenis-prevent-touch="true"
-            className="fixed inset-0 z-40 flex flex-col justify-between overflow-y-auto overscroll-contain bg-[#0A0A0B] px-8 pt-24 pb-12 md:hidden"
+            className="fixed inset-0 z-40 flex flex-col justify-between overflow-y-auto overscroll-contain bg-[#0A0A0B]/98 backdrop-blur-xl px-6 sm:px-8 md:hidden"
             style={{
               WebkitOverflowScrolling: 'touch',
               overscrollBehavior: 'contain',
+              paddingTop: 'calc(env(safe-area-inset-top, 0px) + 5.5rem)',
+              paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 2rem)',
             }}
           >
             <div className="flex flex-col gap-6">
               <span className="font-mono text-xs uppercase tracking-widest text-[#A1A1AA]">Navigation</span>
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
                 {navItems.map((item, idx) => (
                   <motion.a
                     key={item.label}
@@ -206,7 +214,7 @@ export function Navbar({ onOpenContactModal, isReady = true }: NavbarProps) {
                     initial={{ opacity: 0, x: -16 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.04 * idx, duration: 0.25 }}
-                    className="font-display text-3xl font-bold tracking-tight text-[#F4F4F0] hover:text-[#C6FF3D] transition-colors"
+                    className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#F4F4F0] hover:text-[#C6FF3D] transition-colors py-2.5 min-h-[44px] flex items-center"
                   >
                     {item.label}
                   </motion.a>
@@ -220,14 +228,14 @@ export function Navbar({ onOpenContactModal, isReady = true }: NavbarProps) {
                   setMobileMenuOpen(false);
                   onOpenContactModal();
                 }}
-                className="flex w-full items-center justify-center gap-2 rounded-full bg-[#C6FF3D] py-3.5 text-sm font-semibold tracking-wide text-[#0A0A0B] uppercase shadow-[0_0_20px_rgba(198,255,61,0.3)]"
+                className="flex w-full items-center justify-center gap-2 rounded-full bg-[#C6FF3D] py-3.5 min-h-[48px] text-sm font-semibold tracking-wide text-[#0A0A0B] uppercase shadow-[0_0_20px_rgba(198,255,61,0.3)] active:scale-98"
               >
                 <span>Hire me / Start a Project</span>
                 <ArrowUpRight className="h-4 w-4" />
               </button>
-              <div className="flex justify-between font-mono text-xs text-[#A1A1AA]">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1 font-mono text-xs text-[#A1A1AA]">
                 <span>Hyderabad, IN (IST)</span>
-                <span>bonamukkalacharan@gmail.com</span>
+                <span className="text-[11px] truncate">bonamukkalacharan@gmail.com</span>
               </div>
             </div>
           </motion.div>

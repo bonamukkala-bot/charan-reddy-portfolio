@@ -6,7 +6,12 @@ export function FooterSection() {
   };
 
   return (
-    <footer className="relative w-full bg-[#0A0A0B] py-12 text-[#A1A1AA]">
+    <footer
+      className="relative w-full bg-[#0A0A0B] text-[#A1A1AA] pt-12"
+      style={{
+        paddingBottom: 'calc(7.5rem + env(safe-area-inset-bottom, 0px))',
+      }}
+    >
       <div className="mx-auto max-w-7xl px-6 md:px-10 flex flex-col sm:flex-row items-center justify-between gap-6">
         {/* Brand & Copyright */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-center sm:text-left">
@@ -16,7 +21,7 @@ export function FooterSection() {
               e.preventDefault();
               scrollToTop();
             }}
-            className="font-display text-lg font-bold text-[#F4F4F0] hover:text-[#C6FF3D] transition-colors"
+            className="font-display text-lg font-bold text-[#F4F4F0] hover:text-[#C6FF3D] transition-colors py-1"
           >
             Charan<span className="text-[#C6FF3D]">.</span>
           </a>
@@ -33,7 +38,7 @@ export function FooterSection() {
 
           <button
             onClick={scrollToTop}
-            className="group flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-[#A1A1AA] hover:border-[#C6FF3D] hover:text-[#C6FF3D] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C6FF3D]"
+            className="group flex h-11 w-11 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-white/10 text-[#A1A1AA] hover:border-[#C6FF3D] hover:text-[#C6FF3D] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C6FF3D] cursor-pointer"
             aria-label="Back to top"
           >
             <ArrowUp className="h-4 w-4 transition-transform group-hover:-translate-y-0.5" />

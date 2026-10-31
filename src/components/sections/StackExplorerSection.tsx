@@ -80,10 +80,22 @@ function getInitials(name: string): string {
 export function StackExplorerSection() {
   const [selectedTech, setSelectedTech] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<TechLayer | 'All'>('All');
+  const [isMobileOrReduced, setIsMobileOrReduced] = useState(false);
 
-  // Prefetch TechSphere immediately when StackExplorerSection mounts
+  // Prefetch TechSphere only on desktop when motion is not reduced
   useEffect(() => {
-    prefetchTechSphere();
+    const check = () => {
+      const isSmall = window.innerWidth < 768;
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const isMob = isSmall || reduced;
+      setIsMobileOrReduced(isMob);
+      if (!isMob) {
+        prefetchTechSphere();
+      }
+    };
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
   }, []);
 
   // Derive tech -> project names mapping strictly from existing project data
@@ -140,6 +152,18 @@ export function StackExplorerSection() {
   const activeProjects = selectedTech ? techMap[selectedTech] || [] : [];
   const usageCount = selectedTech ? (techMap[selectedTech]?.length || 0) : 0;
 
+  const visibleSphereItems = useMemo(() => {
+    if (activeFilter === 'All') return sphereItems;
+    return sphereItems.filter((item) => item.category === activeFilter);
+  }, [sphereItems, activeFilter]);
+
+  const categoryDotColor: Record<Layer, string> = {
+    Build: 'bg-sky-400',
+    AI: 'bg-[#C6FF3D]',
+    Data: 'bg-purple-400',
+    Ship: 'bg-amber-400',
+  };
+
   return (
     <section className="relative w-full border-b border-white/5 bg-[#0A0A0B] py-16 overflow-hidden">
       {/* Stack Explorer Main Container */}
@@ -189,7 +213,7 @@ export function StackExplorerSection() {
                 type="button"
                 onClick={() => setActiveFilter(cat.label as TechLayer | 'All')}
                 aria-pressed={isActive}
-                className={`font-mono text-xs rounded-full px-3.5 sm:px-4 py-1.5 border transition-all duration-200 select-none cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C6FF3D] ${
+                className={`font-mono text-xs rounded-full px-4 py-2 min-h-[44px] inline-flex items-center justify-center border transition-all duration-200 select-none cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#C6FF3D] ${
                   isActive
                     ? 'bg-[#C6FF3D] text-[#0A0A0B] border-[#C6FF3D] font-semibold shadow-[0_0_16px_rgba(198,255,61,0.35)] scale-105'
                     : 'border-white/10 text-[#A1A1AA] bg-white/[0.03] hover:border-white/30 hover:text-white'
@@ -202,22 +226,60 @@ export function StackExplorerSection() {
           })}
         </div>
 
-        {/* 3D Rotating Tech-Sphere Visual (Lazy loaded with static placeholder of matching size) */}
-        <Suspense
-          fallback={
-            <div
-              className="relative aspect-square w-full max-w-[680px] mx-auto rounded-3xl bg-[#0c0c0f] border border-white/5 my-2"
-              aria-hidden="true"
+        {/* Visual: CSS Grid on mobile/reduced motion to avoid Three.js bundle, 3D Rotating Tech-Sphere on desktop */}
+        {isMobileOrReduced ? (
+          <div className="my-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-2.5 max-h-[360px] overflow-y-auto p-1 pr-1.5 scrollbar-thin">
+              {visibleSphereItems.map((item) => {
+                const isSelected = selectedTech === item.name;
+                const dotColor = categoryDotColor[item.category] || 'bg-[#C6FF3D]';
+                return (
+                  <button
+                    key={item.name}
+                    type="button"
+                    onClick={() => setSelectedTech(isSelected ? null : item.name)}
+                    aria-pressed={isSelected}
+                    className={`min-h-[48px] w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border text-left transition-all duration-200 cursor-pointer ${
+                      isSelected
+                        ? 'bg-[#16161c] border-[#C6FF3D] shadow-[0_0_16px_rgba(198,255,61,0.25)] text-[#F4F4F0] scale-[1.01]'
+                        : 'bg-[#111114]/80 border-white/10 hover:border-white/20 text-[#D4D4D8]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span
+                        className={`h-2 w-2 rounded-full shrink-0 ${dotColor} ${
+                          isSelected ? 'animate-pulse' : ''
+                        }`}
+                      />
+                      <span className="font-mono text-xs sm:text-sm font-medium truncate">
+                        {item.name}
+                      </span>
+                    </div>
+                    <span className="font-mono text-[10px] text-[#8A8A92] shrink-0 rounded bg-white/5 px-1.5 py-0.5">
+                      {item.usageCount}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : (
+          <Suspense
+            fallback={
+              <div
+                className="relative aspect-square w-full max-w-[680px] mx-auto rounded-3xl bg-[#0c0c0f] border border-white/5 my-2"
+                aria-hidden="true"
+              />
+            }
+          >
+            <TechSphere
+              items={sphereItems}
+              activeFilter={activeFilter}
+              selectedTech={selectedTech}
+              onSelectTech={setSelectedTech}
             />
-          }
-        >
-          <TechSphere
-            items={sphereItems}
-            activeFilter={activeFilter}
-            selectedTech={selectedTech}
-            onSelectTech={setSelectedTech}
-          />
-        </Suspense>
+          </Suspense>
+        )}
 
         {/* Below Chips: Compact Row of Project Names (Highlights when tech is hovered/tapped) */}
         <div>

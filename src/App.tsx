@@ -90,8 +90,11 @@ export default function App() {
   const [modalProject, setModalProject] = useState<Project | null>(null);
   const [inquiryModalOpen, setInquiryModalOpen] = useState(false);
   const [inquiryService, setInquiryService] = useState<string | undefined>(undefined);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isHeroReady, setIsHeroReady] = useState(false);
   const [isPageLoaded, setIsPageLoaded] = useState(false);
+
+  const isOverlayOpen = inquiryModalOpen || Boolean(modalProject) || isMobileMenuOpen;
 
   // Prefetch StackExplorerSection and TechSphere during idle time after preloader ends and on scroll
   useEffect(() => {
@@ -248,6 +251,7 @@ export default function App() {
       <Navbar
         onOpenContactModal={() => handleOpenInquiry()}
         isReady={isHeroReady}
+        onMobileMenuToggle={setIsMobileMenuOpen}
       />
 
       <main id="main-content">
@@ -345,12 +349,12 @@ export default function App() {
 
       {/* Portfolio RAG Chatbot */}
       <Suspense fallback={null}>
-        <ChatWidget isPageLoaded={isPageLoaded} />
+        <ChatWidget isPageLoaded={isPageLoaded} isOverlayOpen={isOverlayOpen} />
       </Suspense>
 
       {/* Portfolio Voice Agent */}
       <Suspense fallback={null}>
-        <VoiceAgent isPageLoaded={isPageLoaded} />
+        <VoiceAgent isPageLoaded={isPageLoaded} isOverlayOpen={isOverlayOpen} />
       </Suspense>
     </div>
   );

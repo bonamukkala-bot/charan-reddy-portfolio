@@ -52,9 +52,8 @@ export function TwoModesSection() {
   // Check media queries
   useEffect(() => {
     const checkMedia = () => {
-      const isCoarse = window.matchMedia('(pointer: coarse)').matches;
       const isSmall = window.innerWidth < 768;
-      setIsTouchOrSmall(isCoarse || isSmall);
+      setIsTouchOrSmall(isSmall);
 
       const isWide = window.innerWidth >= 1100;
       setIsWideScreen(isWide);
@@ -645,6 +644,7 @@ export function TwoModesSection() {
 
         {/* ============================================================== */}
         {/* HANDLE: Position clamped so it is NEVER cut off at ends        */}
+        {/* Touch target >= 44x44px                                        */}
         {/* ============================================================== */}
         <div
           ref={handleRef}
@@ -658,12 +658,12 @@ export function TwoModesSection() {
           onKeyDown={handleKeyDown}
           style={{
             touchAction: 'none',
-            left: 'clamp(16px, calc(var(--split, 0.5) * 100%), calc(100% - 16px))',
+            left: 'clamp(22px, calc(var(--split, 0.5) * 100%), calc(100% - 22px))',
           }}
-          className="z-40 pointer-events-auto absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#111114] border-2 border-[#C6FF3D] shadow-[0_0_16px_rgba(198,255,61,0.5)] flex items-center justify-center cursor-ew-resize hover:scale-110 active:scale-95 transition-transform duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6FF3D] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0B]"
+          className="z-40 pointer-events-auto absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#111114] border-2 border-[#C6FF3D] shadow-[0_0_16px_rgba(198,255,61,0.5)] flex items-center justify-center cursor-ew-resize hover:scale-105 active:scale-95 transition-transform duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6FF3D] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0B]"
         >
           {/* Grip arrows */}
-          <div className="flex items-center gap-0.5 text-[#C6FF3D] select-none text-[10px] font-mono leading-none">
+          <div className="flex items-center gap-1 text-[#C6FF3D] select-none text-xs font-mono font-bold leading-none">
             <span>‹</span>
             <span>›</span>
           </div>
@@ -676,7 +676,7 @@ export function TwoModesSection() {
           <a
             href="#work"
             onClick={handleScrollToWork}
-            className="font-mono text-xs uppercase tracking-widest text-[#A1A1AA] hover:text-[#C6FF3D] transition-colors flex items-center gap-1.5 cursor-pointer"
+            className="font-mono text-xs uppercase tracking-widest text-[#A1A1AA] hover:text-[#C6FF3D] transition-colors flex items-center gap-1.5 cursor-pointer py-2 px-3"
           >
             <span>SEE THE WORK ↓</span>
           </a>
@@ -684,17 +684,17 @@ export function TwoModesSection() {
       </div>
 
       {/* ============================================================== */}
-      {/* TOUCH / MOBILE VIEW (< 768px or pointer: coarse)               */}
+      {/* TOUCH / MOBILE VIEW (< 768px)                                   */}
       {/* ============================================================== */}
-      <div className="block md:hidden px-6 pt-20 pb-12 flex flex-col items-center">
-        {/* Two-option Segmented Toggle */}
-        <div className="flex items-center p-1 rounded-full bg-[#141418] border border-white/10 mb-8 font-mono text-xs select-none shadow-lg">
+      <div className="block md:hidden px-4 sm:px-6 pt-16 sm:pt-20 pb-12 flex flex-col items-center">
+        {/* Two-option Segmented Toggle (44px min tap targets) */}
+        <div className="flex items-center p-1 rounded-full bg-[#141418] border border-white/10 mb-8 font-mono text-xs select-none shadow-lg max-w-full">
           <button
             type="button"
             onClick={() => handleMobileToggle('ai')}
-            className={`px-4 py-2 rounded-full transition-all duration-200 cursor-pointer ${
+            className={`min-h-[44px] px-4 sm:px-5 py-2.5 rounded-full transition-all duration-200 cursor-pointer flex items-center justify-center font-bold tracking-tight text-[11px] sm:text-xs ${
               activeMobileMode === 'ai'
-                ? 'bg-[#C6FF3D] text-[#0A0A0B] font-bold shadow-[0_0_12px_rgba(198,255,61,0.35)]'
+                ? 'bg-[#C6FF3D] text-[#0A0A0B] shadow-[0_0_12px_rgba(198,255,61,0.35)]'
                 : 'text-[#8A8A92] hover:text-white'
             }`}
           >
@@ -703,9 +703,9 @@ export function TwoModesSection() {
           <button
             type="button"
             onClick={() => handleMobileToggle('builder')}
-            className={`px-4 py-2 rounded-full transition-all duration-200 cursor-pointer ${
+            className={`min-h-[44px] px-4 sm:px-5 py-2.5 rounded-full transition-all duration-200 cursor-pointer flex items-center justify-center font-bold tracking-tight text-[11px] sm:text-xs ${
               activeMobileMode === 'builder'
-                ? 'bg-[#C6FF3D] text-[#0A0A0B] font-bold shadow-[0_0_12px_rgba(198,255,61,0.35)]'
+                ? 'bg-[#C6FF3D] text-[#0A0A0B] shadow-[0_0_12px_rgba(198,255,61,0.35)]'
                 : 'text-[#8A8A92] hover:text-white'
             }`}
           >
