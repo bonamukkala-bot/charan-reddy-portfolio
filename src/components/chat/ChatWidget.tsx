@@ -20,6 +20,9 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
 
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [liveAnnouncement, setLiveAnnouncement] = useState('');
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [showMobileLabel, setShowMobileLabel] = useState(true);
+  const mobileLabelTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -27,6 +30,30 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
     const listener = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
     mq.addEventListener('change', listener);
     return () => mq.removeEventListener('change', listener);
+  }, []);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)');
+    setIsDesktop(mq.matches);
+    const listener = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mq.addEventListener('change', listener);
+    return () => mq.removeEventListener('change', listener);
+  }, []);
+
+  useEffect(() => {
+    if (!isPageLoaded) return;
+    const timer = window.setTimeout(() => {
+      setShowMobileLabel(false);
+    }, 6000);
+    return () => window.clearTimeout(timer);
+  }, [isPageLoaded]);
+
+  const triggerMobileLabel = useCallback(() => {
+    setShowMobileLabel(true);
+    if (mobileLabelTimerRef.current) window.clearTimeout(mobileLabelTimerRef.current);
+    mobileLabelTimerRef.current = window.setTimeout(() => {
+      setShowMobileLabel(false);
+    }, 3500);
   }, []);
 
   const handleStreamTick = useCallback(() => {
@@ -200,17 +227,28 @@ export function ChatWidget({ isPageLoaded = true }: ChatWidgetProps) {
             bottom: 'max(1.5rem, calc(1.5rem + env(safe-area-inset-bottom, 0px)))',
           }}
         >
-          <span
-            aria-hidden="true"
-            className="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full bg-[#121215]/90 border border-[#C6FF3D]/40 text-[#C6FF3D] font-mono text-[11px] font-bold tracking-wider shadow-lg pointer-events-none"
-          >
-            ASK
-          </span>
+          <AnimatePresence>
+            {(isDesktop || showMobileLabel) && (
+              <motion.span
+                aria-hidden="true"
+                initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.92, x: 6 }}
+                animate={{ opacity: 1, scale: 1, x: 0 }}
+                exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.92, x: 6 }}
+                transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
+                className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#121215]/90 border border-[#C6FF3D]/40 text-[#C6FF3D] font-mono text-[11px] font-bold tracking-wider shadow-lg pointer-events-none whitespace-nowrap"
+              >
+                CHAT WITH ME
+              </motion.span>
+            )}
+          </AnimatePresence>
           <button
             ref={launcherRef}
             type="button"
             onClick={handleOpen}
-            aria-label="Ask about Charan"
+            onMouseEnter={triggerMobileLabel}
+            onFocus={triggerMobileLabel}
+            onTouchStart={triggerMobileLabel}
+            aria-label="Chat with Charan, text chat"
             className="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-[#C6FF3D] hover:bg-[#d4ff66] text-[#0A0A0B] shadow-[0_4px_24px_rgba(198,255,61,0.45)] flex items-center justify-center transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6FF3D] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0B]"
           >
             <svg

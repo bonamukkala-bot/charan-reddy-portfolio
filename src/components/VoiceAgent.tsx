@@ -35,6 +35,10 @@ export function VoiceAgent({ isPageLoaded = true }: VoiceAgentProps) {
   const transcriptBottomRef = useRef<HTMLDivElement | null>(null);
 
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [showMobileLabel, setShowMobileLabel] = useState(true);
+  const mobileLabelTimerRef = useRef<number | null>(null);
+  const [imageError, setImageError] = useState(false);
 
   // Check reduced-motion media query
   useEffect(() => {
@@ -43,6 +47,32 @@ export function VoiceAgent({ isPageLoaded = true }: VoiceAgentProps) {
     const listener = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
     mq.addEventListener('change', listener);
     return () => mq.removeEventListener('change', listener);
+  }, []);
+
+  // Check desktop media query (>= 768px)
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)');
+    setIsDesktop(mq.matches);
+    const listener = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mq.addEventListener('change', listener);
+    return () => mq.removeEventListener('change', listener);
+  }, []);
+
+  // Show mobile label for first 6 seconds after page load
+  useEffect(() => {
+    if (!isPageLoaded) return;
+    const timer = window.setTimeout(() => {
+      setShowMobileLabel(false);
+    }, 6000);
+    return () => window.clearTimeout(timer);
+  }, [isPageLoaded]);
+
+  const triggerMobileLabel = React.useCallback(() => {
+    setShowMobileLabel(true);
+    if (mobileLabelTimerRef.current) window.clearTimeout(mobileLabelTimerRef.current);
+    mobileLabelTimerRef.current = window.setTimeout(() => {
+      setShowMobileLabel(false);
+    }, 3500);
   }, []);
 
   // Lock body scroll while panel is open
@@ -118,35 +148,119 @@ export function VoiceAgent({ isPageLoaded = true }: VoiceAgentProps) {
             bottom: 'calc(max(1.5rem, calc(1.5rem + env(safe-area-inset-bottom, 0px))) + 4.25rem)',
           }}
         >
-          <span
-            aria-hidden="true"
-            className="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full bg-[#121215]/90 border border-[#C6FF3D]/40 text-[#C6FF3D] font-mono text-[11px] font-bold tracking-wider shadow-lg pointer-events-none"
-          >
-            TALK TO CHARAN
-          </span>
-          <button
-            ref={launcherRef}
-            type="button"
-            onClick={openPanel}
-            aria-label="Talk to Charan voice agent"
-            className="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-[#C6FF3D] hover:bg-[#d4ff66] text-[#0A0A0B] shadow-[0_4px_24px_rgba(198,255,61,0.45)] flex items-center justify-center transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6FF3D] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0B]"
-          >
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
+          <AnimatePresence>
+            {(isDesktop || showMobileLabel) && (
+              <motion.span
+                aria-hidden="true"
+                initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.92, x: 6 }}
+                animate={{ opacity: 1, scale: 1, x: 0 }}
+                exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.92, x: 6 }}
+                transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
+                className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#121215]/90 border border-[#C6FF3D]/40 text-[#C6FF3D] font-mono text-[11px] font-bold tracking-wider shadow-lg pointer-events-none whitespace-nowrap"
+              >
+                TALK TO ME
+              </motion.span>
+            )}
+          </AnimatePresence>
+
+          <div className="relative flex items-center justify-center">
+            {/* Subtle pulsing ring animation for voice avatar button only */}
+            {!prefersReducedMotion && (
+              <motion.span
+                aria-hidden="true"
+                className="absolute -inset-1 rounded-full border border-[#C6FF3D]/60 pointer-events-none"
+                animate={{
+                  scale: [1, 1.16, 1],
+                  opacity: [0.7, 0, 0.7],
+                }}
+                transition={{
+                  duration: 2.8,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+              />
+            )}
+
+            <button
+              ref={launcherRef}
+              type="button"
+              onClick={openPanel}
+              onMouseEnter={triggerMobileLabel}
+              onFocus={triggerMobileLabel}
+              onTouchStart={triggerMobileLabel}
+              aria-label="Talk to Charan, voice conversation"
+              className={`relative w-13 h-13 sm:w-14 sm:h-14 rounded-full ${
+                imageError ? 'bg-[#C6FF3D] text-[#0A0A0B]' : 'bg-[#000000] border-2 border-[#C6FF3D]'
+              } shadow-[0_4px_24px_rgba(198,255,61,0.45)] flex items-center justify-center transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6FF3D] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0B]`}
             >
-              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-              <line x1="12" x2="12" y1="19" y2="22" />
-            </svg>
-          </button>
+              {!imageError ? (
+                <>
+                  {/* Avatar circle with black background, scale(0.92), 50% 100% origin */}
+                  <div className="w-full h-full rounded-full overflow-hidden flex items-end justify-center bg-[#000000]">
+                    <img
+                      src="/images/charan-avatar-128.webp"
+                      srcSet="/images/charan-avatar-128.webp 1x, /images/charan-avatar-256.webp 2x"
+                      alt="Charan"
+                      width={56}
+                      height={56}
+                      decoding="async"
+                      draggable={false}
+                      onError={() => setImageError(true)}
+                      className="w-full h-full object-cover select-none pointer-events-none"
+                      style={{
+                        transform: 'scale(0.92)',
+                        transformOrigin: '50% 100%',
+                      }}
+                    />
+                  </div>
+
+                  {/* Tiny pulsing green "live" dot at top-right */}
+                  <span
+                    aria-hidden="true"
+                    className="absolute top-0 right-0 sm:top-0.5 sm:right-0.5 flex h-3 w-3 items-center justify-center pointer-events-none z-10"
+                  >
+                    {!prefersReducedMotion && (
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C6FF3D] opacity-75" />
+                    )}
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#C6FF3D] ring-1 ring-[#0A0A0B]" />
+                  </span>
+
+                  {/* Small lime circular badge with mic icon at bottom-right edge */}
+                  <span
+                    aria-hidden="true"
+                    className="absolute -bottom-0.5 -right-0.5 sm:bottom-0 sm:right-0 w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full bg-[#C6FF3D] text-[#0A0A0B] flex items-center justify-center shadow-md border-2 border-[#0A0A0B] pointer-events-none z-10"
+                  >
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
+                      <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+                    </svg>
+                  </span>
+                </>
+              ) : (
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                  <line x1="12" x2="12" y1="19" y2="22" />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
       )}
 
@@ -198,22 +312,21 @@ export function VoiceAgent({ isPageLoaded = true }: VoiceAgentProps) {
                 {/* Panel Header */}
                 <div className="px-5 py-4 border-b border-white/10 bg-[#121215]/80 backdrop-blur-md flex items-center justify-between select-none">
                   <div className="flex items-center gap-3">
-                    <div className="relative w-8 h-8 rounded-full bg-[#1A1A1F] border border-[#C6FF3D]/30 flex items-center justify-center text-[#C6FF3D]">
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-                        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                        <line x1="12" x2="12" y1="19" y2="22" />
-                      </svg>
+                    <div className="relative w-9 h-9 rounded-full bg-black border border-[#C6FF3D]/50 overflow-hidden flex items-end justify-center shrink-0">
+                      <img
+                        src="/images/charan-avatar-128.webp"
+                        srcSet="/images/charan-avatar-128.webp 1x, /images/charan-avatar-256.webp 2x"
+                        alt="Charan"
+                        width={36}
+                        height={36}
+                        decoding="async"
+                        draggable={false}
+                        className="w-full h-full object-cover select-none pointer-events-none"
+                        style={{
+                          transform: 'scale(0.92)',
+                          transformOrigin: '50% 100%',
+                        }}
+                      />
                       {callState === 'active' && (
                         <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-[#C6FF3D] rounded-full animate-ping opacity-75" />
                       )}
