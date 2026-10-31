@@ -1,11 +1,21 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useVoiceAgent } from '../hooks/useVoiceAgent';
+import { useVoiceAgent, VoiceType } from '../hooks/useVoiceAgent';
 import { useScrollLock } from '../hooks/useScrollLock';
 
 interface VoiceAgentProps {
   isPageLoaded?: boolean;
   isOverlayOpen?: boolean;
+}
+
+export function getVoiceLabel(voice: VoiceType): string {
+  if (voice === 'clone') {
+    return 'AI voice clone of Charan';
+  }
+  if (voice === 'stock') {
+    return "AI voice assistant, trained on Charan's work";
+  }
+  return 'AI voice assistant of Charan';
 }
 
 function formatRemainingTime(seconds: number): string {
@@ -26,6 +36,7 @@ export function VoiceAgent({
     isMuted,
     turns,
     secondsRemaining,
+    voice,
     openPanel,
     closePanel,
     startCall,
@@ -33,6 +44,8 @@ export function VoiceAgent({
     toggleMute,
     fallbackToChat,
   } = useVoiceAgent();
+
+  const voiceLabel = getVoiceLabel(voice);
 
   const launcherRef = useRef<HTMLButtonElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -43,6 +56,26 @@ export function VoiceAgent({
   const [showMobileLabel, setShowMobileLabel] = useState(true);
   const mobileLabelTimerRef = useRef<number | null>(null);
   const [imageError, setImageError] = useState(false);
+
+  // Polite live announcement only when a turn becomes final
+  const lastAnnouncedFinalIdRef = useRef<number | null>(null);
+  const [liveAnnouncement, setLiveAnnouncement] = useState('');
+
+  useEffect(() => {
+    const lastFinalTurn = [...turns].reverse().find((t) => t.final);
+    if (lastFinalTurn && lastFinalTurn.id !== lastAnnouncedFinalIdRef.current) {
+      lastAnnouncedFinalIdRef.current = lastFinalTurn.id;
+      const speaker = lastFinalTurn.role === 'agent' ? 'Charan' : 'You';
+      setLiveAnnouncement(`${speaker}: ${lastFinalTurn.text}`);
+    }
+  }, [turns]);
+
+  useEffect(() => {
+    if (callState === 'connecting' || callState === 'idle') {
+      lastAnnouncedFinalIdRef.current = null;
+      setLiveAnnouncement('');
+    }
+  }, [callState]);
 
   // Check reduced-motion media query
   useEffect(() => {
@@ -199,7 +232,7 @@ export function VoiceAgent({
               onMouseEnter={triggerMobileLabel}
               onFocus={triggerMobileLabel}
               onTouchStart={triggerMobileLabel}
-              aria-label="Talk to Charan, voice conversation"
+              aria-label={voiceLabel}
               className={`relative w-13 h-13 sm:w-14 sm:h-14 rounded-full ${
                 imageError ? 'bg-[#C6FF3D] text-[#0A0A0B]' : 'bg-[#000000] border-2 border-[#C6FF3D]'
               } shadow-[0_4px_24px_rgba(198,255,61,0.45)] flex items-center justify-center transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6FF3D] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0B]`}
@@ -298,6 +331,7 @@ export function VoiceAgent({
                 ref={panelRef}
                 role="dialog"
                 aria-modal="true"
+                aria-label={voiceLabel}
                 aria-labelledby="voice-widget-header"
                 initial={
                   prefersReducedMotion
@@ -420,7 +454,7 @@ export function VoiceAgent({
                       </button>
 
                       <p className="text-[12px] text-zinc-500 font-mono mt-3">
-                        AI voice clone of Charan
+                        {voiceLabel}
                       </p>
                     </div>
                   )}
@@ -494,11 +528,18 @@ export function VoiceAgent({
                         </div>
                       </div>
 
-                      {/* Live Transcript Area */}
+                      {/* Screen reader live region announcing ONLY finalized turns */}
                       <div
+                        role="status"
                         aria-live="polite"
-                        className="flex-1 max-h-[160px] overflow-y-auto bg-[#121215]/60 border border-white/5 rounded-xl p-3 flex flex-col gap-2.5 text-xs font-sans"
+                        aria-atomic="true"
+                        className="sr-only"
                       >
+                        {liveAnnouncement}
+                      </div>
+
+                      {/* Live Transcript Area: last 4 turns rendered, interim turns dimmer */}
+                      <div className="flex-1 max-h-[160px] overflow-y-auto bg-[#121215]/60 border border-white/5 rounded-xl p-3 flex flex-col gap-2.5 text-xs font-sans">
                         {turns.length === 0 ? (
                           <div className="text-zinc-500 italic text-center my-auto font-mono text-[11px]">
                             {callState === 'connecting'
@@ -506,7 +547,7 @@ export function VoiceAgent({
                               : 'Say hello to Charan...'}
                           </div>
                         ) : (
-                          turns.map((turn) => {
+                          turns.slice(-4).map((turn) => {
                             const isAgent = turn.role === 'agent';
                             return (
                               <div
@@ -523,7 +564,7 @@ export function VoiceAgent({
                                     isAgent
                                       ? 'bg-zinc-800/80 text-zinc-100 border border-white/5'
                                       : 'bg-[#C6FF3D]/15 text-[#C6FF3D] border border-[#C6FF3D]/25'
-                                  } ${!turn.final ? 'opacity-65 italic' : 'opacity-100'}`}
+                                  } ${!turn.final ? 'opacity-60 italic' : 'opacity-100'}`}
                                 >
                                   {turn.text}
                                 </div>
@@ -663,6 +704,10 @@ export function VoiceAgent({
                       >
                         Speak again
                       </button>
+
+                      <p className="text-[12px] text-zinc-500 font-mono mt-3">
+                        {voiceLabel}
+                      </p>
                     </div>
                   )}
 

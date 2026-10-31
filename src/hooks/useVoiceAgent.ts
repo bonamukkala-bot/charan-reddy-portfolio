@@ -4,9 +4,10 @@ import type { WebSession, SessionStatus, TranscriptEvent } from '@omnidim-ai/cli
 export type CallState = 'idle' | 'connecting' | 'active' | 'ended' | 'error';
 export type SpeakerState = 'connecting' | 'listening' | 'speaking';
 export type ErrorType = 'permission_denied' | 'unavailable' | 'unknown';
+export type VoiceType = 'clone' | 'stock' | null;
 
 export interface TranscriptTurn {
-  id: string;
+  id: number;
   role: 'user' | 'agent';
   text: string;
   final: boolean;
@@ -15,38 +16,65 @@ export interface TranscriptTurn {
 const MAX_CALL_DURATION_SEC = 180; // 3 minutes auto-end
 
 /**
- * Updates turns ensuring the latest cumulative snapshot replaces the current turn in-place,
- * creating a new turn only when speaker changes or after a finalized turn.
+ * Updates turns ensuring the cumulative snapshot replaces the current turn in-place:
+ * 1. If LAST turn has the same role and is not final -> replace text and final flag in-place.
+ * 2. If event repeats text of last FINAL turn with same role (duplicate final) -> ignore it.
+ * 3. If an event arrives from other role while turn is in-progress -> mark in-progress turn final and push new turn.
+ * 4. Otherwise -> push new turn.
+ * 5. Stable incrementing counter for ids (React keys).
  */
 function updateTurns(
   prevTurns: TranscriptTurn[],
-  event: TranscriptEvent
+  event: TranscriptEvent,
+  nextId: () => number
 ): TranscriptTurn[] {
-  if (!event.text) return prevTurns;
+  const text = event.text ?? '';
+  if (!text.trim()) return prevTurns;
 
-  const lastTurn = prevTurns[prevTurns.length - 1];
+  const lastIdx = prevTurns.length - 1;
+  const lastTurn = lastIdx >= 0 ? prevTurns[lastIdx] : null;
 
-  // If last turn exists, has same role, and wasn't finalized yet -> REPLACE in-place
-  if (lastTurn && lastTurn.role === event.role && !lastTurn.final) {
-    const updated = [...prevTurns];
-    updated[updated.length - 1] = {
-      ...lastTurn,
-      text: event.text,
-      final: event.final,
+  // 3. If an event arrives from the other role while a turn is still in progress,
+  // mark the in-progress turn final and start the new one.
+  if (lastTurn && !lastTurn.final && lastTurn.role !== event.role) {
+    const finalizedLast: TranscriptTurn = { ...lastTurn, final: true };
+    const newTurn: TranscriptTurn = {
+      id: nextId(),
+      role: event.role,
+      text,
+      final: Boolean(event.final),
     };
-    return updated;
+    return [...prevTurns.slice(0, lastIdx), finalizedLast, newTurn].slice(-4);
   }
 
-  // Otherwise (role changed or last turn was final) -> append fresh turn
-  const newTurn: TranscriptTurn = {
-    id: `${event.role}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-    role: event.role,
-    text: event.text,
-    final: event.final,
-  };
+  // 2a. If the LAST turn has the same role and is not final, replace its text (and final flag)
+  if (lastTurn && !lastTurn.final && lastTurn.role === event.role) {
+    const updatedLast: TranscriptTurn = {
+      ...lastTurn,
+      text,
+      final: Boolean(event.final),
+    };
+    return [...prevTurns.slice(0, lastIdx), updatedLast];
+  }
 
-  // Keep last 6 turns to keep the panel compact and readable
-  return [...prevTurns, newTurn].slice(-6);
+  // 2b. If the event repeats the text of the last FINAL turn with the same role (duplicate final), ignore it.
+  if (
+    lastTurn &&
+    lastTurn.final &&
+    lastTurn.role === event.role &&
+    (lastTurn.text.trim() === text.trim() || lastTurn.text.trim().startsWith(text.trim()))
+  ) {
+    return prevTurns;
+  }
+
+  // 2c. Otherwise, push a new turn.
+  const newTurn: TranscriptTurn = {
+    id: nextId(),
+    role: event.role,
+    text,
+    final: Boolean(event.final),
+  };
+  return [...prevTurns, newTurn].slice(-4);
 }
 
 export function useVoiceAgent() {
@@ -58,8 +86,18 @@ export function useVoiceAgent() {
   const [turns, setTurns] = useState<TranscriptTurn[]>([]);
   const [secondsRemaining, setSecondsRemaining] = useState(MAX_CALL_DURATION_SEC);
   const [endedReason, setEndedReason] = useState<string | null>(null);
+  const [voice, setVoice] = useState<VoiceType>(null);
+
+  const turnIdCounterRef = useRef(0);
+  const nextTurnId = useCallback(() => ++turnIdCounterRef.current, []);
 
   const sessionRef = useRef<WebSession | null>(null);
+  const activeSessionIdRef = useRef<number>(0);
+  const isStartingRef = useRef(false);
+  const statusCbRef = useRef<((s: SessionStatus) => void) | null>(null);
+  const transcriptCbRef = useRef<((t: TranscriptEvent) => void) | null>(null);
+  const errorCbRef = useRef<((e: Error) => void) | null>(null);
+
   const countdownTimerRef = useRef<number | null>(null);
   const speakingTimeoutRef = useRef<number | null>(null);
   const callStateRef = useRef<CallState>('idle');
@@ -69,8 +107,11 @@ export function useVoiceAgent() {
     callStateRef.current = callState;
   }, [callState]);
 
-  // Clean up all audio/socket connections
+  // Clean up all audio/socket connections and event listeners
   const cleanUpSession = useCallback(() => {
+    // Invalidate active session so in-flight events are ignored
+    activeSessionIdRef.current++;
+
     if (countdownTimerRef.current) {
       clearInterval(countdownTimerRef.current);
       countdownTimerRef.current = null;
@@ -80,12 +121,25 @@ export function useVoiceAgent() {
       speakingTimeoutRef.current = null;
     }
     if (sessionRef.current) {
+      const session = sessionRef.current;
+      sessionRef.current = null;
+      if (statusCbRef.current) {
+        session.off('status', statusCbRef.current);
+        statusCbRef.current = null;
+      }
+      if (transcriptCbRef.current) {
+        session.off('transcript', transcriptCbRef.current);
+        transcriptCbRef.current = null;
+      }
+      if (errorCbRef.current) {
+        session.off('error', errorCbRef.current);
+        errorCbRef.current = null;
+      }
       try {
-        sessionRef.current.stop();
+        session.stop();
       } catch {
         // Safe fallback
       }
-      sessionRef.current = null;
     }
   }, []);
 
@@ -114,23 +168,32 @@ export function useVoiceAgent() {
     }, 1000);
   }, [endCall]);
 
-  // Start a fresh voice call
+  // Start a fresh voice call ("Speak with Charan" / "Speak again")
   const startCall = useCallback(async () => {
-    cleanUpSession();
-    setTurns([]);
-    setCallState('connecting');
-    setSpeakerState('connecting');
-    setErrorType(null);
-    setIsMuted(false);
-    setEndedReason(null);
-    setSecondsRemaining(MAX_CALL_DURATION_SEC);
+    if (isStartingRef.current) return;
+    isStartingRef.current = true;
 
     try {
+      cleanUpSession();
+      turnIdCounterRef.current = 0;
+      setTurns([]);
+      setCallState('connecting');
+      setSpeakerState('connecting');
+      setErrorType(null);
+      setIsMuted(false);
+      setEndedReason(null);
+      setSecondsRemaining(MAX_CALL_DURATION_SEC);
+      setVoice(null);
+
+      const currentSessionId = activeSessionIdRef.current;
+
       // 1. Request fresh ws_url from backend
       const res = await fetch('/api/voice-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
+
+      if (activeSessionIdRef.current !== currentSessionId) return;
 
       if (!res.ok) {
         setCallState('error');
@@ -138,20 +201,28 @@ export function useVoiceAgent() {
         return;
       }
 
-      const data = (await res.json()) as { ws_url?: string };
+      const data = (await res.json()) as { ws_url?: string; voice?: 'clone' | 'stock' };
+      if (activeSessionIdRef.current !== currentSessionId) return;
+
       if (!data.ws_url) {
         setCallState('error');
         setErrorType('unavailable');
         return;
       }
 
+      // Store voice for current call as soon as session is created
+      setVoice(data.voice === 'clone' ? 'clone' : 'stock');
+
       // 2. Lazy-load WebSession from @omnidim-ai/client
       const { WebSession } = await import('@omnidim-ai/client');
+      if (activeSessionIdRef.current !== currentSessionId) return;
+
       const session = new WebSession();
       sessionRef.current = session;
 
-      // 3. Attach SDK event listeners
-      session.on('status', (s: SessionStatus) => {
+      // 3. Attach SDK event listeners (guarded by session ID)
+      const onStatus = (s: SessionStatus) => {
+        if (activeSessionIdRef.current !== currentSessionId) return;
         if (s === 'connecting') {
           setCallState('connecting');
           setSpeakerState('connecting');
@@ -164,11 +235,17 @@ export function useVoiceAgent() {
           setCallState('ended');
           setEndedReason(s.reason || 'ended');
         }
-      });
+      };
 
-      session.on('transcript', (t: TranscriptEvent) => {
+      const onTranscript = (t: TranscriptEvent) => {
+        if (activeSessionIdRef.current !== currentSessionId) return;
         if (!t.text) return;
-        setTurns((prev) => updateTurns(prev, t));
+
+        if (import.meta.env.DEV) {
+          console.warn(`[VoiceAgent] transcript: role=${t.role}, final=${t.final}, len=${t.text.length}`);
+        }
+
+        setTurns((prev) => updateTurns(prev, t, nextTurnId));
 
         if (t.role === 'agent') {
           setSpeakerState('speaking');
@@ -182,9 +259,10 @@ export function useVoiceAgent() {
           if (speakingTimeoutRef.current) clearTimeout(speakingTimeoutRef.current);
           setSpeakerState('listening');
         }
-      });
+      };
 
-      session.on('error', (err: Error) => {
+      const onError = (err: Error) => {
+        if (activeSessionIdRef.current !== currentSessionId) return;
         console.error('OmniDimension session error:', err);
         cleanUpSession();
         setCallState('error');
@@ -193,7 +271,15 @@ export function useVoiceAgent() {
           err.name === 'PermissionDeniedError' ||
           /permission|denied|notallowed/i.test(err.message || '');
         setErrorType(isPermission ? 'permission_denied' : 'unavailable');
-      });
+      };
+
+      statusCbRef.current = onStatus;
+      transcriptCbRef.current = onTranscript;
+      errorCbRef.current = onError;
+
+      session.on('status', onStatus);
+      session.on('transcript', onTranscript);
+      session.on('error', onError);
 
       // 4. Start session (prompts for mic permission)
       await session.start({ wsUrl: data.ws_url });
@@ -207,8 +293,10 @@ export function useVoiceAgent() {
         error?.name === 'PermissionDeniedError' ||
         /permission|denied|notallowed/i.test(error?.message || '');
       setErrorType(isPermission ? 'permission_denied' : 'unavailable');
+    } finally {
+      isStartingRef.current = false;
     }
-  }, [cleanUpSession, startCountdown]);
+  }, [cleanUpSession, nextTurnId, startCountdown]);
 
   // Toggle mute
   const toggleMute = useCallback(() => {
@@ -232,6 +320,7 @@ export function useVoiceAgent() {
   const closePanel = useCallback(() => {
     endCall('closed_panel');
     setIsOpen(false);
+    setVoice(null);
   }, [endCall]);
 
   // Fallback to text chatbot
@@ -252,6 +341,7 @@ export function useVoiceAgent() {
     const handleCloseFromOutside = () => {
       endCall('external_close');
       setIsOpen(false);
+      setVoice(null);
     };
     window.addEventListener('close-voice-widget', handleCloseFromOutside);
 
@@ -271,6 +361,7 @@ export function useVoiceAgent() {
     turns,
     secondsRemaining,
     endedReason,
+    voice,
     openPanel,
     closePanel,
     startCall,
