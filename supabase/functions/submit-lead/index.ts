@@ -43,6 +43,29 @@ const PHONE_REGEX = /^\+91[6-9]\d{9}$/;
 const DEFAULT_CONSENT_TEXT =
   "I agree to receive a call from Charan's AI assistant on this number about my inquiry. The call may be transcribed to help prepare a reply.";
 
+/**
+ * Checks whether the current time in Asia/Kolkata is between 10:00 and 20:00 (10 AM to 8 PM).
+ */
+function isWithinIndiaCallingWindow(): boolean {
+  try {
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone: "Asia/Kolkata",
+      hour: "numeric",
+      minute: "numeric",
+      hourCycle: "h23",
+    });
+    const parts = formatter.formatToParts(new Date());
+    const hour = Number(parts.find((p) => p.type === "hour")?.value ?? "0");
+    const minute = Number(parts.find((p) => p.type === "minute")?.value ?? "0");
+    const currentMinutes = hour * 60 + minute;
+    // 10:00 is 600 minutes; 20:00 is 1200 minutes
+    return currentMinutes >= 10 * 60 && currentMinutes < 20 * 60;
+  } catch (err) {
+    console.error("Error evaluating Asia/Kolkata time:", err);
+    return false;
+  }
+}
+
 Deno.serve(async (req: Request) => {
   const corsHeaders = getCorsHeaders(req);
 
@@ -243,24 +266,28 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // 8. Insert into public.leads table (status stays 'new', do not trigger call yet)
-    const { error: insertError } = await supabase.from("leads").insert({
-      name,
-      email,
-      phone,
-      project_type: project_type || null,
-      budget: budget || null,
-      timeline: timeline || null,
-      preferred_language,
-      message,
-      consent_given: true,
-      consent_at: new Date().toISOString(),
-      consent_text,
-      status: "new",
-      source_ip: sourceIp,
-    });
+    // 8. Insert into public.leads table
+    const { data: insertedLead, error: insertError } = await supabase
+      .from("leads")
+      .insert({
+        name,
+        email,
+        phone,
+        project_type: project_type || null,
+        budget: budget || null,
+        timeline: timeline || null,
+        preferred_language,
+        message,
+        consent_given: true,
+        consent_at: new Date().toISOString(),
+        consent_text,
+        status: "new",
+        source_ip: sourceIp,
+      })
+      .select()
+      .single();
 
-    if (insertError) {
+    if (insertError || !insertedLead) {
       console.error("Failed to insert lead into database:", insertError);
       return new Response(
         JSON.stringify({
@@ -274,6 +301,152 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    // 9. Outbound call trigger (ONLY if CALLS_ENABLED is "true")
+    const callsEnabled = Deno.env.get("CALLS_ENABLED") === "true";
+
+    if (callsEnabled) {
+      try {
+        // Step 1: Do not call if any existing lead with the same phone has do_not_call = true
+        const { data: dncLead, error: dncError } = await supabase
+          .from("leads")
+          .select("id")
+          .eq("phone", phone)
+          .eq("do_not_call", true)
+          .limit(1)
+          .maybeSingle();
+
+        if (dncError) {
+          console.error("Error checking do_not_call status for phone:", dncError);
+        }
+
+        if (dncLead) {
+          console.log(`Skipping outbound call for lead ${insertedLead.id}: phone ${phone} has do_not_call=true.`);
+          // Also flag the current lead record
+          await supabase
+            .from("leads")
+            .update({ do_not_call: true })
+            .eq("id", insertedLead.id);
+        } else if (!isWithinIndiaCallingWindow()) {
+          // Step 2: Calling window: only between 10:00 and 20:00 India time (Asia/Kolkata).
+          // Outside it, set status to 'queued' and do not call.
+          console.log(`Outside calling window (10:00-20:00 IST). Setting lead ${insertedLead.id} status to 'queued'.`);
+          await supabase
+            .from("leads")
+            .update({ status: "queued" })
+            .eq("id", insertedLead.id);
+        } else {
+          // Step 3: Dispatch the call
+          const omnidimApiKey = Deno.env.get("OMNIDIM_API_KEY");
+          const omnidimAgentId = Deno.env.get("OMNIDIM_AGENT_ID");
+          const apiBaseUrl = (
+            Deno.env.get("OMNIDIM_API_BASE_URL") || "https://backend.omnidim.io/api/v1"
+          ).replace(/\/+$/, "");
+          const fromNumberId = Deno.env.get("OMNIDIM_FROM_NUMBER_ID")?.trim();
+
+          if (!omnidimApiKey || !omnidimAgentId) {
+            console.error("OmniDimension configuration missing (OMNIDIM_API_KEY or OMNIDIM_AGENT_ID). Marking lead failed.");
+            await supabase
+              .from("leads")
+              .update({ status: "failed" })
+              .eq("id", insertedLead.id);
+          } else {
+            const dispatchPayload: Record<string, any> = {
+              agent_id: Number(omnidimAgentId),
+              to_number: insertedLead.phone,
+              call_context: {
+                user_name: insertedLead.name,
+                project_type: insertedLead.project_type,
+                budget_range: insertedLead.budget,
+                timeline: insertedLead.timeline,
+                preferred_language: insertedLead.preferred_language,
+                lead_message: insertedLead.message,
+              },
+              metadata: {
+                lead_id: insertedLead.id,
+                source: "portfolio_form",
+              },
+            };
+
+            if (fromNumberId) {
+              dispatchPayload.from_number_id = !isNaN(Number(fromNumberId))
+                ? Number(fromNumberId)
+                : fromNumberId;
+            }
+
+            const dispatchUrl = `${apiBaseUrl}/calls/dispatch`;
+            const dispatchController = new AbortController();
+            const dispatchTimeout = setTimeout(() => dispatchController.abort(), 8000);
+
+            try {
+              const dispatchRes = await fetch(dispatchUrl, {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${omnidimApiKey}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(dispatchPayload),
+                signal: dispatchController.signal,
+              });
+
+              const responseText = await dispatchRes.text();
+              let responseData: any = null;
+              try {
+                responseData = JSON.parse(responseText);
+              } catch {
+                // Not JSON
+              }
+
+              const isSuccess =
+                dispatchRes.ok &&
+                (responseData?.success === true ||
+                  (responseData?.requestId && responseData?.success !== false));
+
+              if (isSuccess) {
+                // 4. On a success response (success true), set status 'calling', save returned requestId into omni_request_id, set call_started_at, increment call_attempts to 1.
+                const omniRequestId =
+                  responseData?.requestId ??
+                  responseData?.request_id ??
+                  (responseData?.id ? String(responseData.id) : null);
+
+                await supabase
+                  .from("leads")
+                  .update({
+                    status: "calling",
+                    omni_request_id: omniRequestId ? String(omniRequestId) : null,
+                    call_started_at: new Date().toISOString(),
+                    call_attempts: 1,
+                  })
+                  .eq("id", insertedLead.id);
+              } else {
+                // 5. If dispatch fails, set status 'failed', and log status code and response body. Never log API key.
+                console.error(
+                  `OmniDimension dispatch failed with status ${dispatchRes.status}: ${responseText}`
+                );
+                await supabase
+                  .from("leads")
+                  .update({ status: "failed" })
+                  .eq("id", insertedLead.id);
+              }
+            } catch (dispatchErr: unknown) {
+              console.error(
+                "OmniDimension dispatch network/timeout error:",
+                dispatchErr instanceof Error ? dispatchErr.message : String(dispatchErr)
+              );
+              await supabase
+                .from("leads")
+                .update({ status: "failed" })
+                .eq("id", insertedLead.id);
+            } finally {
+              clearTimeout(dispatchTimeout);
+            }
+          }
+        }
+      } catch (callErr: unknown) {
+        console.error("Outbound call handling error:", callErr);
+      }
+    }
+
+    // 6. Never let a dispatch problem break the response to the visitor: lead is already saved
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -289,4 +462,3 @@ Deno.serve(async (req: Request) => {
     );
   }
 });
-
