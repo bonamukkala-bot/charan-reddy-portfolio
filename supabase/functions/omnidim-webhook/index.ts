@@ -35,6 +35,48 @@ function normalizeIndianPhone(input: unknown): string | null {
   return null;
 }
 
+/**
+ * Extracts the structural shape of call_report for diagnostics.
+ * Returns each key's type (string/number/object/array/boolean) and
+ * for extracted_variables only its key names, ensuring no sensitive
+ * lead text, summaries, or transcripts are logged.
+ */
+function getCallReportShape(callReport: any): Record<string, any> {
+  if (!callReport || typeof callReport !== "object") {
+    return { _type: typeof callReport };
+  }
+  const shape: Record<string, any> = {};
+  for (const [key, val] of Object.entries(callReport)) {
+    if (key === "extracted_variables" || key === "extractedVariables") {
+      if (val && typeof val === "object" && !Array.isArray(val)) {
+        shape[key] = Object.keys(val);
+      } else {
+        shape[key] = Array.isArray(val) ? "array" : typeof val;
+      }
+    } else if (Array.isArray(val)) {
+      shape[key] = "array";
+    } else if (val === null) {
+      shape[key] = "null";
+    } else {
+      shape[key] = typeof val;
+    }
+  }
+  return shape;
+}
+
+const NO_ANSWER_CALL_STATUS_PATTERNS = [
+  "no-answer",
+  "no_answer",
+  "noanswer",
+  "busy",
+  "failed",
+  "voicemail",
+  "unanswered",
+  "not answered",
+  "canceled",
+  "cancelled",
+];
+
 Deno.serve(async (req: Request) => {
   // 1. Accept POST only
   if (req.method !== "POST") {
@@ -47,7 +89,7 @@ Deno.serve(async (req: Request) => {
     );
   }
 
-  // 1. Authenticate webhook using constant-time comparison on ?token=
+  // 1. Authenticate webhook using constant-time comparison on ?token= (never log token)
   const url = new URL(req.url);
   const token = url.searchParams.get("token") ?? "";
   const webhookSecret = Deno.env.get("WEBHOOK_SECRET") ?? "";
@@ -87,7 +129,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Initialize Supabase Admin client
+    // Initialize Supabase Admin client with service role key
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
@@ -106,7 +148,7 @@ Deno.serve(async (req: Request) => {
       auth: { persistSession: false },
     });
 
-    // Extract potential sub-objects defensively
+    // Extract sub-objects defensively
     const metadata =
       payload.metadata && typeof payload.metadata === "object" ? payload.metadata : {};
     const callReport =
@@ -130,84 +172,76 @@ Deno.serve(async (req: Request) => {
         ? callReport.callContext
         : {};
 
-    // 3. Find matching lead:
-    // (a) lead id found in metadata or call_context echoed in payload
+    // 1. LEAD MATCHING ORDER
     let matchedLead: any = null;
+    let matchRule = "none";
 
-    const candidateLeadId =
-      metadata.lead_id ??
-      metadata.leadId ??
-      reportMetadata.lead_id ??
-      reportMetadata.leadId ??
-      callContext.lead_id ??
-      callContext.leadId ??
-      reportContext.lead_id ??
-      reportContext.leadId ??
-      payload.lead_id ??
-      payload.leadId;
+    // a. Primary match: call_request_id (compare as text) against leads.omni_request_id
+    const candidateRequestId =
+      payload.call_request_id ??
+      payload.callRequestId ??
+      payload.request_id ??
+      payload.requestId ??
+      payload.omni_request_id;
 
-    if (candidateLeadId && typeof candidateLeadId === "string" && candidateLeadId.trim()) {
-      const { data, error } = await supabase
-        .from("leads")
-        .select("*")
-        .eq("id", candidateLeadId.trim())
-        .maybeSingle();
+    if (candidateRequestId !== undefined && candidateRequestId !== null) {
+      const reqIdStr = String(candidateRequestId).trim();
+      if (reqIdStr) {
+        const { data, error } = await supabase
+          .from("leads")
+          .select("*")
+          .eq("omni_request_id", reqIdStr)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
 
-      if (!error && data) {
-        matchedLead = data;
-      }
-    }
-
-    // (b) omni_request_id equal to a request id found in payload
-    if (!matchedLead) {
-      const candidateRequestId =
-        payload.request_id ??
-        payload.requestId ??
-        payload.omni_request_id ??
-        metadata.request_id ??
-        metadata.requestId ??
-        reportMetadata.request_id ??
-        reportMetadata.requestId ??
-        callReport.request_id ??
-        callReport.requestId;
-
-      if (candidateRequestId !== undefined && candidateRequestId !== null) {
-        const reqIdStr = String(candidateRequestId).trim();
-        if (reqIdStr) {
-          const { data, error } = await supabase
-            .from("leads")
-            .select("*")
-            .eq("omni_request_id", reqIdStr)
-            .order("created_at", { ascending: false })
-            .limit(1)
-            .maybeSingle();
-
-          if (!error && data) {
-            matchedLead = data;
-          }
+        if (!error && data) {
+          matchedLead = data;
+          matchRule = "a:call_request_id";
         }
       }
     }
 
-    // (c) Fallback: most recent lead whose phone equals payload phone_number (normalized to +91XXXXXXXXXX) with status 'calling' created in last 3 hours
+    // b. metadata.lead_id or call_context.lead_id if present anywhere in the payload
     if (!matchedLead) {
-      const rawPhone =
-        payload.phone_number ??
-        payload.phoneNumber ??
-        payload.to_number ??
-        payload.toNumber ??
-        callReport.phone_number ??
-        callReport.phoneNumber ??
-        callReport.to_number ??
-        callReport.toNumber;
+      const candidateLeadId =
+        metadata.lead_id ??
+        metadata.leadId ??
+        reportMetadata.lead_id ??
+        reportMetadata.leadId ??
+        callContext.lead_id ??
+        callContext.leadId ??
+        reportContext.lead_id ??
+        reportContext.leadId ??
+        payload.lead_id ??
+        payload.leadId;
 
-      const normalizedPhone = normalizeIndianPhone(rawPhone);
-      if (normalizedPhone) {
-        const threeHoursAgo = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString();
+      if (candidateLeadId && typeof candidateLeadId === "string" && candidateLeadId.trim()) {
         const { data, error } = await supabase
           .from("leads")
           .select("*")
-          .eq("phone", normalizedPhone)
+          .eq("id", candidateLeadId.trim())
+          .maybeSingle();
+
+        if (!error && data) {
+          matchedLead = data;
+          matchRule = "b:lead_id";
+        }
+      }
+    }
+
+    // c. Fallback: most recent lead whose phone equals to_number first, then phone_number
+    // (both normalized to +91XXXXXXXXXX) with status 'calling' created in last 3 hours.
+    // Never match on from_number.
+    if (!matchedLead) {
+      const threeHoursAgo = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString();
+
+      const normalizedTo = normalizeIndianPhone(payload.to_number ?? payload.toNumber);
+      if (normalizedTo) {
+        const { data, error } = await supabase
+          .from("leads")
+          .select("*")
+          .eq("phone", normalizedTo)
           .eq("status", "calling")
           .gte("created_at", threeHoursAgo)
           .order("created_at", { ascending: false })
@@ -216,16 +250,67 @@ Deno.serve(async (req: Request) => {
 
         if (!error && data) {
           matchedLead = data;
+          matchRule = "c:to_number";
+        }
+      }
+
+      if (!matchedLead) {
+        const normalizedPhone = normalizeIndianPhone(payload.phone_number ?? payload.phoneNumber);
+        if (normalizedPhone) {
+          const { data, error } = await supabase
+            .from("leads")
+            .select("*")
+            .eq("phone", normalizedPhone)
+            .eq("status", "calling")
+            .gte("created_at", threeHoursAgo)
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          if (!error && data) {
+            matchedLead = data;
+            matchRule = "c:phone_number";
+          }
         }
       }
     }
 
-    // 6. If no lead matches, store nothing, log clear warning with payload keys (not transcript), return 200 { ok: true, matched: false }
+    // Extract top-level call values
+    const callStatusVal =
+      payload.call_status !== undefined && payload.call_status !== null
+        ? String(payload.call_status).trim()
+        : null;
+
+    const callDirectionVal =
+      payload.call_direction !== undefined && payload.call_direction !== null
+        ? String(payload.call_direction).trim()
+        : null;
+
+    const hangupSourceVal =
+      payload.hangup_source !== undefined && payload.hangup_source !== null
+        ? String(payload.hangup_source).trim()
+        : null;
+
+    const callDurationVal =
+      payload.call_duration !== undefined && payload.call_duration !== null
+        ? String(payload.call_duration).trim()
+        : null;
+
+    // 4. DIAGNOSTICS: log one line on EVERY request with values & call_report shape (never log transcripts or lead text)
+    const reportShape = getCallReportShape(callReport);
+    console.log(
+      `[OmniDimension Webhook] Diagnostics: ${JSON.stringify({
+        call_status: callStatusVal,
+        call_direction: callDirectionVal,
+        hangup_source: hangupSourceVal,
+        call_duration: callDurationVal,
+        matched_rule: matchRule,
+        call_report_shape: reportShape,
+      })}`
+    );
+
+    // 5. If no lead matches, return 200 { ok: true, matched: false }
     if (!matchedLead) {
-      console.warn(
-        "OmniDimension webhook received but no matching lead found. Payload keys:",
-        Object.keys(payload)
-      );
       return new Response(
         JSON.stringify({ ok: true, matched: false }),
         {
@@ -235,8 +320,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // 4. Extract fields to update the matched lead
-    // call_transcript (full conversation as text)
+    // Extract report fields
     let transcriptText: string | null = null;
     const rawConversation =
       callReport.full_conversation ??
@@ -265,7 +349,6 @@ Deno.serve(async (req: Request) => {
       transcriptText = JSON.stringify(rawConversation, null, 2);
     }
 
-    // ai_summary & call_sentiment
     const aiSummary =
       typeof callReport.summary === "string"
         ? callReport.summary
@@ -280,7 +363,6 @@ Deno.serve(async (req: Request) => {
         ? payload.sentiment
         : null;
 
-    // extracted variables (the whole extracted_variables object as jsonb)
     const rawExtracted =
       callReport.extracted_variables ??
       payload.extracted_variables ??
@@ -291,7 +373,6 @@ Deno.serve(async (req: Request) => {
     const extracted =
       typeof rawExtracted === "object" && rawExtracted !== null ? rawExtracted : {};
 
-    // call_outcome (from extracted_variables.call_outcome if present)
     const rawCallOutcome =
       extracted.call_outcome ??
       extracted.callOutcome ??
@@ -300,7 +381,6 @@ Deno.serve(async (req: Request) => {
       null;
     const callOutcome = typeof rawCallOutcome === "string" ? rawCallOutcome.trim() : null;
 
-    // fit_score (parse extracted_variables.fit_score as integer, only if 1 to 10)
     let fitScore: number | null = null;
     const rawFitScore = extracted.fit_score ?? extracted.fitScore;
     if (rawFitScore !== undefined && rawFitScore !== null && rawFitScore !== "") {
@@ -310,33 +390,49 @@ Deno.serve(async (req: Request) => {
       }
     }
 
-    // do_not_call (true if extracted_variables.do_not_call is "yes", case-insensitive)
     const rawDnc = String(
       extracted.do_not_call ?? extracted.doNotCall ?? ""
     ).trim().toLowerCase();
     const doNotCall = rawDnc === "yes" ? true : (matchedLead.do_not_call ?? false);
 
-    // omni_call_id (payload call_id as text)
     const rawCallId = payload.call_id ?? payload.callId;
     const omniCallId = rawCallId !== undefined && rawCallId !== null ? String(rawCallId) : null;
 
-    // call_ended_at (now)
     const callEndedAt = new Date().toISOString();
 
-    // 5. Status: 'no_answer' if call_outcome is Voicemail or Hung up early, otherwise 'called'.
-    // Never overwrite a status of qualified, won or lost.
+    // 3. STATUS LOGIC:
+    // Set 'no_answer' when call_outcome is Voicemail or Hung up early,
+    // OR when call_status (case-insensitive) contains any of the 10 no-answer patterns.
+    // Otherwise 'called'. Never overwrite a status of qualified, won or lost.
+    let isNoAnswer = false;
+
+    const outcomeLower = (callOutcome ?? "").toLowerCase();
+    if (outcomeLower === "voicemail" || outcomeLower === "hung up early") {
+      isNoAnswer = true;
+    }
+
+    const statusLower = (callStatusVal ?? "").toLowerCase();
+    if (statusLower) {
+      for (const pattern of NO_ANSWER_CALL_STATUS_PATTERNS) {
+        if (statusLower.includes(pattern)) {
+          isNoAnswer = true;
+          break;
+        }
+      }
+    }
+
     let updatedStatus = matchedLead.status;
     const preservedStatuses = ["qualified", "won", "lost"];
 
     if (!preservedStatuses.includes(matchedLead.status)) {
-      const outcomeLower = (callOutcome ?? "").toLowerCase();
-      if (outcomeLower === "voicemail" || outcomeLower === "hung up early") {
+      if (isNoAnswer) {
         updatedStatus = "no_answer";
       } else {
         updatedStatus = "called";
       }
     }
 
+    // 2. NEW COLUMNS & UPDATES
     const updateData: Record<string, any> = {
       call_transcript: transcriptText ?? matchedLead.call_transcript ?? null,
       ai_summary: aiSummary ?? matchedLead.ai_summary ?? null,
@@ -349,6 +445,9 @@ Deno.serve(async (req: Request) => {
       call_ended_at: callEndedAt,
       last_webhook: payload,
       status: updatedStatus,
+      call_status: callStatusVal ?? matchedLead.call_status ?? null,
+      call_duration: callDurationVal ?? matchedLead.call_duration ?? null,
+      hangup_source: hangupSourceVal ?? matchedLead.hangup_source ?? null,
     };
 
     const { error: updateError } = await supabase
@@ -385,4 +484,3 @@ Deno.serve(async (req: Request) => {
     );
   }
 });
-
