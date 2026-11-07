@@ -3,6 +3,7 @@
  * - ALLOWED_ORIGINS
  * - SUPABASE_URL
  * - SUPABASE_SERVICE_ROLE_KEY
+ * - PHONE_DAILY_LIMIT
  * - CALLS_ENABLED
  * - CALL_TEST_ALLOWLIST
  * - CALL_WINDOW_START
@@ -141,6 +142,27 @@ function isWithinIndiaCallingWindow(): boolean {
     console.error("Error evaluating Asia/Kolkata time window:", err);
     return false;
   }
+}
+
+/**
+ * Parses and validates PHONE_DAILY_LIMIT (1-100).
+ * Falls back to 10 if missing, non-integer, or out of range.
+ */
+function getPhoneDailyLimit(): number {
+  const DEFAULT_LIMIT = 10;
+  const raw = Deno.env.get("PHONE_DAILY_LIMIT");
+  if (raw === undefined || raw === null) {
+    return DEFAULT_LIMIT;
+  }
+  const trimmed = raw.trim();
+  if (!/^\d+$/.test(trimmed)) {
+    return DEFAULT_LIMIT;
+  }
+  const parsed = parseInt(trimmed, 10);
+  if (parsed < 1 || parsed > 100) {
+    return DEFAULT_LIMIT;
+  }
+  return parsed;
 }
 
 Deno.serve(async (req: Request) => {
@@ -321,6 +343,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
+    const phoneDailyLimit = getPhoneDailyLimit();
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const { count: phoneCount, error: phoneCountError } = await supabase
       .from("leads")
@@ -330,11 +353,11 @@ Deno.serve(async (req: Request) => {
 
     if (phoneCountError) {
       console.error("Rate limit check error (phone):", phoneCountError);
-    } else if (phoneCount !== null && phoneCount >= 2) {
+    } else if (phoneCount !== null && phoneCount >= phoneDailyLimit) {
       return new Response(
         JSON.stringify({
           ok: false,
-          error: "You have already submitted 2 inquiries for this phone number today. We'll be in touch shortly!",
+          error: `You have already submitted ${phoneDailyLimit} inquiries for this phone number today. We'll be in touch shortly!`,
         }),
         {
           status: 429,
