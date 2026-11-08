@@ -11,7 +11,7 @@ interface ProjectInquiryModalProps {
 }
 
 const CONSENT_TEXT =
-  "I agree to receive a call from Charan's AI assistant on this number about my inquiry. The call may be transcribed to help prepare a reply.";
+  "I agree to receive a call from Charan's AI assistant on this number about my inquiry. The call may be recorded and transcribed to help prepare a reply.";
 
 export function ProjectInquiryModal({ isOpen, onClose, initialService }: ProjectInquiryModalProps) {
   const modalRef = useRef<HTMLDivElement | null>(null);

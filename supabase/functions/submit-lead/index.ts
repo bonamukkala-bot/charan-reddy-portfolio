@@ -57,7 +57,7 @@ function getCorsHeaders(req: Request): Record<string, string> {
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_REGEX = /^\+91[6-9]\d{9}$/;
 const DEFAULT_CONSENT_TEXT =
-  "I agree to receive a call from Charan's AI assistant on this number about my inquiry. The call may be transcribed to help prepare a reply.";
+  "I agree to receive a call from Charan's AI assistant on this number about my inquiry. The call may be recorded and transcribed to help prepare a reply.";
 
 /**
  * Checks whether the lead's phone number is permitted to receive calls.
