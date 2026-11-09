@@ -77,6 +77,15 @@ const NO_ANSWER_CALL_STATUS_PATTERNS = [
   "cancelled",
 ];
 
+const PROTECTED_STATUSES = [
+  "qualified",
+  "contacted",
+  "proposal_sent",
+  "negotiating",
+  "won",
+  "lost",
+] as const;
+
 Deno.serve(async (req: Request) => {
   // 1. Accept POST only
   if (req.method !== "POST") {
@@ -401,30 +410,31 @@ Deno.serve(async (req: Request) => {
     const callEndedAt = new Date().toISOString();
 
     // 3. STATUS LOGIC:
-    // Set 'no_answer' when call_outcome is Voicemail or Hung up early,
+    // If the lead is in a protected status (qualified, contacted, proposal_sent, negotiating, won, lost),
+    // set by the human owner, NEVER change the status.
+    // Otherwise: set 'no_answer' when call_outcome is Voicemail or Hung up early,
     // OR when call_status (case-insensitive) contains any of the 10 no-answer patterns.
-    // Otherwise 'called'. Never overwrite a status of qualified, won or lost.
-    let isNoAnswer = false;
+    // Otherwise set 'called'.
+    let updatedStatus = matchedLead.status;
 
-    const outcomeLower = (callOutcome ?? "").toLowerCase();
-    if (outcomeLower === "voicemail" || outcomeLower === "hung up early") {
-      isNoAnswer = true;
-    }
+    if (!(PROTECTED_STATUSES as readonly string[]).includes(matchedLead.status)) {
+      let isNoAnswer = false;
 
-    const statusLower = (callStatusVal ?? "").toLowerCase();
-    if (statusLower) {
-      for (const pattern of NO_ANSWER_CALL_STATUS_PATTERNS) {
-        if (statusLower.includes(pattern)) {
-          isNoAnswer = true;
-          break;
+      const outcomeLower = (callOutcome ?? "").toLowerCase();
+      if (outcomeLower === "voicemail" || outcomeLower === "hung up early") {
+        isNoAnswer = true;
+      }
+
+      const statusLower = (callStatusVal ?? "").toLowerCase();
+      if (statusLower) {
+        for (const pattern of NO_ANSWER_CALL_STATUS_PATTERNS) {
+          if (statusLower.includes(pattern)) {
+            isNoAnswer = true;
+            break;
+          }
         }
       }
-    }
 
-    let updatedStatus = matchedLead.status;
-    const preservedStatuses = ["qualified", "won", "lost"];
-
-    if (!preservedStatuses.includes(matchedLead.status)) {
       if (isNoAnswer) {
         updatedStatus = "no_answer";
       } else {
